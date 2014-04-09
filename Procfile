@@ -1,0 +1,1 @@
+web: bundle exec ruby bpan.rb -p $PORT
