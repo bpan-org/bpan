@@ -54,6 +54,7 @@ Host bpan.github.com
   IdentityFile #{SSH_KEY_FILE}
 EOF
   end
+  logger.debug `eval \`ssh-agent -s\``
   logger.debug `ssh-add -D`
   logger.debug `ssh-add #{SSH_KEY_FILE}`
 
