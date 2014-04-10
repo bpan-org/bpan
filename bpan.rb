@@ -24,6 +24,12 @@ post '/push/?' do
   'push'
 end
 
+get '/ensure' do
+  ensure_ssh
+  logger.debug "ssh config: #{File.read(SSH_CONFIG)}"
+  logger.debug "ssh key: #{File.read(SSH_KEY_FILE)}"
+end
+
 get '/?' do
   redirect to('http://bpan.org')
 end
