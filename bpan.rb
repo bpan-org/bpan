@@ -33,8 +33,6 @@ private
 SSH_KEY_FILE = File.join(ENV['HOME'], '.ssh', 'server.id_rsa')
 SSH_CONFIG = File.join(ENV['HOME'], '.ssh', 'config')
 def ensure_ssh
-  logger.debug "ssh config: #{File.read(SSH_CONFIG)}"
-  logger.debug "ssh key: #{File.read(SSH_KEY_FILE)}"
   return if File.exist?(SSH_KEY_FILE)
   FileUtils.mkdir_p File.join(ENV['HOME'], '.ssh')
   File.open(SSH_KEY_FILE, 'w+') do |f|
@@ -52,6 +50,8 @@ end
 
 def ensure_index_dir
   ensure_ssh
+  logger.debug "ssh config: #{File.read(SSH_CONFIG)}"
+  logger.debug "ssh key: #{File.read(SSH_KEY_FILE)}"
   return if Dir.exist?(INDEX_DIR)
   FileUtils.mkdir_p(INDEX_DIR)
   Git.clone('git@bpan.github.com:bpan-org/bpan-org.git', 'index', path: File.dirname(__FILE__), log: logger)
