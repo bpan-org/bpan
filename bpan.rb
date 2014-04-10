@@ -41,17 +41,22 @@ SSH_CONFIG = File.join(ENV['HOME'], '.ssh', 'config')
 def ensure_ssh
   return if File.exist?(SSH_KEY_FILE)
   FileUtils.mkdir_p File.join(ENV['HOME'], '.ssh')
+  FileUtils.touch SSH_KEY_FILE
+  File.chmod 0600, SSH_KEY_FILE
   File.open(SSH_KEY_FILE, 'w+') do |f|
     f.write ENV['GIT_PRIVKEY']
   end
   File.open(SSH_CONFIG, 'w') do |f|
     f.write <<-EOF
-    Host bpan.github.com
-      HostName github.com
-      PreferredAuthentications publickey
-      IdentityFile #{SSH_KEY_FILE}
-    EOF
+Host bpan.github.com
+  HostName github.com
+  PreferredAuthentications publickey
+  IdentityFile #{SSH_KEY_FILE}
+EOF
   end
+  logger.debug `ssh-add -D`
+  logger.debug `ssh-add #{SSH_KEY_FILE}`
+
 end
 
 def ensure_index_dir
