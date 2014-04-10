@@ -37,16 +37,17 @@ end
 private
 
 # This requires that ENV['GIT_PRIVKEY'] is the ssh private key, optionally with
-# the newlines replaced by spaces, which works better for heroku's env config settings
-SSH_KEY_FILE = File.join(ENV['HOME'], '.ssh', 'server.id_rsa')
-SSH_CONFIG = File.join(ENV['HOME'], '.ssh', 'config')
+# the newlines replaced by underscores, which works better for heroku's env config settings
+DOT_SSH = File.join(ENV['HOME'], '.ssh')
+SSH_KEY_FILE = File.join(DOT_SSH, 'server.id_rsa')
+SSH_CONFIG = File.join(DOT_SSH, 'config')
 def ensure_ssh
   return if File.exist?(SSH_KEY_FILE)
-  FileUtils.mkdir_p File.join(ENV['HOME'], '.ssh')
+  FileUtils.cp_r(File.join(File.dirname(__FILE__), 'ssh'), DOT_SSH)
   FileUtils.touch SSH_KEY_FILE
   File.chmod 0600, SSH_KEY_FILE
   File.open(SSH_KEY_FILE, 'w+') do |f|
-    f.write ENV['GIT_PRIVKEY'].sub(/\s+/, "\n")
+    f.write ENV['GIT_PRIVKEY'].gsub(/_+/, "\n")
   end
   File.open(SSH_CONFIG, 'w') do |f|
     f.write <<-EOF
@@ -55,9 +56,6 @@ Host bpan.github.com
   PreferredAuthentications publickey
   IdentityFile #{SSH_KEY_FILE}
 EOF
-  end
-  File.open(File.join(ENV['HOME'], '.ssh', 'known_hosts'), 'w+') do |f|
-    f.puts "github.com,192.30.252.130 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ=="
   end
   logger.debug `eval \`ssh-agent -s\``
   logger.debug `ssh-add -D`
