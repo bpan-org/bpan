@@ -5,7 +5,7 @@ require 'logger'
 require 'fileutils'
 
 $stdout.sync = true
-logger = Logger.new $stdout
+logger = Logger.new $stdout, Logger::DEBUG
 
 INDEX_DIR = File.join(File.dirname(__FILE__), 'index')
 INDEX_BRANCH = 'index'
@@ -26,8 +26,6 @@ end
 
 get '/ensure' do
   ensure_ssh
-  logger.debug "ssh config: #{File.read(SSH_CONFIG)}"
-  logger.debug "ssh key: #{File.read(SSH_KEY_FILE)}"
 end
 
 get '/?' do
@@ -57,9 +55,15 @@ Host bpan.github.com
   IdentityFile #{SSH_KEY_FILE}
 EOF
   end
-  logger.debug `eval \`ssh-agent -s\``
-  logger.debug `ssh-add -D`
-  logger.debug `ssh-add #{SSH_KEY_FILE}`
+  exxec "eval \`ssh-agent -s\`"
+  exxec "ssh-add -D"
+  exxec "ssh-add #{SSH_KEY_FILE}"
+end
+
+def exxec cmd
+  logger.debug cmd
+  logger.debug `#{cmd}`
+  logger.debug "Exited: #{$?}"
 end
 
 def ensure_index_dir
