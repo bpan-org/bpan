@@ -2,6 +2,7 @@ Bundler.require
 require 'sinatra'
 require 'json'
 require 'logger'
+require 'fileutils'
 
 $stdout.sync = true
 logger = Logger.new $stdout
@@ -33,6 +34,7 @@ SSH_KEY_FILE = File.join(ENV['HOME'], '.ssh', 'server.id_rsa')
 SSH_CONFIG = File.join(ENV['HOME'], '.ssh', 'config')
 def ensure_ssh
   return if File.exist?(SSH_KEY_FILE)
+  FileUtils.mkdir_p File.join(ENV['HOME'], '.ssh')
   File.open(SSH_KEY_FILE, 'w+') do |f|
     f.write ENV['GIT_PRIVKEY']
   end
@@ -49,7 +51,6 @@ end
 def ensure_index_dir
   ensure_ssh
   return if Dir.exist?(INDEX_DIR)
-  require 'fileutils'
   FileUtils.mkdir_p(INDEX_DIR)
   Git.clone('git@bpan.github.com:bpan-org/bpan-org.git', 'index', path: File.dirname(__FILE__), log: logger)
 end
