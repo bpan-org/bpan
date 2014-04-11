@@ -24,41 +24,11 @@ post '/push/?' do
   'push'
 end
 
-get '/ensure' do
-  ensure_ssh
-end
-
 get '/?' do
   redirect to('http://bpan.org')
 end
 
 private
-
-# This requires that ENV['GIT_PRIVKEY'] is the ssh private key, optionally with
-# the newlines replaced by underscores, which works better for heroku's env config settings
-DOT_SSH = File.join(ENV['HOME'], '.ssh')
-SSH_KEY_FILE = File.join(DOT_SSH, 'server.id_rsa')
-SSH_CONFIG = File.join(DOT_SSH, 'config')
-def ensure_ssh
-  return if File.exist?(SSH_KEY_FILE)
-  FileUtils.cp_r(File.join(File.dirname(__FILE__), 'ssh'), DOT_SSH)
-  FileUtils.touch SSH_KEY_FILE
-  File.chmod 0600, SSH_KEY_FILE
-  File.open(SSH_KEY_FILE, 'w+') do |f|
-    f.write ENV['GIT_PRIVKEY'].gsub(/_+/, "\n")
-  end
-  File.open(SSH_CONFIG, 'w') do |f|
-    f.write <<-EOF
-Host bpan.github.com
-  HostName github.com
-  PreferredAuthentications publickey
-  IdentityFile #{SSH_KEY_FILE}
-EOF
-  end
-  exxec "eval \`ssh-agent -s\`"
-  exxec "ssh-add -D"
-  exxec "ssh-add #{SSH_KEY_FILE}"
-end
 
 def exxec cmd
   logger.debug cmd
@@ -67,12 +37,9 @@ def exxec cmd
 end
 
 def ensure_index_dir
-  ensure_ssh
-  logger.debug "ssh config: #{File.read(SSH_CONFIG)}"
-  logger.debug "ssh key: #{File.read(SSH_KEY_FILE)}"
   return if Dir.exist?(INDEX_DIR)
   FileUtils.mkdir_p(INDEX_DIR)
-  Git.clone('git@bpan.github.com:bpan-org/bpan-org.git', 'index', path: File.dirname(__FILE__), log: logger)
+  Git.clone('git@github.com:bpan-org/bpan-org.git', 'index', path: File.dirname(__FILE__), log: logger)
 end
 
 def repo
