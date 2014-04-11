@@ -7,3 +7,6 @@ deploy:
 
 tail:
 	ssh $(SERVER) 'tail -f /var/www/bpan-org/logs/unicorn.log'
+
+ssh:
+	ssh $(SERVER)

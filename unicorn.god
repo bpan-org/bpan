@@ -1,11 +1,13 @@
-# http://unicorn.bogomips.org/SIGNALS.html
+BPAN = '/var/www/bpan-org'
+BIN_PATH = "#{BPAN}/vendor/bundle/ruby/2.1.0/bin/"
+PID_DIR = "#{BPAN}/pids"
 
 God.watch do |w|
   w.name = "unicorn"
   w.interval = 30.seconds # default
   
   # unicorn needs to be run from the rails root
-  w.start = "cd #{RAILS_ROOT} && #{BIN_PATH}/unicorn_rails -c #{RAILS_ROOT}/config/unicorn.rb -E #{RAILS_ENV} -D"
+  w.start = "cd #{BPAN} && bundle exec #{BIN_PATH}/unicorn -c #{BPAN}/unicorn.rb -E 'production' -D"
 
   # QUIT gracefully shuts down workers
   w.stop = "kill -QUIT `cat #{PID_DIR}/unicorn.pid`"
@@ -17,8 +19,8 @@ God.watch do |w|
   w.restart_grace = 10.seconds
   w.pid_file = "#{PID_DIR}/unicorn.pid"
 
-  w.uid = 'rails'
-  w.gid = 'rails'
+  w.uid = 'www-data'
+  w.gid = 'www-data'
 
   w.behavior(:clean_pid_file)
 
