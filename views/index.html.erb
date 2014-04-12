@@ -1,0 +1,102 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
+	<title>BPAN: Better Programming Alliance Network</title>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+
+    <!-- Custom styles for this template -->
+    <link href="jumbotron-narrow.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="container">
+  	<!--
+      <div class="header">
+        <ul class="nav nav-pills pull-right">
+          <li class="active"><a href="#">Home</a></li>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+        <h3 class="text-muted">BPAN</h3>
+      </div>
+    -->
+
+      <div class="jumbotron">
+        <h1>BPAN is the Better Programming Alliance Network</h1>
+        <p class="lead">It is a a simple way to share library/module packages for any/all programming languages.</p>
+        <p><!--a class="btn btn-lg btn-success" href="#" role="button">Sign up today</a></p-->
+      </div>
+
+      <div class="row marketing">
+        <div class="col-lg-6">
+          <h4>About</h4>
+          	<p>
+			Currently it is in the proof-of-concept phase and being used for the Bash
+			Programming language.
+
+			See these links:
+			</p>
+			<ul>
+			  <li><a href="http://bash.bpan.org">Bash BPAN</a></li>
+			  <li><a href="http://www.bpan.org/packages/">BPAN Packages List</a>.</li>
+			  <li><a href="http://github.org/bpan-org/bpan-client#readme">BPAN Commandline Client / Install Tool</a></li>
+			</ul>
+        </div>
+
+        <div class="col-lg-6">
+          <h4>Becoming an author</h4>
+			<p>
+			To become a BPAN Contributing Author, simply visit
+			<a href="http://github.org/bpan-org/bpan.org">the GitHub BPAN.org repository</a>
+			and Star it. Then you will show up on the
+			<a href="http://www.bpan.org/authors/">BPAN Authors List</a>.
+			</p>
+        </div>
+
+        <div class="col-lg-6">
+          <h4>Becoming an author</h4>
+	        <ul id="authors">
+				<% authors.each do |author| %>
+					<li><img src="https://secure.gravatar.com/avatar/<%=author['gravatar_id']%>?d=retro" /> <%=author['login']%></li>
+				<%end%>
+			</ul>
+		</div>
+
+      </div>
+
+      <div class="footer">
+        <p>&copy; Oui Street 2014</p>
+      </div>
+
+    </div> <!-- /container -->
+
+
+    <!-- Placed at the end of the document so the pages load faster -->
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+
+  </body>
+</html>
+
+
+</body>
+</html>
