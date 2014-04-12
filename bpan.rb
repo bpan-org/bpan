@@ -10,11 +10,12 @@ logger = Logger.new $stdout, Logger::DEBUG
 INDEX_DIR = File.join(File.dirname(__FILE__), 'index')
 INDEX_BRANCH = 'index'
 AUTHORS_FILE = File.join(INDEX_DIR, 'authors.json')
+AUTHORS_FILEP = AUTHORS_FILE+'p'
 
 post '/star/?' do
   request.body.rewind  # in case someone already read it
   data = JSON.parse request.body.read
-  sender = data['sender']['login']
+  sender = data['sender']
   logger.debug "Received star from #{sender.inspect}"
   add_author sender
   "Thanks for starring, #{sender}"
@@ -29,12 +30,6 @@ get '/?' do
 end
 
 private
-
-def exxec cmd
-  logger.debug cmd
-  logger.debug `#{cmd}`
-  logger.debug "Exited: #{$?}"
-end
 
 def ensure_index_dir
   return if Dir.exist?(INDEX_DIR)
@@ -59,15 +54,31 @@ end
 def add_author author
   git = ensure_index_updated
   authors = JSON.parse(File.read(AUTHORS_FILE))
-  authors << author
-  authors.uniq!
-  authors.sort!
+  authors << format_author(author)
+  authors.uniq! {|author| author["login"]}
+  authors.sort! {|a,b| a["login"] <=> b["login"]}
+  json = authors.to_json
   File.open(AUTHORS_FILE, 'w') {|f|
-    f.write authors.to_json
+    f.write json
+  }
+  File.open(AUTHORS_FILEP, 'w') {|f|
+    f.write "var authors = "
+    f.write json
+    f.write ";"
   }
   git.add(File.basename(AUTHORS_FILE))
+  git.add(File.basename(AUTHORS_FILEP))
   git.commit("Add author '#{author}'")
   git.push 'origin', INDEX_BRANCH
+end
+
+def format_author author
+  { "login" => author['login'],
+    "avatar_url" => author["avatar_url"],
+    "gravatar_id" => author["gravatar_id"],
+    "url" => author["url"],
+    "html_url" => author["html_url"],
+  }
 end
 
 
