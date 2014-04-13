@@ -1,3 +1,5 @@
 .env
 index/
 id_rsa_server*
+bpan-ghpages/
+views/jumbotron-narrow.css
