@@ -22,11 +22,10 @@ that need a new packaging system.
 
 This repository has 4 main branches:
 
-* master — General Information Only
-* gh-pages — The bpan.org website
-* server — The webhook server code
-* index — The BPAN index files
-* client — The BPAN commandline client / installer
+* master — General Information and Documentation Only
+* gh-pages — The bpan.org website (including the BPAN indexes
+* server — The webhook server code (sinatra server)
+* client — The BPAN commandline client / installer (written in Bash, of course)
 
 ## Architecture
 
