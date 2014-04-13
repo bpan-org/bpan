@@ -45,7 +45,7 @@ HOMEPAGE_FILE = File.join(branch_dir(GH_PAGES_BRANCH), 'index.html')
 def ensure_dir branch
   return if Dir.exist?(branch_dir branch)
   FileUtils.mkdir_p(branch_dir branch)
-  Git.clone('git@github.com:bpan-org/bpan-org.git', branch, path: File.dirname(__FILE__), log: logger)
+  Git.clone('git@github.com:bpan-org/bpan.git', branch, path: File.dirname(__FILE__), log: logger)
 end
 
 def repo(branch)
