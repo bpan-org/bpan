@@ -12,3 +12,6 @@ tail:
 
 ssh:
 	ssh $(SERVER)
+
+startstop:
+		ssh $(SERVER) 'sudo /var/www/.rbenv/shims/god stop unicorn && sleep 10 && sudo /var/www/.rbenv/shims/god start unicorn' 

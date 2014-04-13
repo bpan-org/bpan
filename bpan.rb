@@ -31,6 +31,10 @@ def branch_dir branch
   File.join(File.dirname(__FILE__), branch)
 end
 
+def h s
+  CGI.escape_html s
+end
+
 INDEX_BRANCH = 'index'
 GH_PAGES_BRANCH = 'gh-pages'
 AUTHORS_FILE = File.join(branch_dir(INDEX_BRANCH), 'authors.json')
