@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -e
+
+export BASHLIB="$(
+  set -- $(echo "${0%/*}"/../{,ext/*/}{bin,lib})
+  IFS=':'; echo "$*"
+)"
+export PATH="$BASHLIB:$PATH"
+
+source bash+ ':std'
+
+use BPAN
+
+main "$@"

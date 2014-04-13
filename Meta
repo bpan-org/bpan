@@ -1,0 +1,18 @@
+name: bpan-client
+version: 0.0.1
+abstract: BPAN commandline client tool
+homepage: http://bpan.org/
+source: https://github.org/bpan-org/bpan/
+license: MIT
+author:
+  name: Ingy döt Net
+  email: ingy@ingy.net
+requires:
+- bashplus: 0.0.1
+- json-bash: 0.0.1
+test:
+  cmd: prove -l test/
+  requires:
+  - test-more-bash: 0.0.1
+install:
+  cmd: make install
