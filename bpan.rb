@@ -21,9 +21,22 @@ post '/push/?' do
   'push'
 end
 
-get '/?' do
-  redirect to('http://bpan.org')
+if ENV['RACK_ENV'] == 'development'
+  get '/?' do
+    ensure_branch_updated GH_PAGES_BRANCH
+    authors = JSON.parse(File.read(AUTHORS_FILE))
+    homepage(authors)
+  end
+  get '/jumbotron-narrow.css' do
+    content_type 'text/css'
+    File.read './views/jumbotron-narrow.css'
+  end
+else
+  get '/?' do
+    redirect to('http://bpan.org')
+  end
 end
+
 
 private
 
@@ -35,9 +48,8 @@ def h s
   CGI.escape_html s
 end
 
-INDEX_BRANCH = 'index'
 GH_PAGES_BRANCH = 'gh-pages'
-AUTHORS_FILE = File.join(branch_dir(INDEX_BRANCH), 'authors.json')
+AUTHORS_FILE = File.join(branch_dir(GH_PAGES_BRANCH), 'authors.json')
 AUTHORS_FILEP = AUTHORS_FILE+'p'
 HOMEPAGE_VIEW = ERB.new(File.read(File.join(File.dirname(__FILE__), 'views', 'index.html.erb')))
 HOMEPAGE_FILE = File.join(branch_dir(GH_PAGES_BRANCH), 'index.html')
@@ -48,39 +60,26 @@ def ensure_dir branch
   Git.clone('git@github.com:bpan-org/bpan.git', branch, path: File.dirname(__FILE__), log: logger)
 end
 
-def repo(branch)
-  g = Git.open branch_dir(branch), log: logger
-  g.branch(branch).checkout
-  g.config('user.name', 'BPAN index')
-  g.config('user.email', 'index@bpan.org')
-  return g
-end
-
 def ensure_branch_updated branch
   ensure_dir branch
-  repo(branch).pull 'origin', branch
-  return repo(branch)
+  git = Git.open branch_dir(branch), log: logger
+  git.checkout(branch)
+  git.pull 'origin', branch
+  return git
 end
 
 def add_author author
-  git = ensure_branch_updated INDEX_BRANCH
+  git = ensure_branch_updated GH_PAGES_BRANCH
   authors = JSON.parse(File.read(AUTHORS_FILE))
   authors << format_author(author)
   authors.uniq! {|author| author["login"]}
   authors.sort! {|a,b| a["login"] <=> b["login"]}
 
   # Regenerate homepage
-  git_gh = ensure_branch_updated GH_PAGES_BRANCH
   File.open(HOMEPAGE_FILE, 'w') {|f|
-    f.write HOMEPAGE_VIEW.result(binding)
+    f.write homepage(authors)
   }
-  git_gh.add(File.basename(HOMEPAGE_FILE))
-  begin
-    git_gh.commit("Add author #{author['login'].inspect}")
-  rescue Git::GitExecuteError => e
-    raise e unless e.message =~ /nothing to commit/i
-  end
-  git_gh.push 'origin', GH_PAGES_BRANCH
+  git.add(File.basename(HOMEPAGE_FILE))
 
   # Regenerate json index
   json = authors.to_json
@@ -99,8 +98,12 @@ def add_author author
   rescue Git::GitExecuteError => e
     raise e unless e.message =~ /nothing to commit/i
   end
-  git.push 'origin', INDEX_BRANCH
+  git.push 'origin', GH_PAGES_BRANCH
 
+end
+
+def homepage authors
+  HOMEPAGE_VIEW.result(binding)
 end
 
 def format_author author
@@ -111,5 +114,4 @@ def format_author author
     "html_url" => author["html_url"],
   }
 end
-
 
