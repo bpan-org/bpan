@@ -1,17 +1,18 @@
+.PHONY: deploy tail ssh startstop
+
 SERVER=webhook.bpan.org
+SSH=ssh $(SERVER)
 EXCLUDE=--exclude-from=.gitignore --exclude=.git*
 
-.PHONY: ssh deploy tail
-
-deploy: 
+deploy:
 	rsync -avzL $(EXCLUDE) --include=id_rsa_server ./ $(SERVER):bpan-org/
-	ssh $(SERVER) 'sudo rsync -avzL bpan-org/ /var/www/bpan-org/ && sudo chown -R www-data /var/www/bpan-org/ && sudo /var/www/.rbenv/shims/god restart unicorn' 
+	$(SSH) 'sudo rsync -avzL bpan-org/ /var/www/bpan-org/ && sudo chown -R www-data /var/www/bpan-org/ && sudo /var/www/.rbenv/shims/god restart unicorn'
 
 tail:
-	ssh $(SERVER) 'tail -f /var/www/bpan-org/logs/unicorn.log'
+	$(SSH) 'tail -f /var/www/bpan-org/logs/unicorn.log'
 
 ssh:
-	ssh $(SERVER)
+	$(SSH)
 
 startstop:
-		ssh $(SERVER) 'sudo /var/www/.rbenv/shims/god stop unicorn && sleep 10 && sudo /var/www/.rbenv/shims/god start unicorn' 
+	$(SSH) 'sudo /var/www/.rbenv/shims/god stop unicorn && sleep 10 && sudo /var/www/.rbenv/shims/god start unicorn'

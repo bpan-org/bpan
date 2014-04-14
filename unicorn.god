@@ -5,7 +5,7 @@ PID_DIR = "#{BPAN}/pids"
 God.watch do |w|
   w.name = "unicorn"
   w.interval = 30.seconds # default
-  
+
   # unicorn needs to be run from the rails root
   w.start = "cd #{BPAN} && bundle exec #{BIN_PATH}/unicorn -c #{BPAN}/unicorn.rb -E 'production' -D"
 
