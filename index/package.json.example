@@ -1,0 +1,41 @@
+[
+{ "package": "git-hub"
+, "author": "ingydotnet"
+, "version": "0.1.0"
+, "sha1": "521e105c229040456123e4bcc0f23279d6b62df5"
+, "abstract": "The Git command for GitHub"
+, "requires":
+  { "bash": "3.2.0"
+  , "git": "1.7.0"
+  , "bashplus": "0.0.1"
+  , "json": "0.0.1"
+  }
+, "test":
+  { "cmd": "make test",
+  , "requires":
+    { "test-more": "0.0.1"
+    }
+  }
+, "install": "make install"
+, "time": "12:00 UTC 13 April, 2014"
+},
+{ "package": "test-more"
+, "author": "ingydotnet"
+, "version": "0.0.1"
+, "sha1": "ddc513d8958dcb49473a8d60a64c8d967c0aac9a"
+, "abstract": "TAP Testing for Bash"
+, "requires":
+  { "bash": "3.2.0"
+  , "bashplus": "0.0.1"
+  , "test-tap": "0.0.1"
+  }
+, "test":
+  { "cmd": "make test",
+  , "requires":
+    { "test-more": "0.0.1"
+    }
+  }
+, "install": "make install"
+, "time": "12:00 UTC 13 April, 2014"
+}]
+

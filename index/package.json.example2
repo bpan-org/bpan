@@ -1,0 +1,15 @@
+[
+{ "package": "git-hub"
+, "author": "ingydotnet"
+, "version": "0.1.0"
+, "sha1": "521e105c229040456123e4bcc0f23279d6b62df5"
+, "meta-url": "https://raw.githubusercontent.com/ingydotnet/git-hub/ad29c06ba7f439fcacebfe47a4246b2f91aceb92/Meta"
+, "time": "12:00 UTC 13 April, 2014"
+},
+{ "package": "test-more"
+, "author": "ingydotnet"
+, "version": "0.0.1"
+, "sha1": "ddc513d8958dcb49473a8d60a64c8d967c0aac9a"
+, "meta-url": "https://raw.githubusercontent.com/ingydotnet/test-more-bash/ddc513d8958dcb49473a8d60a64c8d967c0aac9a/Meta"
+, "time": "12:00 UTC 13 April, 2014"
+}]
