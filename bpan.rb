@@ -11,19 +11,18 @@ logger = Logger.new($stdout, Logger::DEBUG)
 post /\/(star)?\/?/ do
   request.body.rewind  # in case someone already read it
   data = body_json
-  return 400, 'Invalid payload-- no "action"' if !data['action']
     
-  case data['action']
-  when /^star[ref_type]ed$/
+  if data['action'] =~ /^star[ref_type]ed$/
     sender = data['sender']
     logger.debug "Received star from #{sender['login'].inspect}"
     add_author sender
     return "Thanks for starring, #{sender['login']}"
-  when 'create'
-    return "Only tags are supported" if data['ref_type'] != 'tag' # return 200 so github thinks we're cool
-    logger.debug "Received new tag from "
+  elsif data['ref_type'] == 'tag'
+    created = !data['master_branch'].nil?
+    logger.debug "Tag #{data['ref'].inspect} #{created ? 'created' : 'deleted'} on #{data['repository']['clone_url'].inspect}"
   else
-    halt 400, "Invalid action #{data['action'].inspect}"
+    logger.info data
+    halt 400, "Invalid action"
   end
 end
 
@@ -78,7 +77,6 @@ end
 def ensure_branch_updated branch
   ensure_dir branch
   git = Git.open branch_dir(branch), log: logger
-  puts "In #{Dir.pwd}"
   git.checkout(branch)
   git.pull 'origin', branch
   return git
@@ -133,7 +131,9 @@ def format_author author
 end
 
 def body_json
-  JSON.parse request.body.read
+  j = request.body.read
+  # logger.info j
+  JSON.parse j
 rescue
   halt 400, "Invalid JSON"
 end

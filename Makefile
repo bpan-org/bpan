@@ -1,8 +1,8 @@
-.PHONY: deploy tail ssh startstop
+.PHONY: deploy tail ssh startstop test
 
 SERVER=webhook.bpan.org
 SSH=ssh $(SERVER)
-EXCLUDE=--exclude-from=.gitignore --exclude=.git*
+EXCLUDE=--exclude-from=.gitignore --exclude=.git* --exclude=test/
 
 deploy:
 	rsync -avzL $(EXCLUDE) --include=id_rsa_server ./ $(SERVER):bpan-org/
@@ -16,3 +16,12 @@ ssh:
 
 startstop:
 	$(SSH) 'sudo /var/www/.rbenv/shims/god stop unicorn && sleep 10 && sudo /var/www/.rbenv/shims/god start unicorn'
+
+test:
+	bundle exec ruby test/bpan_test.rb
+
+untag:
+	git push origin :tingle ; git tag -d tingle
+
+tag:
+	git tag tingle ; git push --tag

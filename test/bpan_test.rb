@@ -31,7 +31,7 @@ class BpanTest < Test::Unit::TestCase
   def test_post_different_nothing
     post '/', '{}'
     assert_equal 400, last_response.status
-    assert_match 'Invalid payload', last_response.body
+    assert_match 'Invalid action', last_response.body
   end
 
   def test_post_bad_action
