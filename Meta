@@ -18,11 +18,11 @@ author:
 requires:
   bash: 3.2.0
   bashplus: 0.0.1
-  json-bash: 0.0.1
+  json: 0.0.1
 test:
   cmd: make test
   requires:
-    test-more-bash: 0.0.1
+    test-more: 0.0.1
 install:
   cmd: make install
 
