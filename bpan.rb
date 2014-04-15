@@ -1,9 +1,12 @@
 Bundler.require
-require 'sinatra'
-require 'json'
-require 'logger'
-require 'fileutils'
-require 'erb'
+%w{
+  sinatra
+  json
+  logger
+  fileutils
+  erb
+  yaml
+}.each{|l| require l}
 
 $stdout.sync = true
 logger = Logger.new($stdout, Logger::DEBUG)
@@ -20,6 +23,8 @@ post /\/(star)?\/?/ do
   elsif data['ref_type'] == 'tag'
     created = !data['master_branch'].nil?
     logger.debug "Tag #{data['ref'].inspect} #{created ? 'created' : 'deleted'} on #{data['repository']['clone_url'].inspect}"
+    meta = add_package data, created
+    return "Thanks for pushing #{meta['name'].inspect} version #{meta['version'].inspect}"
   else
     logger.info data
     halt 400, "Invalid action"
@@ -115,6 +120,19 @@ def add_author author
   end
   git.push 'origin', GH_PAGES_BRANCH
 
+end
+
+def add_package data, created
+  return unless created
+  Dir.mktmpdir('bpan_package_clone') do |dir|
+    url = data['repository']['clone_url']
+    tag = data['ref']
+    git = Git.clone(url, tag, path: dir, log: logger, depth: 0)
+    git.checkout(tag)
+    git.pull 'origin', tag
+    meta = YAML.safe_load(File.read(File.join(dir, tag, 'Meta')))
+    return meta
+  end
 end
 
 def homepage authors
