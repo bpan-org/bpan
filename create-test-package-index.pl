@@ -16,8 +16,13 @@ my %index;
 my $owner = "ingydotnet";
 
 for my $package (@packages) {
-    my $meta = YAML::XS::LoadFile "../../$package/Meta";
+    my $dir = "../$package";
+    my $meta = YAML::XS::LoadFile "$dir/Meta";
     my $name = $meta->{name} or die;
+
+    $meta->{release}{url} = "http://github.com/$owner/$name.git";
+    $meta->{release}{sha} = `(cd $dir; git rev-parse HEAD)`;
+
     $index{"$owner/$name"} = $meta;
     $index{"$name"} = "$owner/$name";
 }
