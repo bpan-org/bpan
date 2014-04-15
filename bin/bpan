@@ -3,13 +3,28 @@
 set -e
 
 export BASHLIB="$(
-  set -- $(echo "${0%/*}"/../{,ext/*/}{bin,lib})
+  set -- $(echo "${0%/*}"/../{,ext/*/}{blib,bin,lib})
   IFS=':'; echo "$*"
 )"
 export PATH="$BASHLIB:$PATH"
 
-source bash+ ':std'
+source bash+ ':std' can
 
 use BPAN::Client
 
-main "$@"
+[ -n "$HOME" ] ||
+  fail "'HOME' environment variable not set"
+
+abspath() { perl -MCwd -le 'print Cwd::abs_path(shift)' "$1"; }
+
+# Initialize the BPAN environment:
+BPAN_ROOT="${BPAN_ROOT:-$(abspath $(dirname $0)/..)}"
+BPAN_BIN="${BPAN_BIN:-$BPAN_ROOT/bin}"
+BPAN_LIB="${BPAN_LIB:-$BPAN_ROOT/lib}"
+BPAN_MAN="${BPAN_MAN:-$BPAN_ROOT/man}"
+BPAN_MAN1="${BPAN_MAN1:-$BPAN_MAN/man1}"
+BPAN_MAN3="${BPAN_MAN3:-$BPAN_MAN/man3}"
+BPAN_INDEX="${BPAN_INDEX:-$BPAN_ROOT/index}"
+BPAN_BUILD="${BPAN_BUILD:-$BPAN_ROOT/build}"
+
+[ "${BASH_SOURCE[0]}" == "$0" ] && main "$@"
