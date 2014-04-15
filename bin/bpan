@@ -10,6 +10,6 @@ export PATH="$BASHLIB:$PATH"
 
 source bash+ ':std'
 
-use BPAN
+use BPAN::Client
 
 main "$@"
