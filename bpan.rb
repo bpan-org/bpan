@@ -6,15 +6,25 @@ require 'fileutils'
 require 'erb'
 
 $stdout.sync = true
-logger = Logger.new $stdout, Logger::DEBUG
+logger = Logger.new($stdout, Logger::DEBUG)
 
-post '/star/?' do
+post /\/(star)?\/?/ do
   request.body.rewind  # in case someone already read it
-  data = JSON.parse request.body.read
-  sender = data['sender']
-  logger.debug "Received star from #{sender.inspect}"
-  add_author sender
-  "Thanks for starring, #{sender}"
+  data = body_json
+  return 400, 'Invalid payload-- no "action"' if !data['action']
+    
+  case data['action']
+  when /^star[ref_type]ed$/
+    sender = data['sender']
+    logger.debug "Received star from #{sender['login'].inspect}"
+    add_author sender
+    return "Thanks for starring, #{sender['login']}"
+  when 'create'
+    return "Only tags are supported" if data['ref_type'] != 'tag' # return 200 so github thinks we're cool
+    logger.debug "Received new tag from "
+  else
+    halt 400, "Invalid action #{data['action'].inspect}"
+  end
 end
 
 post '/push/?' do
@@ -24,12 +34,13 @@ end
 if ENV['RACK_ENV'] == 'development'
   get '/?' do
     ensure_branch_updated GH_PAGES_BRANCH
+    File.open(AUTHORS_FILE, 'w+') {|f|f.puts'[]'} unless File.exist?(AUTHORS_FILE)
     authors = JSON.parse(File.read(AUTHORS_FILE))
     homepage(authors)
   end
-  get '/jumbotron-narrow.css' do
+  get '/css/jumbotron-narrow.css' do
     content_type 'text/css'
-    File.read './views/jumbotron-narrow.css'
+    File.read(File.join(File.dirname(__FILE__), 'views', 'jumbotron-narrow.css'))
   end
 else
   get '/?' do
@@ -41,7 +52,7 @@ end
 private
 
 def branch_dir branch
-  File.join(File.dirname(__FILE__), branch)
+  File.expand_path(File.join(File.dirname(__FILE__), ENV['BPAN_TEST_DIR'] || '', branch))
 end
 
 def h s
@@ -49,20 +60,25 @@ def h s
 end
 
 GH_PAGES_BRANCH = 'gh-pages'
-AUTHORS_FILE = File.join(branch_dir(GH_PAGES_BRANCH), 'authors.json')
+INDEX_DIR = 'index'
+AUTHORS_FILE = File.join(branch_dir(GH_PAGES_BRANCH), INDEX_DIR, 'author.json')
 AUTHORS_FILEP = AUTHORS_FILE+'p'
+PACKAGES_FILE = File.join(branch_dir(GH_PAGES_BRANCH), INDEX_DIR, 'package.json')
+PACKAGES_FILEP = PACKAGES_FILE + 'p'
 HOMEPAGE_VIEW = ERB.new(File.read(File.join(File.dirname(__FILE__), 'views', 'index.html.erb')))
 HOMEPAGE_FILE = File.join(branch_dir(GH_PAGES_BRANCH), 'index.html')
+GIT_REMOTE = ENV['BPAN_TEST_REMOTE'] || 'git@github.com:bpan-org/bpan.git'
 
 def ensure_dir branch
   return if Dir.exist?(branch_dir branch)
   FileUtils.mkdir_p(branch_dir branch)
-  Git.clone('git@github.com:bpan-org/bpan.git', branch, path: File.dirname(__FILE__), log: logger)
+  Git.clone(GIT_REMOTE, branch, path: File.dirname(branch_dir(branch)), log: logger)
 end
 
 def ensure_branch_updated branch
   ensure_dir branch
   git = Git.open branch_dir(branch), log: logger
+  puts "In #{Dir.pwd}"
   git.checkout(branch)
   git.pull 'origin', branch
   return git
@@ -70,6 +86,7 @@ end
 
 def add_author author
   git = ensure_branch_updated GH_PAGES_BRANCH
+  File.open(AUTHORS_FILE, 'w+') {|f|f.puts'[]'} unless File.exist?(AUTHORS_FILE)
   authors = JSON.parse(File.read(AUTHORS_FILE))
   authors << format_author(author)
   authors.uniq! {|author| author["login"]}
@@ -91,8 +108,8 @@ def add_author author
     f.write json
     f.write ";"
   }
-  git.add(File.basename(AUTHORS_FILE))
-  git.add(File.basename(AUTHORS_FILEP))
+  git.add(AUTHORS_FILE)
+  git.add(AUTHORS_FILEP)
   begin
     git.commit("Add author #{author['login'].inspect}")
   rescue Git::GitExecuteError => e
@@ -115,3 +132,8 @@ def format_author author
   }
 end
 
+def body_json
+  JSON.parse request.body.read
+rescue
+  halt 400, "Invalid JSON"
+end
