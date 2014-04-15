@@ -1,4 +1,4 @@
-== Working now
+== Working now, ready to release:
 
 bashplus
 bpan-client
@@ -8,10 +8,15 @@ test-more
 test-tap
 
 
-== In the works
+== New ideas in the works:
 
 git-subrepo
 git-super
+
+benchmark
+
+
+== Older stuff still in the works:
 
 config-ini      # Switch from submodule to subrepo
 test-simple
@@ -24,4 +29,3 @@ data
 docopt
 config-ini
 getopt
-
