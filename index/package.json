@@ -1,171 +1,176 @@
 {
-   "ingydotnet/test-tap" : {
-      "devel" : {
-         "git" : "git@github.org/ingydotnet/test-tap-bash.git",
-         "bug" : "https://github.com/ingydotnet/test-tap-bash/issues/",
-         "irc" : "irc.freenode.net/bpan"
-      },
-      "name" : "test-tap",
-      "license" : "MIT",
-      "author" : {
-         "name" : "Ingy d\u00f6t Net",
-         "freenode" : "ingy",
-         "homepage" : "http://ingy.net",
-         "email" : "ingy@ingy.net",
-         "twitter" : "ingydotnet",
-         "github" : "ingydotnet"
-      },
-      "homepage" : "http://bpan.org/package/test-tap/",
-      "requires" : {
-         "bash" : "3.2.0"
-      },
-      "test" : {
-         "cmd" : "make test"
-      },
-      "install" : {
-         "cmd" : "make install"
-      },
-      "copyright" : "2013, 2014",
-      "version" : "0.0.1",
-      "=meta" : "0.0.1",
-      "abstract" : "TAP Test Base for Bash"
-   },
-   "ingydotnet/json" : {
-      "devel" : {
-         "bug" : "https://github.com/ingydotnet/json-bash/issues/",
-         "git" : "git:github.org:ingydotnet/json-bash.git",
-         "irc" : "irc.freenode.net/bpan"
-      },
-      "name" : "json",
-      "author" : {
-         "github" : "ingydotnet",
-         "twitter" : "ingydotnet",
-         "homepage" : "http://ingy.net",
-         "email" : "ingy@ingy.net",
-         "freenode" : "ingy",
-         "name" : "Ingy d\u00f6t Net"
-      },
-      "license" : "MIT",
-      "requires" : {
-         "bash" : "3.2.0"
-      },
-      "homepage" : "http://bpan.org/package/json/",
-      "copyright" : "2013, 2014",
-      "install" : {
-         "cmd" : "make install"
-      },
-      "test" : {
-         "cmd" : "make test",
-         "requires" : {
-            "test-more" : "0.0.1"
-         }
-      },
-      "version" : "0.0.1",
-      "abstract" : "JSON for Bash",
-      "=meta" : "0.0.1"
-   },
+   "bashplus" : "ingydotnet/bashplus",
+   "git-hub" : "ingydotnet/git-hub",
    "ingydotnet/bashplus" : {
+      "=meta" : "0.0.1",
+      "abstract" : "Modern Bash Programming",
+      "author" : {
+         "email" : "ingy@ingy.net",
+         "freenode" : "ingy",
+         "github" : "ingydotnet",
+         "homepage" : "http://ingy.net",
+         "name" : "Ingy d\u00f6t Net",
+         "twitter" : "ingydotnet"
+      },
       "copyright" : "2013, 2014",
+      "devel" : {
+         "bug" : "https://github.com/ingydotnet/bashplus/issues/",
+         "git" : "git@github.org/ingydotnet/bashplus",
+         "irc" : "irc.freenode.net/bpan"
+      },
+      "homepage" : "http://bpan.org/package/bashplus/",
       "install" : {
          "cmd" : "make install"
       },
-      "test" : {
-         "cmd" : "make test",
-         "requires" : {
-            "test-more" : "0.0.1"
-         }
-      },
-      "abstract" : "Modern Bash Programming",
-      "=meta" : "0.0.1",
-      "version" : "0.0.1",
+      "license" : "MIT",
       "name" : "bashplus",
-      "devel" : {
-         "git" : "git@github.org/ingydotnet/bashplus",
-         "bug" : "https://github.com/ingydotnet/bashplus/issues/",
-         "irc" : "irc.freenode.net/bpan"
-      },
       "requires" : {
          "bash" : "3.2.0",
          "bashplus" : "0.0.1",
          "json" : "0.0.1"
       },
-      "homepage" : "http://bpan.org/package/bashplus/",
+      "test" : {
+         "cmd" : "make test",
+         "requires" : {
+            "test-more" : "0.0.1"
+         }
+      },
+      "version" : "0.0.1"
+   },
+   "ingydotnet/git-hub" : {
+      "=meta" : "0.0.1",
+      "abstract" : "The Git command for GitHub",
       "author" : {
-         "name" : "Ingy d\u00f6t Net",
-         "freenode" : "ingy",
          "email" : "ingy@ingy.net",
-         "homepage" : "http://ingy.net",
+         "freenode" : "ingy",
          "github" : "ingydotnet",
+         "homepage" : "http://ingy.net",
+         "name" : "Ingy d\u00f6t Net",
          "twitter" : "ingydotnet"
       },
-      "license" : "MIT"
+      "copyright" : "2013, 2014",
+      "devel" : {
+         "bug" : "https://github.com/ingydotnet/git-hub/issues/",
+         "git" : "git@github.org:ingydotnet/git-hub.git",
+         "irc" : "irc.freenode.net/git-commands"
+      },
+      "homepage" : "http://bpan.org/package/git-hub/",
+      "install" : "make install",
+      "license" : "MIT",
+      "name" : "git-hub",
+      "requires" : {
+         "bash" : "3.2.0",
+         "bashplus" : "0.0.1",
+         "git" : "1.7.0",
+         "json" : "0.0.1"
+      },
+      "test" : {
+         "cmd" : "make test",
+         "requires" : {
+            "test-more" : "0.0.1"
+         }
+      },
+      "version" : "0.1.0"
    },
-   "ingydotnet/test-more" : {
+   "ingydotnet/json" : {
+      "=meta" : "0.0.1",
+      "abstract" : "JSON for Bash",
+      "author" : {
+         "email" : "ingy@ingy.net",
+         "freenode" : "ingy",
+         "github" : "ingydotnet",
+         "homepage" : "http://ingy.net",
+         "name" : "Ingy d\u00f6t Net",
+         "twitter" : "ingydotnet"
+      },
+      "copyright" : "2013, 2014",
+      "devel" : {
+         "bug" : "https://github.com/ingydotnet/json-bash/issues/",
+         "git" : "git:github.org:ingydotnet/json-bash.git",
+         "irc" : "irc.freenode.net/bpan"
+      },
+      "homepage" : "http://bpan.org/package/json/",
       "install" : {
          "cmd" : "make install"
       },
-      "copyright" : "2013, 2014",
-      "test" : {
-         "cmd" : "make test"
+      "license" : "MIT",
+      "name" : "json",
+      "requires" : {
+         "bash" : "3.2.0"
       },
-      "abstract" : "TAP Testing for Bash",
+      "test" : {
+         "cmd" : "make test",
+         "requires" : {
+            "test-more" : "0.0.1"
+         }
+      },
+      "version" : "0.0.1"
+   },
+   "ingydotnet/test-more" : {
       "=meta" : "0.0.1",
-      "version" : "0.0.1",
-      "name" : "test-more",
+      "abstract" : "TAP Testing for Bash",
+      "author" : {
+         "email" : "ingy@ingy.net",
+         "freenode" : "ingy",
+         "github" : "ingydotnet",
+         "homepage" : "http://ingy.net",
+         "name" : "Ingy d\u00f6t Net",
+         "twitter" : "ingydotnet"
+      },
+      "copyright" : "2013, 2014",
       "devel" : {
          "bug" : "https://github.com/ingydotnet/test-more-bash/issues/",
          "git" : "git@github.org/ingydotnet/test-more-bash.git",
          "irc" : "irc.freenode.net/bpan"
       },
       "homepage" : "http://bpan.org/package/test-more/",
-      "requires" : {
-         "bash" : "3.2.0",
-         "test-tap" : "0.0.1",
-         "bashplus" : "0.0.1"
-      },
-      "author" : {
-         "name" : "Ingy d\u00f6t Net",
-         "freenode" : "ingy",
-         "email" : "ingy@ingy.net",
-         "homepage" : "http://ingy.net",
-         "github" : "ingydotnet",
-         "twitter" : "ingydotnet"
-      },
-      "license" : "MIT"
-   },
-   "ingydotnet/git-hub" : {
-      "homepage" : "http://bpan.org/package/git-hub/",
-      "requires" : {
-         "json" : "0.0.1",
-         "git" : "1.7.0",
-         "bashplus" : "0.0.1",
-         "bash" : "3.2.0"
+      "install" : {
+         "cmd" : "make install"
       },
       "license" : "MIT",
+      "name" : "test-more",
+      "requires" : {
+         "bash" : "3.2.0",
+         "bashplus" : "0.0.1",
+         "test-tap" : "0.0.1"
+      },
+      "test" : {
+         "cmd" : "make test"
+      },
+      "version" : "0.0.1"
+   },
+   "ingydotnet/test-tap" : {
+      "=meta" : "0.0.1",
+      "abstract" : "TAP Test Base for Bash",
       "author" : {
          "email" : "ingy@ingy.net",
-         "homepage" : "http://ingy.net",
+         "freenode" : "ingy",
          "github" : "ingydotnet",
-         "twitter" : "ingydotnet",
+         "homepage" : "http://ingy.net",
          "name" : "Ingy d\u00f6t Net",
-         "freenode" : "ingy"
-      },
-      "name" : "git-hub",
-      "devel" : {
-         "irc" : "irc.freenode.net/git-commands",
-         "bug" : "https://github.com/ingydotnet/git-hub/issues/",
-         "git" : "git@github.org:ingydotnet/git-hub.git"
-      },
-      "=meta" : "0.0.1",
-      "abstract" : "The Git command for GitHub",
-      "version" : "0.1.0",
-      "test" : {
-         "cmd" : "make test",
-         "requires" : {
-            "test-more" : "0.0.1"
-         }
+         "twitter" : "ingydotnet"
       },
       "copyright" : "2013, 2014",
-      "install" : "make install"
-   }
+      "devel" : {
+         "bug" : "https://github.com/ingydotnet/test-tap-bash/issues/",
+         "git" : "git@github.org/ingydotnet/test-tap-bash.git",
+         "irc" : "irc.freenode.net/bpan"
+      },
+      "homepage" : "http://bpan.org/package/test-tap/",
+      "install" : {
+         "cmd" : "make install"
+      },
+      "license" : "MIT",
+      "name" : "test-tap",
+      "requires" : {
+         "bash" : "3.2.0"
+      },
+      "test" : {
+         "cmd" : "make test"
+      },
+      "version" : "0.0.1"
+   },
+   "json" : "ingydotnet/json",
+   "test-more" : "ingydotnet/test-more",
+   "test-tap" : "ingydotnet/test-tap"
 }

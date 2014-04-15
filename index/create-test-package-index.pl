@@ -13,13 +13,15 @@ my @packages = qw(
 );
 
 my %index;
+my $owner = "ingydotnet";
 
 for my $package (@packages) {
     my $meta = YAML::XS::LoadFile "../../$package/Meta";
     my $name = $meta->{name} or die;
-    $index{"ingydotnet/$name"} = $meta;
+    $index{"$owner/$name"} = $meta;
+    $index{"$name"} = "$owner/$name";
 }
 
-my $jxs = JSON::XS->new->ascii->pretty->allow_nonref;
+my $jxs = JSON::XS->new->ascii->pretty->allow_nonref->canonical;
 print $jxs->encode(\%index);
 
