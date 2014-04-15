@@ -77,7 +77,7 @@ class BpanTest < Test::Unit::TestCase
       }
     END
     assert_equal 200, last_response.status, "Wrong status, body was #{last_response.body}"
-    assert_match 'Thanks for pushing "Mister-Blonde" version "0.0.5"', last_response.body
+    assert_equal 'Thanks for pushing "Mister-Blonde" version "0.0.5", sha 8c125cb3bf2c180537086715f7946f5ca24fbe91', last_response.body
   end
 
 end

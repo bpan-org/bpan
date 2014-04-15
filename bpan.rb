@@ -24,7 +24,7 @@ post /\/(star)?\/?/ do
     created = !data['master_branch'].nil?
     logger.debug "Tag #{data['ref'].inspect} #{created ? 'created' : 'deleted'} on #{data['repository']['clone_url'].inspect}"
     meta = add_package data, created
-    return "Thanks for pushing #{meta['name'].inspect} version #{meta['version'].inspect}"
+    return "Thanks for pushing #{meta['name'].inspect} version #{meta['version'].inspect}, sha #{meta['release']['sha']}"
   else
     logger.info data
     halt 400, "Invalid action"
@@ -131,6 +131,10 @@ def add_package data, created
     git.checkout(tag)
     git.pull 'origin', tag
     meta = YAML.safe_load(File.read(File.join(dir, tag, 'Meta')))
+    meta['release'] = {
+      'sha' => git.revparse(tag),
+      'url' => url
+    }
     return meta
   end
 end
