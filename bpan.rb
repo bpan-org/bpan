@@ -79,7 +79,7 @@ def h s
 end
 
 GH_PAGES_BRANCH = 'gh-pages'
-INDEX_DIR = 'index'
+INDEX_DIR = ''
 AUTHORS_FILE = File.join(branch_dir(GH_PAGES_BRANCH), INDEX_DIR, 'author.json')
 AUTHORS_FILEP = AUTHORS_FILE+'p'
 PACKAGES_FILE = File.join(branch_dir(GH_PAGES_BRANCH), INDEX_DIR, 'package.json')
@@ -104,9 +104,13 @@ end
 
 def add_author author
   git = ensure_branch_updated GH_PAGES_BRANCH
-  File.open(AUTHORS_FILE, 'w+') {|f|f.puts'[]'} unless File.exist?(AUTHORS_FILE)
+  File.open(AUTHORS_FILE, 'w') {|f|f.puts'[]'} unless File.exist?(AUTHORS_FILE)
   authors = JSON.parse(File.read(AUTHORS_FILE))
   authors << format_author(author)
+  post_process_and_commit_authors git, authors, author
+end
+
+def post_process_and_commit_authors git, authors, author=nil
   authors.uniq! {|author| author["login"]}
   authors.sort! {|a,b| a["login"] <=> b["login"]}
 
@@ -129,12 +133,16 @@ def add_author author
   git.add(AUTHORS_FILE)
   git.add(AUTHORS_FILEP)
   begin
-    git.commit("Add author #{author['login'].inspect}")
+    message = if author
+      "Add author #{author['login'].inspect}"
+    else
+      "Prune/resync authors directory"
+    end
+    git.commit(message)
   rescue Git::GitExecuteError => e
     raise e unless e.message =~ /nothing to commit/i
   end
   git.push 'origin', GH_PAGES_BRANCH
-
 end
 
 def add_package data, created
