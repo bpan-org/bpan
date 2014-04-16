@@ -1,14 +1,16 @@
-bpan-client(1)
-=============
+bpan(1)
+=======
 
 This is the command line tool for installing packages from BPAN.
 
 ## Synopsis
 
-    bpan install bashplus
     bpan find json
+    bpan install json
     bpan update
     bpan upgrade
+    bpan env BPAN_ROOT
+    bpan version
 
 ## Installation
 
