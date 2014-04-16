@@ -42,13 +42,28 @@ if ENV['RACK_ENV'] == 'development'
     authors = JSON.parse(File.read(AUTHORS_FILE))
     homepage(authors)
   end
+else
+  get '/?' do
+    redirect to('http://bpan.org')
+  end
+end
+
+if %w{development test}.include? ENV['RACK_ENV'] 
   get '/css/jumbotron-narrow.css' do
     content_type 'text/css'
     File.read(File.join(File.dirname(__FILE__), 'views', 'jumbotron-narrow.css'))
   end
-else
-  get '/?' do
-    redirect to('http://bpan.org')
+
+  get '/authors.json' do
+    ensure_branch_updated GH_PAGES_BRANCH
+    File.open(AUTHORS_FILE, 'w+') {|f|f.puts'[]'} unless File.exist?(AUTHORS_FILE)
+    return File.read(AUTHORS_FILE)
+  end
+
+  get '/packages.json' do
+    ensure_branch_updated GH_PAGES_BRANCH
+    File.open(PACKAGES_FILE, 'w+') {|f|f.puts'{}'} unless File.exist?(PACKAGES_FILE)
+    return File.read(PACKAGES_FILE)
   end
 end
 
@@ -124,6 +139,7 @@ end
 
 def add_package data, created
   return unless created
+  meta = nil
   Dir.mktmpdir('bpan_package_clone') do |dir|
     url = data['repository']['clone_url']
     tag = data['ref']
@@ -133,10 +149,50 @@ def add_package data, created
     meta = YAML.safe_load(File.read(File.join(dir, tag, 'Meta')))
     meta['release'] = {
       'sha' => git.revparse(tag),
-      'url' => url
+      'url' => url,
+      'timestamp' => Time.now.to_i
     }
-    return meta
   end
+
+  # Get the exisitng package index
+  git = ensure_branch_updated GH_PAGES_BRANCH
+  File.open(PACKAGES_FILE, 'w+') {|f|f.puts'{}'} unless File.exist?(PACKAGES_FILE)
+  packages = JSON.parse(File.read(PACKAGES_FILE))
+
+  # generate our new entries
+  half_qualified_key = [meta['name'], data['repository']['owner']['login']].join('/')
+  fully_qualified_key = [half_qualified_key, meta['version']].join('/')
+
+  # update version array
+  packages[half_qualified_key] ||= []
+  packages[half_qualified_key].unshift meta['version']
+
+  # add full package meta for this version
+  packages[fully_qualified_key] = meta
+
+  # set short name if it isn't already taken
+  packages[meta['name']] ||= half_qualified_key
+
+  # Regenerate json index
+  json = packages.to_json
+  File.open(PACKAGES_FILE, 'w') {|f|
+    f.write json
+  }
+  File.open(PACKAGES_FILEP, 'w') {|f|
+    f.write "var packages = "
+    f.write json
+    f.write ";"
+  }
+  git.add(PACKAGES_FILE)
+  git.add(PACKAGES_FILEP)
+  begin
+    git.commit("Add package #{fully_qualified_key.inspect}")
+  rescue Git::GitExecuteError => e
+    raise e unless e.message =~ /nothing to commit/i
+  end
+  git.push 'origin', GH_PAGES_BRANCH
+
+  return meta
 end
 
 def homepage authors
