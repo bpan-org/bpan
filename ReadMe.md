@@ -7,8 +7,8 @@ BPAN's a very modern packaging system, that serves the Bash language.
 
 Bash is a programming language that has been around since 1989, but is
 generally only seen as a scripting language for smallish tasks. In fact, it is
-a very cabaple language that is better suited to many tasks, than languages
-like Perl, Ruby, Python or Node.js.
+a very cabaple language that is better suited to many tasks than languages like
+Perl, Ruby, Python or Node.js.
 
 The thing that Bash is missing is a set of reusable packages (libraries,
 modules). BPAN intends to fill that gap.
@@ -17,6 +17,11 @@ BPAN also is trying to use techniques from the modern (2014) era, that will
 make it more lightweight and scalable than its predecessors CPAN, RubyGems,
 PyPI and NPM. If this works out well, BPAN can be used as a model for languages
 that need a new packaging system.
+
+## Use the BPAN Client
+
+If you want to install the BPAN packages and use them, see the documentation
+[here](https://github.com/bpan-org/bpan/tree/client#readme).
 
 ## Repository Layout
 
