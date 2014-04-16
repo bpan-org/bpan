@@ -92,7 +92,7 @@ do-update() {
     cd $BPAN_ROOT
     # assert-git-clean
     git fetch origin
-    git read-tree --prefix=index gh-pages
+    git read-tree --prefix=index origin/gh-pages
     git checkout -- index
     git rm -r --cache index &> /dev/null
   )
