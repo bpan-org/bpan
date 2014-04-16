@@ -25,8 +25,8 @@
       "license" : "MIT",
       "name" : "bashplus",
       "release" : {
-         "sha" : "54654485aa64e60d9cd59f25934094f6536e5ce2\n",
-         "url" : "http://github.com/ingydotnet/bashplus.git"
+         "sha" : "54654485aa64e60d9cd59f25934094f6536e5ce2",
+         "url" : "https://github.com/ingydotnet/bashplus.git"
       },
       "requires" : {
          "bash" : "3.2.0",
@@ -63,8 +63,8 @@
       "license" : "MIT",
       "name" : "git-hub",
       "release" : {
-         "sha" : "47131de302cdeb13df1b285cd5c82fdc6d62ddc4\n",
-         "url" : "http://github.com/ingydotnet/git-hub.git"
+         "sha" : "a40852faa9c1359b794c05ba261c19e1aadfcf3a",
+         "url" : "https://github.com/ingydotnet/git-hub.git"
       },
       "requires" : {
          "bash" : "3.2.0",
@@ -104,8 +104,8 @@
       "license" : "MIT",
       "name" : "json",
       "release" : {
-         "sha" : "536c619e7da81b50cef98ab83ca3b6aa1ba592ee\n",
-         "url" : "http://github.com/ingydotnet/json.git"
+         "sha" : "536c619e7da81b50cef98ab83ca3b6aa1ba592ee",
+         "url" : "https://github.com/ingydotnet/json-bash.git"
       },
       "requires" : {
          "bash" : "3.2.0"
@@ -142,8 +142,8 @@
       "license" : "MIT",
       "name" : "test-more",
       "release" : {
-         "sha" : "7dd320f9c92335e3a41e6861444cdada40f73668\n",
-         "url" : "http://github.com/ingydotnet/test-more.git"
+         "sha" : "7dd320f9c92335e3a41e6861444cdada40f73668",
+         "url" : "https://github.com/ingydotnet/test-more-bash.git"
       },
       "requires" : {
          "bash" : "3.2.0",
@@ -179,8 +179,8 @@
       "license" : "MIT",
       "name" : "test-tap",
       "release" : {
-         "sha" : "80f547b50520b0f6d282ce7b1a598ada7bdf49d9\n",
-         "url" : "http://github.com/ingydotnet/test-tap.git"
+         "sha" : "80f547b50520b0f6d282ce7b1a598ada7bdf49d9",
+         "url" : "https://github.com/ingydotnet/test-tap-bash.git"
       },
       "requires" : {
          "bash" : "3.2.0"

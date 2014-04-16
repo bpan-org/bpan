@@ -20,8 +20,9 @@ for my $package (@packages) {
     my $meta = YAML::XS::LoadFile "$dir/Meta";
     my $name = $meta->{name} or die;
 
-    $meta->{release}{url} = "http://github.com/$owner/$name.git";
+    $meta->{release}{url} = "https://github.com/$owner/$package.git";
     $meta->{release}{sha} = `(cd $dir; git rev-parse HEAD)`;
+    chomp $meta->{release}{sha};
 
     $index{"$owner/$name"} = $meta;
     $index{"$name"} = "$owner/$name";
