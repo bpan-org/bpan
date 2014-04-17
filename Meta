@@ -1,0 +1,32 @@
+=meta: 0.0.1
+
+name: bpan
+version: 0.0.1
+abstract: BPAN commandline client tool
+homepage: http://bpan.org/package/bpan/
+
+license: MIT
+copyright: 2014
+author:
+  name: Ingy döt Net
+  email: ingy@ingy.net
+  github: ingydotnet
+  twitter: ingydotnet
+  freenode: ingy
+  homepage: http://ingy.net
+
+requires:
+  bash: 3.2.0
+  bashplus: 0.0.1
+  json: 0.0.1
+test:
+  cmd: make test
+  requires:
+    test-more: 0.0.1
+install:
+  cmd: make install
+
+devel:
+  git: git@github.org:bpan-org/bpan.git
+  irc: irc.freenode.net/bpan
+  bug: https://github.com/ingydotnet/bpan/issues/

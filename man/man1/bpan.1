@@ -1,0 +1,86 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+This is the command line tool for installing packages from BPAN\.
+.
+.SH "Synopsis"
+.
+.nf
+
+bpan find json
+bpan install json
+bpan update
+bpan upgrade
+bpan env BPAN_ROOT
+bpan version
+.
+.fi
+.
+.SH "Installation"
+You can install BPAN in any directory you want\.
+.
+.P
+We recommend \fB~/\.bpan/\fR but it is completely up to you\. Whereever \fBbpan\fR is found in your \fBPATH\fR it will adjust everything else for you\. In other words, simply change all the occurences of \fB~/bpan\fR below to your choice:
+.
+.IP "" 4
+.
+.nf
+
+# Clone the \'bpan\' repo:
+git clone http://github\.com/bpan\-org/bpan ~/\.bpan
+# Add these commands to your shell initialization:
+export PATH=~/\.bpan/bin:~/\.bpan/lib:$PATH
+export MANPATH=~/\.bpan/man:$MANPATH
+.
+.fi
+.
+.IP "" 0
+.
+.SH "Using BPAN in different shells"
+Just because Bash is a shell and BPAN is for Bash and \fBbpan\fR is written in Bash does\'nt mean you can\'t use it under the shell of your choice\. If you are a Zsh or or Dash or Fish user, everything should work fine as long as \fBbash\fR is somewhere in your command PATH\.
+.
+.SH "Environment"
+These variables will all be set automatically or you can set some or all of them yourself:
+.
+.IP "\(bu" 4
+\fBBPAN_ROOT\fR
+.
+.IP "\(bu" 4
+\fBBPAN_BIN\fR
+.
+.IP "\(bu" 4
+\fBBPAN_LIB\fR
+.
+.IP "\(bu" 4
+\fBBPAN_MAN\fR
+.
+.IP "\(bu" 4
+\fBBPAN_MAN1\fR
+.
+.IP "\(bu" 4
+\fBBPAN_MAN3\fR
+.
+.IP "\(bu" 4
+\fBBPAN_INDEX\fR
+.
+.IP "\(bu" 4
+\fBBPAN_BUILD\fR
+.
+.IP "" 0
+.
+.P
+These all have reasonable defaults, but feel free to do what you want\.
+.
+.P
+To get the value of an automatically set command, use the \fBbpan env\fR command:
+.
+.IP "" 4
+.
+.nf
+
+bpan env BPAN_ROOT
+bpan env BPAN_INDEX
+.
+.fi
+.
+.IP "" 0
+

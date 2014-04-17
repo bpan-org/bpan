@@ -1,0 +1,31 @@
+== Working now, ready to release:
+
+bashplus
+bpan-client
+git-hub
+json
+test-more
+test-tap
+
+
+== New ideas in the works:
+
+git-subrepo
+git-super
+
+benchmark
+
+
+== Older stuff still in the works:
+
+config-ini      # Switch from submodule to subrepo
+test-simple
+yaml
+template
+cogdb
+lola
+pkg
+data
+docopt
+config-ini
+getopt
