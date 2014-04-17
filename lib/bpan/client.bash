@@ -139,6 +139,9 @@ command:upgrade() {
     git fetch
     git checkout client
     git pull --rebase origin client
+  )
+  (
+    cd $BPAN_ROOT
     old_version="$(BPAN::CLIENT:VERSION)"
     source "$BPAN_ROOT/lib/bpan/client.bash"
     new_version="$(BPAN::CLIENT:VERSION)"
