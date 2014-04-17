@@ -78,8 +78,8 @@ check-index-up-to-date() {
     local prev=$(date --utc --reference=$index_stamp +%s)
     local now=$(date "+%s")
     local time=$(( now - prev ))
-    if [[ $(( now - prev )) -lt $(( 2 * 60 )) ]]; then
-    # if [[ $(( now - prev )) -lt $(( 60 * 60 * 24 )) ]]; then
+    # if [[ $(( now - prev )) -lt $(( 2 * 60 )) ]]; then
+    if [[ $(( now - prev )) -lt $(( 60 * 60 * 24 )) ]]; then
       return
     fi
   fi
