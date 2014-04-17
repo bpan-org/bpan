@@ -139,11 +139,11 @@ command:upgrade() {
     git fetch
     git checkout client
     git rebase -p origin client
-    old_version="$(BPAN::CLIENT:VERSION)"
-    source "$BPAN_ROOT/lib/bpan/client.bash"
-    new_version="$(BPAN::CLIENT:VERSION)"
-    say "BPAN client ('bpan') upgraded from '$old_version' to '$new_version'."
   )
+  old_version="$(BPAN::CLIENT:VERSION)"
+  source "$BPAN_ROOT/lib/bpan/client.bash"
+  new_version="$(BPAN::CLIENT:VERSION)"
+  say "BPAN client ('bpan') upgraded from '$old_version' to '$new_version'."
 }
 
 command:env() {
