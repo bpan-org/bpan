@@ -4,7 +4,7 @@ set -e
 
 use JSON
 
-BPAN::CLIENT:VERSION() { grep -E 'version:' Meta | cut -d ' ' -f2; }
+BPAN:VERSION() { grep -E 'version:' Meta | cut -d ' ' -f2; }
 
 OPTIONS_SPEC="\
 bpan <command> [<options>] [<arguments>]
@@ -140,14 +140,14 @@ command:upgrade() {
     set -x
     cd $BPAN_ROOT
     git fetch
-    git checkout client
-    git pull --rebase origin client
+    git checkout master
+    git pull --rebase origin master
   )
   (
     cd $BPAN_ROOT
-    old_version="$(BPAN::CLIENT:VERSION)"
-    source "$BPAN_ROOT/lib/bpan/client.bash"
-    new_version="$(BPAN::CLIENT:VERSION)"
+    old_version="$(BPAN:VERSION)"
+    source "$BPAN_ROOT/lib/bpan.bash"
+    new_version="$(BPAN:VERSION)"
     say "BPAN client ('bpan') upgraded from '$old_version' to '$new_version'."
   )
 }
@@ -158,7 +158,7 @@ command:env() {
 }
 
 command:version() {
-  echo "BPAN — version $(BPAN::CLIENT:VERSION)"
+  echo "BPAN — version $(BPAN:VERSION)"
 }
 
 do-install() {

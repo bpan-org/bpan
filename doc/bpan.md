@@ -14,20 +14,29 @@ This is the command line tool for installing packages from BPAN.
 
 ## Installation
 
-You can install BPAN in any directory you want. We recommend `~/.bpan/` but it
-is completely up to you. Whereever `bpan` is found in your `PATH` it will
-adjust everything else for you. In other words, change `~/bpan` to your choice
-in these commands:
+You can install BPAN in any directory you want.
 
-    # Clone the client branch of the 'bpan' repo:
-    git clone http://github.com/bpan-org/bpan ~/.bpan --branch=client
-    # Add these lines to your shell init file:
-    export PATH=~/.bpan/bin:$PATH
+We recommend `~/.bpan/` but it is completely up to you. Whereever `bpan` is
+found in your `PATH` it will adjust everything else for you. In other words,
+simply change all the occurences of `~/bpan` below to your choice:
+
+    # Clone the 'bpan' repo:
+    git clone http://github.com/bpan-org/bpan ~/.bpan
+    # Add these commands to your shell initialization:
+    export PATH=~/.bpan/bin:~/.bpan/lib:$PATH
     export MANPATH=~/.bpan/man:$MANPATH
+
+## Using BPAN in different shells
+
+Just because Bash is a shell and BPAN is for Bash and `bpan` is written in
+Bash does'nt mean you can't use it under the shell of your choice. If you are
+a Zsh or or Dash or Fish user, everything should work fine as long as `bash`
+is somewhere in your command PATH.
 
 ## Environment
 
-These variables all set automatically or you can set them yourself:
+These variables will all be set automatically or you can set some or all of
+them yourself:
 
 * `BPAN_ROOT`
 * `BPAN_BIN`

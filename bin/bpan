@@ -10,7 +10,7 @@ export PATH="$BASHLIB:$PATH"
 
 source bash+ ':std' can
 
-use BPAN::Client
+use BPAN
 
 [ -n "$HOME" ] ||
   fail "'HOME' environment variable not set"
