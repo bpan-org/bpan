@@ -117,11 +117,14 @@ command:install() {
 
   # XXX resolve deps and make install list
 
-  local url="$(JSON.get -a /ingydotnet/$name/release/url -)"
+  local full_name="$(JSON.get -a /$name -)"
+  local version="$(JSON.get -a /$full_name/0 -)"
+
+  local url="$(JSON.get -a /$full_name/$version/release/url -)"
   [ -n "$url" ] || fail "Package '$name' not found"
-  local sha="$(JSON.get -a /ingydotnet/$name/release/sha -)"
-  [ -n "$sha" ] || fail "Package '$name' not found"
-  local cmd="$(JSON.get -a /ingydotnet/$name/install/cmd -)"
+  local sha="$(JSON.get -a /$full_name/$version/release/sha -)"
+  [ -n "$sha" ] || fail "Package2 '$name' not found"
+  local cmd="$(JSON.get -a /$full_name/$version/install/cmd -)"
   cmd="${cmd:-make install}"
 
   do-install
