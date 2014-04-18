@@ -100,8 +100,62 @@ do-update() {
 }
 
 command:find() {
+  search_term="$1"
   check-index-up-to-date
-  cat $package_index | JSON.load
+  cat $package_index | JSON.load | sort |
+  (
+    count=0 name= owner= prev_name= prev_owner= short=false
+    while read -r line; do
+      [[ "$line" =~ ^/([^/$'\t']+)(/([^/$'\t']+))? ]] || die
+      name="${BASH_REMATCH[1]}"
+      if [ -z "$owner" ]; then
+        owner="${BASH_REMATCH[3]}"
+      fi
+      [ -z "$prev_name" ] && prev_name="$name"
+      [ -z "$prev_owner" ] && prev_owner="$owner"
+
+      [ "$name" != "$prev_name" -o "$owner" != "$prev_owner" ] && found-entry
+
+      if [[ "$line" =~ ^/([^/]+)/([^/]+)/([\.0-9]+)/([^$'\t']+)$'\t'\"(.*)\"$ ]]; then
+        var="${BASH_REMATCH[4]}"
+        var=${var//\//_}
+        var=${var//=/__}
+        value="${BASH_REMATCH[5]}"
+        # echo "$var=$value"
+        printf -v $var "$value"
+      elif [[ "$line" =~ ^/([^/]+)$'\t'\"(.*)\"$ ]]; then
+        short=true
+      else
+        : echo ">>$line"
+      fi
+    done
+    found-entry
+    if [ $count -eq 0 ]; then
+      say "No packages found"
+    fi
+  )
+}
+
+found-entry() {
+  if [ -n "$search_term" ]; then
+    [[ "$prev_name" =~ $search_term ]] ||
+    [[ "$abstract" =~ $search_term ]] ||
+      return 0
+  fi
+
+  : $((count++))
+  if $short; then
+    echo "$count) $prev_name ($prev_owner/$prev_name) $version"
+  else
+    echo "$count) $prev_name/$prev_owner $version"
+  fi
+  if [ -n "$abstract" ]; then
+    echo "   abstract: $abstract"
+  fi
+  if [ -n "$release_sha" ]; then
+    echo "   sha1: $release_sha"
+  fi
+  prev_name="$name" prev_owner="$owner" name= owner= version= sha=
 }
 
 command:install() {
