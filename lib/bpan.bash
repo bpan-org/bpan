@@ -137,14 +137,17 @@ command:update() {
 
 command:upgrade() {
   (
-    set -x
+    say "> cd $BPAN_ROOT"
     cd $BPAN_ROOT
-    git fetch
-    git checkout master
+
+    local branch=$(git rev-parse --abbrev-ref HEAD)
+    if [ "$branch" != master ]; then
+      say "> git checkout master"
+      git checkout master
+    fi
+    say "> git pull --rebase origin master"
     git pull --rebase origin master
-  )
-  (
-    cd $BPAN_ROOT
+
     old_version="$(BPAN:VERSION)"
     source "$BPAN_ROOT/lib/bpan.bash"
     new_version="$(BPAN:VERSION)"
