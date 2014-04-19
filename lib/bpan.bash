@@ -75,7 +75,11 @@ setup() {
 
 check-index-up-to-date() {
   if [ -f $index_stamp ]; then
-    local prev=$(date --utc --reference=$index_stamp +%s)
+    if [ $(uname) == Darwin ]; then
+      local prev=$(stat -f "%m" $index_stamp)
+    else
+      local prev=$(date --utc --reference=$index_stamp +%s)
+    fi
     local now=$(date "+%s")
     local time=$(( now - prev ))
     # if [[ $(( now - prev )) -lt $(( 2 * 60 )) ]]; then
