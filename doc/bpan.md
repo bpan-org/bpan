@@ -1,56 +1,38 @@
-bpan(1)
-=======
+BPAN - Bash Packages Ain't No Joke
+==================================
 
-This is the command line tool for installing packages from BPAN.
+http://bpan.org
 
-## Synopsis
+BPAN's a very modern packaging system, that serves the Bash language.
 
-    bpan find json
-    bpan install json
-    bpan update
-    bpan upgrade
-    bpan env BPAN_ROOT
-    bpan version
+Bash is a programming language that has been around since 1989, but is
+generally only seen as a scripting language for smallish tasks. In fact, it is
+a very cabaple language that is better suited to many tasks than languages
+like Perl, Ruby, Python or Node.js.
 
-## Installation
+The thing that Bash is missing is a set of reusable packages (libraries,
+modules). BPAN intends to fill that gap.
 
-You can install BPAN in any directory you want.
+BPAN also is trying to use techniques from the modern (2014) era, that will
+make it more lightweight and scalable than its predecessors CPAN, RubyGems,
+PyPI and NPM. If this works out well, BPAN can be used as a model for
+languages that need a new packaging system.
 
-We recommend `~/.bpan/` but it is completely up to you. Whereever `bpan` is
-found in your `PATH` it will adjust everything else for you. In other words,
-simply change all the occurences of `~/bpan` below to your choice:
+## Use the BPAN Client
 
-    # Clone the 'bpan' repo:
-    git clone http://github.com/bpan-org/bpan ~/.bpan
-    # Add these commands to your shell initialization:
-    export PATH=~/.bpan/bin:~/.bpan/lib:$PATH
-    export MANPATH=~/.bpan/man:$MANPATH
+If you want to install the BPAN packages and use them, see the documentation
+[here](https://github.com/bpan-org/bpan/tree/master/doc/client.md).
 
-## Using BPAN in different shells
+## Repository Layout
 
-Just because Bash is a shell and BPAN is for Bash and `bpan` is written in
-Bash does'nt mean you can't use it under the shell of your choice. If you are
-a Zsh or or Dash or Fish user, everything should work fine as long as `bash`
-is somewhere in your command PATH.
+This repository has 3 main branches:
 
-## Environment
+* master — General Information and BPAN Commandline Client
+* gh-pages — The bpan.org website (including the BPAN indexes
+* server — The webhook server code (sinatra server)
 
-These variables will all be set automatically or you can set some or all of
-them yourself:
+## Architecture
 
-* `BPAN_ROOT`
-* `BPAN_BIN`
-* `BPAN_LIB`
-* `BPAN_MAN`
-* `BPAN_MAN1`
-* `BPAN_MAN3`
-* `BPAN_INDEX`
-* `BPAN_BUILD`
-
-These all have reasonable defaults, but feel free to do what you want.
-
-To get the value of an automatically set command, use the `bpan env` command:
-
-    bpan env BPAN_ROOT
-    bpan env BPAN_INDEX
-
+BPAN is built over GitHub infrastructure. It is not tied to it forever, but
+GitHub has almost all the pieces ready to go. A small sinatra server receives
+webhook API calls from GitHub and updates the indexes.
