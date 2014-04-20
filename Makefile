@@ -14,7 +14,7 @@ tail:
 ssh:
 	$(SSH)
 
-startstop:
+restart:
 	$(SSH) 'sudo /var/www/.rbenv/shims/god stop unicorn && sleep 10 && sudo /var/www/.rbenv/shims/god start unicorn'
 
 test:
