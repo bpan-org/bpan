@@ -125,7 +125,12 @@ command:find() {
         var=${var//\//_}
         var=${var//=/__}
         value="${BASH_REMATCH[5]}"
-        # echo "$var=$value"
+        printf -v $var "$value"
+      elif [[ "$line" =~ ^/([^/]+)/([^/]+)/([\.0-9]+)/([^$'\t']+)$'\t'(.*)$ ]]; then
+        var="${BASH_REMATCH[4]}"
+        var=${var//\//_}
+        var=${var//=/__}
+        value="${BASH_REMATCH[5]}"
         printf -v $var "$value"
       elif [[ "$line" =~ ^/([^/]+)$'\t'\"(.*)\"$ ]]; then
         short=true
@@ -147,11 +152,13 @@ found-entry() {
       return 0
   fi
 
+  date="$(date -d @$release_timestamp +%F)"
+
   : $((count++))
   if $short; then
-    echo "$count) $prev_name ($prev_owner/$prev_name) $version"
+    echo "$count) $prev_name ($prev_owner/$prev_name) $version - $date"
   else
-    echo "$count) $prev_name/$prev_owner $version"
+    echo "$count) $prev_name/$prev_owner $version - $date"
   fi
   if [ -n "$abstract" ]; then
     echo "   abstract: $abstract"
@@ -159,6 +166,7 @@ found-entry() {
   if [ -n "$release_sha" ]; then
     echo "   sha1: $release_sha"
   fi
+  echo "   url: ${release_url%.git}/tree/$version"
   prev_name="$name" prev_owner="$owner" name= owner= version= sha=
 }
 
