@@ -4,7 +4,23 @@ SERVER=webhook.bpan.org
 SSH=ssh $(SERVER)
 EXCLUDE=--exclude-from=.gitignore --exclude=.git* --exclude=test/
 
-deploy:
+default: help
+
+help:
+	@echo ''
+	@echo 'Targets:'
+	@echo ''
+	@echo '  push       — Sync server code and restart'
+	@echo '  tail       — Tail the server log'
+	@echo '  ssh        — ssh to the server'
+	@echo '  restart    — Restart the BPAN server'
+	@echo ''
+	@echo '  test       — Run the tests locally'
+	@echo '  tag        — ???'
+	@echo '  untag      — ???'
+	@echo ''
+
+push:
 	rsync -avzL $(EXCLUDE) --include=id_rsa_server ./ $(SERVER):bpan-org/
 	$(SSH) 'sudo rsync -avzL bpan-org/ /var/www/bpan-org/ && sudo chown -R www-data /var/www/bpan-org/ && sudo /var/www/.rbenv/shims/god restart unicorn'
 
