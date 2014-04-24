@@ -1,0 +1,20 @@
+== Meta
+name: test-tap
+version: 0.3.1
+repo: test-tap-bash
+author: aocole
+
+== Install
+~/.bpan/lib/test/tap.bash
+
+~/.bpan/lib/@aocole/test/tap.bash
+~/.bpan/lib/test/tap:0.3.1.bash
+~/.bpan/lib/@aocole/test/tap:0.3.1.bash
+
+== Usage
+source bash+
+use Test::Tap
+
+use Test::Tap@aocole
+use Test::Tap,0.3.1
+use Test::Tap@aocole,0.3.1
