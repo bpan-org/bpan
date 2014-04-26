@@ -11,10 +11,10 @@ Bundler.require
 $stdout.sync = true
 logger = Logger.new($stdout, Logger::DEBUG)
 
-post /\/(star)?\/?/ do
+post '/?' do
   request.body.rewind  # in case someone already read it
   data = body_json
-    
+
   if data['action'] =~ /^star[ref_type]ed$/
     sender = data['sender']
     logger.debug "Received star from #{sender['login'].inspect}"
@@ -22,9 +22,17 @@ post /\/(star)?\/?/ do
     return "Thanks for starring, #{sender['login']}"
   elsif data['ref_type'] == 'tag'
     created = !data['master_branch'].nil?
-    logger.debug "Tag #{data['ref'].inspect} #{created ? 'created' : 'deleted'} on #{data['repository']['clone_url'].inspect}"
+    logger.debug "Tag %s %s on %s" % [
+      data['ref'].inspect,
+      (created ? 'created' : 'deleted'),
+      data['repository']['clone_url'].inspect,
+    ]
     meta = add_package data, created
-    return "Thanks for pushing #{meta['name'].inspect} version #{meta['version'].inspect}, sha #{meta['release']['sha']}"
+    return "Thanks for pushing %s version %s sha %s" % [
+      meta['name'].inspect,
+      meta['version'].inspect,
+      meta['release']['sha'],
+    ]
   else
     logger.info data
     halt 400, "Invalid action"
@@ -37,10 +45,11 @@ end
 
 if ENV['RACK_ENV'] == 'development'
   get '/?' do
-    ensure_branch_updated GH_PAGES_BRANCH
-    File.open(AUTHORS_FILE, 'w+') {|f|f.puts'[]'} unless File.exist?(AUTHORS_FILE)
-    authors = JSON.parse(File.read(AUTHORS_FILE))
-    homepage(authors)
+    ensure_ghpages_branch_updated
+    File.open(AUTHOR_FILE, 'w+') {|f|f.puts'[]'} \
+      unless File.exist?(AUTHOR_FILE)
+    author = JSON.parse(File.read(AUTHOR_FILE))
+    homepage(author)
   end
 else
   get '/?' do
@@ -48,22 +57,30 @@ else
   end
 end
 
-if %w{development test}.include? ENV['RACK_ENV'] 
+if %w{development test}.include? ENV['RACK_ENV']
   get '/css/jumbotron-narrow.css' do
     content_type 'text/css'
-    File.read(File.join(File.dirname(__FILE__), 'views', 'jumbotron-narrow.css'))
+    File.read(
+      File.join(
+        File.dirname(__FILE__),
+        'views',
+        'jumbotron-narrow.css',
+      )
+    )
   end
 
-  get '/authors.json' do
-    ensure_branch_updated GH_PAGES_BRANCH
-    File.open(AUTHORS_FILE, 'w+') {|f|f.puts'[]'} unless File.exist?(AUTHORS_FILE)
-    return File.read(AUTHORS_FILE)
+  get '/author.json' do
+    ensure_ghpages_branch_updated
+    File.open(AUTHOR_FILE, 'w+') {|f|f.puts'[]'} \
+      unless File.exist?(AUTHOR_FILE)
+    return File.read(AUTHOR_FILE)
   end
 
-  get '/packages.json' do
-    ensure_branch_updated GH_PAGES_BRANCH
-    File.open(PACKAGES_FILE, 'w+') {|f|f.puts'{}'} unless File.exist?(PACKAGES_FILE)
-    return File.read(PACKAGES_FILE)
+  get '/package.json' do
+    ensure_ghpages_branch_updated
+    File.open(PACKAGE_FILE, 'w+') {|f|f.puts'{}'} \
+      unless File.exist?(PACKAGE_FILE)
+    return File.read(PACKAGE_FILE)
   end
 end
 
@@ -71,7 +88,13 @@ end
 private
 
 def branch_dir branch
-  File.expand_path(File.join(File.dirname(__FILE__), ENV['BPAN_TEST_DIR'] || '', branch))
+  File.expand_path(
+    File.join(
+      File.dirname(__FILE__),
+      ENV['BPAN_TEST_DIR'] || '',
+      branch,
+    )
+  )
 end
 
 def h s
@@ -80,69 +103,100 @@ end
 
 GH_PAGES_BRANCH = 'gh-pages'
 INDEX_DIR = ''
-AUTHORS_FILE = File.join(branch_dir(GH_PAGES_BRANCH), INDEX_DIR, 'author.json')
-AUTHORS_FILEP = AUTHORS_FILE+'p'
-PACKAGES_FILE = File.join(branch_dir(GH_PAGES_BRANCH), INDEX_DIR, 'package.json')
-PACKAGES_FILEP = PACKAGES_FILE + 'p'
-HOMEPAGE_VIEW = ERB.new(File.read(File.join(File.dirname(__FILE__), 'views', 'index.html.erb')))
-HOMEPAGE_FILE = File.join(branch_dir(GH_PAGES_BRANCH), 'index.html')
-GIT_REMOTE = ENV['BPAN_TEST_REMOTE'] || 'git@github.com:bpan-org/bpan.git'
+AUTHOR_FILE = File.join(
+  branch_dir(GH_PAGES_BRANCH),
+  INDEX_DIR,
+  'author.json',
+)
+AUTHOR_FILEP = "#{AUTHOR_FILE}p"
+PACKAGE_FILE = File.join(
+  branch_dir(GH_PAGES_BRANCH),
+  INDEX_DIR,
+  'package.json',
+)
+PACKAGE_FILEP = "#{PACKAGE_FILE}p"
+HOMEPAGE_VIEW = ERB.new(
+  File.read(
+    File.join(
+      File.dirname(__FILE__),
+      'views',
+      'index.html.erb',
+    )
+  )
+)
+HOMEPAGE_FILE = File.join(
+  branch_dir(GH_PAGES_BRANCH),
+  'index.html',
+)
+GIT_REMOTE =
+  ENV['BPAN_TEST_REMOTE'] ||
+  'git@github.com:bpan-org/bpan.git'
+
+GIT = Git.open branch_dir(GH_PAGES_BRANCH), log: logger
 
 def ensure_dir branch
   return if Dir.exist?(branch_dir branch)
   FileUtils.mkdir_p(branch_dir branch)
-  Git.clone(GIT_REMOTE, branch, path: File.dirname(branch_dir(branch)), log: logger)
+  Git.clone(
+    GIT_REMOTE,
+    branch,
+    path: File.dirname(branch_dir(branch)),
+    log: logger,
+  )
 end
 
-def ensure_branch_updated branch
+def ensure_ghpages_branch_updated
+  branch=GH_PAGES_BRANCH
   ensure_dir branch
-  git = Git.open branch_dir(branch), log: logger
-  git.checkout(branch)
-  git.pull 'origin', branch
-  return git
+  GIT.checkout(branch)
+  GIT.pull 'origin', branch
 end
 
-def add_author author
-  git = ensure_branch_updated GH_PAGES_BRANCH
-  File.open(AUTHORS_FILE, 'w') {|f|f.puts'[]'} unless File.exist?(AUTHORS_FILE)
-  authors = JSON.parse(File.read(AUTHORS_FILE))
-  authors << format_author(author)
-  post_process_and_commit_authors git, authors, author
+def add_author sender
+  ensure_ghpages_branch_updated
+  File.open(AUTHOR_FILE, 'w') {|f|f.puts'[]'} \
+    unless File.exist?(AUTHOR_FILE)
+  author = JSON.parse(File.read(AUTHOR_FILE))
+  author << format_author(sender)
+  post_process_and_commit_author author, sender
 end
 
-def post_process_and_commit_authors git, authors, author=nil
-  authors.uniq! {|author| author["login"]}
-  authors.sort! {|a,b| a["login"] <=> b["login"]}
+def post_process_and_commit_author author, hash=nil
+  author.uniq! {|a| a["login"]}
+  author.sort! {|a,b| a["login"] <=> b["login"]}
 
   # Regenerate homepage
   File.open(HOMEPAGE_FILE, 'w') {|f|
-    f.write homepage(authors)
+    f.write homepage(author)
   }
-  git.add(File.basename(HOMEPAGE_FILE))
+  GIT.add(File.basename(HOMEPAGE_FILE))
 
   # Regenerate json index
-  json = authors.to_json
-  File.open(AUTHORS_FILE, 'w') {|f|
+  json = JSON.pretty_generate author
+  File.open(AUTHOR_FILE, 'w') {|f|
     f.write json
   }
-  File.open(AUTHORS_FILEP, 'w') {|f|
-    f.write "var authors = "
+  File.open(AUTHOR_FILEP, 'w') {|f|
+    f.write "var author = "
     f.write json
     f.write ";"
   }
-  git.add(AUTHORS_FILE)
-  git.add(AUTHORS_FILEP)
+  GIT.add(AUTHOR_FILE)
+  GIT.add(AUTHOR_FILEP)
   begin
-    message = if author
-      "Add author #{author['login'].inspect}"
+    message = if hash
+      "Add author #{hash['login'].inspect}"
     else
-      "Prune/resync authors directory"
+      "Prune/resync author directory"
     end
-    git.commit(message)
+    GIT.commit(message)
   rescue Git::GitExecuteError => e
     raise e unless e.message =~ /nothing to commit/i
   end
-  git.push 'origin', GH_PAGES_BRANCH
+  GIT.push 'origin', GH_PAGES_BRANCH
+
+  package = load_package
+  save_package package
 end
 
 def add_package data, created
@@ -162,48 +216,72 @@ def add_package data, created
     }
   end
 
-  # Get the exisitng package index
-  git = ensure_branch_updated GH_PAGES_BRANCH
-  File.open(PACKAGES_FILE, 'w+') {|f|f.puts'{}'} unless File.exist?(PACKAGES_FILE)
-  packages = JSON.parse(File.read(PACKAGES_FILE))
+  # Get the existing package index
+  package = load_package
 
   # generate our new entries
-  half_qualified_key = [meta['name'], data['repository']['owner']['login']].join('/')
-  fully_qualified_key = [half_qualified_key, meta['version']].join('/')
+  half_qualified_key = [
+    meta['name'],
+    data['repository']['owner']['login'],
+  ].join('/')
+  fully_qualified_key = [
+    half_qualified_key,
+    meta['version'],
+  ].join('/')
 
   # update version array
-  packages[half_qualified_key] ||= []
-  packages[half_qualified_key].unshift meta['version']
+  package[half_qualified_key] ||= []
+  package[half_qualified_key].unshift meta['version']
 
   # add full package meta for this version
-  packages[fully_qualified_key] = meta
+  package[fully_qualified_key] = meta
 
   # set short name if it isn't already taken
-  packages[meta['name']] ||= half_qualified_key
+  package[meta['name']] ||= half_qualified_key
 
-  # Regenerate json index
-  json = packages.to_json
-  File.open(PACKAGES_FILE, 'w') {|f|
-    f.write json
-  }
-  File.open(PACKAGES_FILEP, 'w') {|f|
-    f.write "var packages = "
-    f.write json
-    f.write ";"
-  }
-  git.add(PACKAGES_FILE)
-  git.add(PACKAGES_FILEP)
-  begin
-    git.commit("Add package #{fully_qualified_key.inspect}")
-  rescue Git::GitExecuteError => e
-    raise e unless e.message =~ /nothing to commit/i
-  end
-  git.push 'origin', GH_PAGES_BRANCH
+  save_package package, fully_qualified_key
 
   return meta
 end
 
-def homepage authors
+def load_package
+  ensure_ghpages_branch_updated
+  File.open(PACKAGE_FILE, 'w+') {|f|f.puts'{}'} \
+    unless File.exist?(PACKAGE_FILE)
+  JSON.parse(
+    File.open(PACKAGE_FILE, "r:UTF-8", &:read)
+  )
+end
+
+def save_package package, fully_qualified_key=nil
+  # Regenerate json index
+  json = JSON.pretty_generate Hash[
+    *(package.keys.sort.map{|k|[k,package[k]]}.flatten)
+  ]
+  File.open(PACKAGE_FILE, 'w') {|f|
+    f.write json
+  }
+  File.open(PACKAGE_FILEP, 'w') {|f|
+    f.write "var package = "
+    f.write json
+    f.write ";"
+  }
+  GIT.add(PACKAGE_FILE)
+  GIT.add(PACKAGE_FILEP)
+  begin
+    if fully_qualified_key
+      GIT.commit("Add package #{fully_qualified_key.inspect}")
+    else
+      logger.debug "Regenerating package.json"
+    end
+  rescue Git::GitExecuteError => e
+    raise e unless e.message =~ /nothing to commit/i
+  end
+  GIT.push 'origin', GH_PAGES_BRANCH
+end
+
+
+def homepage author
   HOMEPAGE_VIEW.result(binding)
 end
 

@@ -52,9 +52,9 @@ class BpanTest < Test::Unit::TestCase
   def test_star
     reset_remote
     reset_checkout
-    get '/authors.json'
-    authors = JSON.parse(last_response.body)
-    assert_equal %w{aocole foo-aocole}, authors.collect{ |a| a['login'] }.sort
+    get '/author.json'
+    author = JSON.parse(last_response.body)
+    assert_equal %w{aocole foo-aocole}, author.collect{ |a| a['login'] }.sort
 
     post '/', <<-END
     {
@@ -71,9 +71,9 @@ class BpanTest < Test::Unit::TestCase
     assert_equal 200, last_response.status, "Wrong status, body was #{last_response.body}"
     assert_match 'Thanks for starring, bar-aocole', last_response.body
 
-    get '/authors.json'
-    authors = JSON.parse(last_response.body)
-    assert_equal %w{aocole bar-aocole foo-aocole}, authors.collect{ |a| a['login'] }.sort
+    get '/author.json'
+    author = JSON.parse(last_response.body)
+    assert_equal %w{aocole bar-aocole foo-aocole}, author.collect{ |a| a['login'] }.sort
     assert_equal(
     {
       "login" => "bar-aocole",
@@ -81,7 +81,7 @@ class BpanTest < Test::Unit::TestCase
       "html_url" => "https://github.com/bar-aocole",
       "url" => "https://api.github.com/users/bar-aocole",
       "avatar_url" => "https://avatars.githubusercontent.com/u/393591?"
-    }, authors.detect{|a|a['login']=='bar-aocole'})
+    }, author.detect{|a|a['login']=='bar-aocole'})
     reset_remote
   end
 

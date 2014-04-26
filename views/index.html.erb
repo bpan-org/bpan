@@ -64,9 +64,9 @@
 
         <div class="col-lg-6">
           <h4>Authors</h4>
-          <ul id="authors" class="list-unstyled">
-            <% authors.each do |author| %>
-              <li><a href="https://github.com/<%=h author['login']%>/"><img src="https://secure.gravatar.com/avatar/<%=author['gravatar_id']%>?d=retro" /> <%=h author['login']%></a></li>
+          <ul id="author" class="list-unstyled">
+            <% author.each do |object| %>
+              <li><a href="https://github.com/<%=h object['login']%>/"><img src="https://secure.gravatar.com/avatar/<%=object['gravatar_id']%>?d=retro" /> <%=h object['login']%></a></li>
             <%end%>
           </ul>
         </div>
