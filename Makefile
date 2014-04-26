@@ -11,9 +11,10 @@ help:
 	@echo 'Targets:'
 	@echo ''
 	@echo '  push       — Sync server code and restart'
+	@echo '  status     — Show the unicorn processes'
 	@echo '  tail       — Tail the server log'
-	@echo '  ssh        — ssh to the server'
 	@echo '  restart    — Restart the BPAN server'
+	@echo '  ssh        — ssh into the server directory'
 	@echo ''
 	@echo '  test       — Run the tests locally'
 	@echo '  tag        — ???'
@@ -21,23 +22,39 @@ help:
 	@echo ''
 
 push:
-	rsync -avzL $(EXCLUDE) --include=id_rsa_server ./ $(SERVER):bpan-org/
-	$(SSH) 'sudo rsync -avzL bpan-org/ /var/www/bpan-org/ && sudo chown -R www-data /var/www/bpan-org/ && sudo /var/www/.rbenv/shims/god restart unicorn'
+	rsync -avzL \
+	    $(EXCLUDE) \
+	    --include=id_rsa_server ./ \
+	    $(SERVER):bpan-org/
+	$(SSH) '\
+	    sudo rsync -avzL bpan-org/ /var/www/bpan-org/ && \
+	    sudo chown -R www-data /var/www/bpan-org/ && \
+	    sudo /var/www/.rbenv/shims/god stop unicorn && \
+	    sudo /var/www/.rbenv/shims/god start unicorn \
+	'
+
+status:
+	$(SSH) 'ps aux | grep unicorn'
 
 tail:
 	$(SSH) 'tail -f /var/www/bpan-org/logs/unicorn.log'
 
-ssh:
-	$(SSH)
-
 restart:
-	$(SSH) 'sudo /var/www/.rbenv/shims/god stop unicorn && sleep 10 && sudo /var/www/.rbenv/shims/god start unicorn'
+	$(SSH) 'sudo /var/www/.rbenv/shims/god stop unicorn && \
+	    sleep 1 && \
+	    sudo /var/www/.rbenv/shims/god start unicorn \
+	'
+
+ssh:
+	$(SSH) -t 'cd /var/www/bpan-org; bash'
 
 test:
 	bundle exec ruby test/bpan_test.rb
 
 untag:
-	git push origin :tingle ; git tag -d tingle
+	git push origin :tingle
+	git tag -d tingle
 
 tag:
-	git tag tingle ; git push --tag
+	git tag tingle
+	git push --tag
