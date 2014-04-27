@@ -14,6 +14,8 @@ help:
 	@echo '  status     — Show the unicorn processes'
 	@echo '  tail       — Tail the server log'
 	@echo '  restart    — Restart the BPAN server'
+	@echo '  stop       — Stop the BPAN server'
+	@echo '  start      — Start the BPAN server'
 	@echo '  ssh        — ssh into the server directory'
 	@echo ''
 	@echo '  test       — Run the tests locally'
@@ -44,6 +46,12 @@ restart:
 	    sleep 1 && \
 	    sudo /var/www/.rbenv/shims/god start unicorn \
 	'
+
+stop:
+	$(SSH) 'sudo /var/www/.rbenv/shims/god stop unicorn'
+
+start:
+	$(SSH) 'sudo /var/www/.rbenv/shims/god start unicorn'
 
 ssh:
 	$(SSH) -t 'cd /var/www/bpan-org; bash'
