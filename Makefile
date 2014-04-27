@@ -18,6 +18,7 @@ help:
 	@echo '  start      — Start the BPAN server'
 	@echo '  ssh        — ssh into the server directory'
 	@echo ''
+	@echo '  rebuild    — Rebuild the remote indexes and webpage'
 	@echo '  test       — Run the tests locally'
 	@echo '  tag        — ???'
 	@echo '  untag      — ???'
@@ -55,6 +56,9 @@ start:
 
 ssh:
 	$(SSH) -t 'cd /var/www/bpan-org; bash'
+
+rebuild:
+	curl --request POST http://webhook.bpan.org/rebuild/
 
 test:
 	bundle exec ruby test/bpan_test.rb

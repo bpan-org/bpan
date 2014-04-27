@@ -47,8 +47,12 @@ post '/?' do
   end
 end
 
-post '/push/?' do
-  'push'
+post '/rebuild/' do
+  author = JSON.parse(File.read(AUTHOR_FILE))
+  post_process_and_commit_author author
+  msg = "Successful rebuild of indexes and webpage"
+  logger.info msg
+  return "#{msg}\n"
 end
 
 if ENV['RACK_ENV'] == 'development'
@@ -193,9 +197,9 @@ def post_process_and_commit_author author, hash=nil
   GIT.add(AUTHOR_FILEP)
   begin
     message = if hash
-      "Add author #{hash['login'].inspect}"
+      "[BPAN] Add author #{hash['login'].inspect}"
     else
-      "Prune/resync author directory"
+      "[BPAN] Prune/resync author directory"
     end
     GIT.commit(message)
   rescue Git::GitExecuteError => e
@@ -279,7 +283,7 @@ def save_package package, fully_qualified_key=nil
   GIT.add(PACKAGE_FILEP)
   begin
     if fully_qualified_key
-      GIT.commit("Add package #{fully_qualified_key.inspect}")
+      GIT.commit("[BPAN] Add package #{fully_qualified_key.inspect}")
     else
       logger.debug "Regenerating package.json"
     end
