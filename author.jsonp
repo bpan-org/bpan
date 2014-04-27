@@ -21,13 +21,6 @@ var author = [
     "html_url": "https://github.com/iansinnott"
   },
   {
-    "login": "ingydotnet",
-    "avatar_url": "https://avatars.githubusercontent.com/u/21826?",
-    "gravatar_id": "8b3bd89d842c858bea279637e34b4382",
-    "url": "https://api.github.com/users/ingydotnet",
-    "html_url": "https://github.com/ingydotnet"
-  },
-  {
     "login": "jscook",
     "avatar_url": "https://avatars.githubusercontent.com/u/353574?",
     "gravatar_id": null,
