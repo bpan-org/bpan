@@ -31,8 +31,9 @@
     <div class="container">
 
       <div class="jumbotron">
-        <h1>BPAN: Bash Packages Ain't NoJoke™</h1>
-        <p class="lead">A simple way to share library/module packages for any/all programming languages.</p>
+        <h1>BPAN</h1>
+        <h2>Bash Packages Ain't NoJoke™</h2>
+        <p class="lead">A simple way to publish and install Bash packages / modules / libraries.</p>
         <p><!--a class="btn btn-lg btn-success" href="#" role="button">Sign up today</a></p-->
       </div>
 
@@ -66,7 +67,7 @@
           <h4>Authors</h4>
           <ul id="author" class="list-unstyled">
             <% author.each do |object| %>
-              <li><a href="https://github.com/<%=h object['login']%>/"><img src="https://secure.gravatar.com/avatar/<%=object['gravatar_id']%>?d=retro" /> <%=h object['login']%></a></li>
+              <li class="author"><a href="https://github.com/<%=h object['login']%>/"><img src="https://secure.gravatar.com/avatar/<%=object['gravatar_id']%>?d=retro" /> <%=h object['login']%></a></li>
             <%end%>
           </ul>
         </div>
