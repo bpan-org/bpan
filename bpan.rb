@@ -57,7 +57,6 @@ end
 
 if ENV['RACK_ENV'] == 'development'
   get '/?' do
-    ensure_ghpages_branch_updated
     File.open(AUTHOR_FILE, 'w+') {|f|f.puts'[]'} \
       unless File.exist?(AUTHOR_FILE)
     author = JSON.parse(File.read(AUTHOR_FILE))
@@ -82,47 +81,60 @@ if %w{development test}.include? ENV['RACK_ENV']
   end
 
   get '/author.json' do
-    ensure_ghpages_branch_updated
     File.open(AUTHOR_FILE, 'w+') {|f|f.puts'[]'} \
       unless File.exist?(AUTHOR_FILE)
     return File.read(AUTHOR_FILE)
   end
 
   get '/package.json' do
-    ensure_ghpages_branch_updated
     File.open(PACKAGE_FILE, 'w+') {|f|f.puts'{}'} \
       unless File.exist?(PACKAGE_FILE)
     return File.read(PACKAGE_FILE)
   end
 end
 
-
+#------------------------------------------------------------------------------
 private
-
-def branch_dir branch
-  File.expand_path(
-    File.join(
-      File.dirname(__FILE__),
-      ENV['BPAN_TEST_DIR'] || '',
-      branch,
-    )
-  )
-end
 
 def h s
   CGI.escape_html s
 end
 
 GH_PAGES_BRANCH = 'gh-pages'
+GH_PAGES_DIR = File.expand_path(
+  File.join(
+    File.dirname(__FILE__),
+    ENV['BPAN_TEST_DIR'] || '',
+    GH_PAGES_BRANCH,
+  )
+)
+GIT_REMOTE =
+  ENV['BPAN_TEST_REMOTE'] ||
+  'git@github.com:bpan-org/bpan.git'
+
+if not Dir.exist?(GH_PAGES_DIR)
+  Git.clone(
+    GIT_REMOTE,
+    GH_PAGES_BRANCH,
+    path: File.dirname(GH_PAGES_DIR),
+    log: logger,
+  )
+  fail unless Dir.exist?(GH_PAGES_DIR)
+end
+
+GIT = Git.open GH_PAGES_DIR, log: logger
+GIT.checkout(GH_PAGES_BRANCH)
+GIT.pull 'origin', GH_PAGES_BRANCH
+
 INDEX_DIR = ''
 AUTHOR_FILE = File.join(
-  branch_dir(GH_PAGES_BRANCH),
+  GH_PAGES_DIR,
   INDEX_DIR,
   'author.json',
 )
 AUTHOR_FILEP = "#{AUTHOR_FILE}p"
 PACKAGE_FILE = File.join(
-  branch_dir(GH_PAGES_BRANCH),
+  GH_PAGES_DIR,
   INDEX_DIR,
   'package.json',
 )
@@ -137,35 +149,11 @@ HOMEPAGE_VIEW = ERB.new(
   )
 )
 HOMEPAGE_FILE = File.join(
-  branch_dir(GH_PAGES_BRANCH),
+  GH_PAGES_DIR,
   'index.html',
 )
-GIT_REMOTE =
-  ENV['BPAN_TEST_REMOTE'] ||
-  'git@github.com:bpan-org/bpan.git'
-
-GIT = Git.open branch_dir(GH_PAGES_BRANCH), log: logger
-
-def ensure_dir branch
-  return if Dir.exist?(branch_dir branch)
-  FileUtils.mkdir_p(branch_dir branch)
-  Git.clone(
-    GIT_REMOTE,
-    branch,
-    path: File.dirname(branch_dir(branch)),
-    log: logger,
-  )
-end
-
-def ensure_ghpages_branch_updated
-  branch=GH_PAGES_BRANCH
-  ensure_dir branch
-  GIT.checkout(branch)
-  GIT.pull 'origin', branch
-end
 
 def add_author sender
-  ensure_ghpages_branch_updated
   File.open(AUTHOR_FILE, 'w') {|f|f.puts'[]'} \
     unless File.exist?(AUTHOR_FILE)
   author = JSON.parse(File.read(AUTHOR_FILE))
@@ -258,7 +246,6 @@ def add_package data
 end
 
 def load_package
-  ensure_ghpages_branch_updated
   File.open(PACKAGE_FILE, 'w+') {|f|f.puts'{}'} \
     unless File.exist?(PACKAGE_FILE)
   JSON.parse(
@@ -292,7 +279,6 @@ def save_package package, fully_qualified_key=nil
   end
   GIT.push 'origin', GH_PAGES_BRANCH
 end
-
 
 def homepage author
   HOMEPAGE_VIEW.result(binding)
