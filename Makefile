@@ -16,6 +16,7 @@ help:
 	@echo '  restart    — Restart the BPAN server'
 	@echo '  stop       — Stop the BPAN server'
 	@echo '  start      — Start the BPAN server'
+	@echo '  reset      — Delete the gh-pages dir'
 	@echo '  ssh        — ssh into the server directory'
 	@echo ''
 	@echo '  rebuild    — Rebuild the remote indexes and webpage'
@@ -53,6 +54,9 @@ stop:
 
 start:
 	$(SSH) 'sudo /var/www/.rbenv/shims/god start unicorn'
+
+reset:
+	$(SSH) 'sudo rm -fr /var/www/bpan-org/gh-pages'
 
 ssh:
 	$(SSH) -t 'cd /var/www/bpan-org; bash'
