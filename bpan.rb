@@ -11,6 +11,13 @@ Bundler.require
 $stdout.sync = true
 logger = Logger.new($stdout, Logger::DEBUG)
 
+def XXX *args
+  c = caller_locations(1,1)[0].label
+  l = caller_locations(1,1)[0].lineno
+  args = args.first if args.size == 1
+  logger.info "\nXXX from #{c} #{l}:\n#{YAML.dump args}"
+end
+
 post '/?' do
   request.body.rewind  # in case someone already read it
   data = body_json
@@ -27,7 +34,8 @@ post '/?' do
       (created ? 'created' : 'deleted'),
       data['repository']['clone_url'].inspect,
     ]
-    meta = add_package data, created
+    return 'Deleted tag' unless created
+    meta = add_package data
     return "Thanks for pushing %s version %s sha %s" % [
       meta['name'].inspect,
       meta['version'].inspect,
@@ -199,8 +207,7 @@ def post_process_and_commit_author author, hash=nil
   save_package package
 end
 
-def add_package data, created
-  return unless created
+def add_package data
   meta = nil
   Dir.mktmpdir('bpan_package_clone') do |dir|
     url = data['repository']['clone_url']
@@ -231,6 +238,8 @@ def add_package data, created
 
   # update version array
   package[half_qualified_key] ||= []
+  package[half_qualified_key] = [package[half_qualified_key]] \
+    if package[half_qualified_key].instance_of? String
   package[half_qualified_key].unshift meta['version']
 
   # add full package meta for this version
@@ -254,9 +263,9 @@ def load_package
 end
 
 def save_package package, fully_qualified_key=nil
-  # Regenerate json index
+  # Regenerate json index. Pretty printed and top keys sorted.
   json = JSON.pretty_generate Hash[
-    *(package.keys.sort.map{|k|[k,package[k]]}.flatten)
+    package.keys.sort.map{|k|[k,package[k]]}
   ]
   File.open(PACKAGE_FILE, 'w') {|f|
     f.write json
