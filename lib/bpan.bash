@@ -17,6 +17,10 @@ Commands:
   env       Get value of BPAN_XXX variable
   version   Show 'bpan' version
 
+Dev Commands:
+  makefile  Generate a Makefile for your BPAN Package
+  register  Register your BPAN package with bpan.org
+
 Options:
 --
 h,help      Show the command summary
@@ -228,6 +232,10 @@ command:env() {
 
 command:version() {
   echo "BPAN — version $(BPAN:VERSION)"
+}
+
+command:makefile() {
+  bpan-makefile
 }
 
 do-install() {

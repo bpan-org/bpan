@@ -15,6 +15,7 @@ use BPAN
 [ -n "$HOME" ] ||
   fail "'HOME' environment variable not set"
 
+# XXX Replace this with Bash solution.
 abspath() { perl -MCwd -le 'print Cwd::abs_path(shift)' "$1"; }
 
 # Initialize the BPAN environment:
