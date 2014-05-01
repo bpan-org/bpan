@@ -7,6 +7,13 @@ var author = [
     "html_url": "https://github.com/aocole"
   },
   {
+    "login": "beppu",
+    "avatar_url": "https://avatars.githubusercontent.com/u/4425?",
+    "gravatar_id": "32093c41c663ea62b17d66dab11b789f",
+    "url": "https://api.github.com/users/beppu",
+    "html_url": "https://github.com/beppu"
+  },
+  {
     "login": "bluebat",
     "avatar_url": "https://avatars.githubusercontent.com/u/6536345?",
     "gravatar_id": "4ba2629b4f4c832f479045fc2392be0e",
