@@ -181,10 +181,10 @@ def post_process_and_commit_author author, hash=nil
       "[BPAN] Prune/resync author directory"
     end
     GIT.commit(message)
+    GIT.push 'origin', GH_PAGES_BRANCH
   rescue Git::GitExecuteError => e
     raise e unless e.message =~ /nothing to commit/i
   end
-  GIT.push 'origin', GH_PAGES_BRANCH
 
   package = load_package
   save_package package
