@@ -142,7 +142,7 @@ AUTHOR_FILEP = "#{AUTHOR_FILE}p"
 PACKAGE_FILE = ghpages_index_file 'package.json'
 PACKAGE_FILEP = "#{PACKAGE_FILE}p"
 HOMEPAGE_VIEW = ERB.new(
-  File.read(ghpages_file, '_cogweb', 'view', 'index.html.erb')
+  File.read File.join ghpages_file, '_cogweb', 'view', 'index.html.erb'
 )
 HOMEPAGE_FILE = ghpages_file 'index.html'
 
