@@ -159,9 +159,7 @@ def post_process_and_commit_author author, hash=nil
   author.sort! {|a,b| a["login"] <=> b["login"]}
 
   # Regenerate homepage
-  File.open(HOMEPAGE_FILE, 'w') {|f|
-    f.write homepage(author)
-  }
+  `(cd gh-pages/_cogweb; make site)`
   GIT.add(File.basename(HOMEPAGE_FILE))
 
   # Regenerate json index
