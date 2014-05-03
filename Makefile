@@ -1,8 +1,24 @@
-.PHONY: deploy tail ssh startstop test
+.PHONY: \
+	push \
+	status \
+	tail \
+	restart \
+	stop \
+	start \
+	reset \
+	ssh \
+	rebuild \
+	test \
+	tag \
+	untag \
 
-SERVER=webhook.bpan.org
-SSH=ssh $(SERVER)
-EXCLUDE=--exclude-from=.gitignore --exclude=.git* --exclude=test/
+SERVER = webhook.bpan.org
+SSH = ssh $(SERVER)
+EXCLUDE = \
+	  --exclude-from=.gitignore \
+	  --exclude=.git \
+	  --exclude=.gitignore \
+	  --exclude=test \
 
 default: help
 
@@ -32,9 +48,7 @@ push:
 	    $(SERVER):bpan-org/
 	$(SSH) '\
 	    sudo rsync -avzL bpan-org/ /var/www/bpan-org/ && \
-	    sudo chown -R www-data /var/www/bpan-org/ && \
-	    sudo /var/www/.rbenv/shims/god stop unicorn && \
-	    sudo /var/www/.rbenv/shims/god start unicorn \
+	    sudo chown -R www-data /var/www/bpan-org/ \
 	'
 
 status:
