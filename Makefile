@@ -41,7 +41,7 @@ status:
 	$(SSH) 'ps aux | grep unicorn'
 
 tail:
-	$(SSH) 'tail -f /var/www/bpan-org/logs/unicorn.log'
+	$(SSH) 'tail -f /var/www/bpan-org/log/unicorn.log'
 
 restart:
 	$(SSH) 'sudo /var/www/.rbenv/shims/god stop unicorn && \

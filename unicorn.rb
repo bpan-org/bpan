@@ -4,13 +4,13 @@ working_directory "/var/www/bpan-org"
 
 # Unicorn PID file location
 # pid "/path/to/pids/unicorn.pid"
-pid "/var/www/bpan-org/pids/unicorn.pid"
+pid "/var/www/bpan-org/pid/unicorn.pid"
 
 # Path to logs
-# stderr_path "/path/to/logs/unicorn.log"
-# stdout_path "/path/to/logs/unicorn.log"
-stderr_path "/var/www/bpan-org/logs/unicorn.log"
-stdout_path "/var/www/bpan-org/logs/unicorn.log"
+# stderr_path "/path/to/log/unicorn.log"
+# stdout_path "/path/to/log/unicorn.log"
+stderr_path "/var/www/bpan-org/log/unicorn.log"
+stdout_path "/var/www/bpan-org/log/unicorn.log"
 
 # Unicorn socket
 # listen "/tmp/unicorn.[app name].sock"

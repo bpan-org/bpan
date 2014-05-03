@@ -1,6 +1,6 @@
 BPAN = '/var/www/bpan-org'
 BIN_PATH = "#{BPAN}/vendor/bundle/ruby/2.1.0/bin/"
-PID_DIR = "#{BPAN}/pids"
+PID_DIR = "#{BPAN}/pid"
 
 God.watch do |w|
   w.name = "unicorn"
