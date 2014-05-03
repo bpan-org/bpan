@@ -126,32 +126,25 @@ GIT = Git.open GH_PAGES_DIR, log: logger
 GIT.checkout(GH_PAGES_BRANCH)
 GIT.pull 'origin', GH_PAGES_BRANCH
 
-INDEX_DIR = ''
-AUTHOR_FILE = File.join(
-  GH_PAGES_DIR,
-  INDEX_DIR,
-  'author.json',
-)
+def ghpages_file *parts
+  File.join(
+    GH_PAGES_DIR,
+    *parts,
+  )
+end
+
+def ghpages_index_file file_name
+  ghpages_file 'index', file_name
+end
+
+AUTHOR_FILE = ghpages_index_file 'author.json'
 AUTHOR_FILEP = "#{AUTHOR_FILE}p"
-PACKAGE_FILE = File.join(
-  GH_PAGES_DIR,
-  INDEX_DIR,
-  'package.json',
-)
+PACKAGE_FILE = ghpages_index_file 'package.json'
 PACKAGE_FILEP = "#{PACKAGE_FILE}p"
 HOMEPAGE_VIEW = ERB.new(
-  File.read(
-    File.join(
-      File.dirname(__FILE__),
-      'views',
-      'index.html.erb',
-    )
-  )
+  File.read(ghpages_file 'views', 'index.html.erb')
 )
-HOMEPAGE_FILE = File.join(
-  GH_PAGES_DIR,
-  'index.html',
-)
+HOMEPAGE_FILE = ghpages_file 'index.html'
 
 def add_author sender
   File.open(AUTHOR_FILE, 'w') {|f|f.puts'[]'} \
