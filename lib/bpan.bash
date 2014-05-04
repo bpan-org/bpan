@@ -130,7 +130,8 @@ command:find() {
       [ -z "$prev_name" ] && prev_name="$name"
       [ -z "$prev_owner" ] && prev_owner="$owner"
 
-      [ "$name" != "$prev_name" -o "$owner" != "$prev_owner" ] && found-entry
+      [ "$name" != "$prev_name" -o "$owner" != "$prev_owner" ] &&
+        found-entry
 
       if [[ "$line" =~ ^/([^/]+)/([^/]+)/([\.0-9]+)/([^$'\t']+)$'\t'\"(.*)\"$ ]]; then
         var="${BASH_REMATCH[4]}"
