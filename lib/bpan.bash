@@ -43,7 +43,7 @@ main() {
   if can "command:$command"; then
     "command:$command" "${command_arguments[@]}"
   else
-    fail "Unknown command '$command'"
+    error "unknown command '$command'"
   fi
 }
 
@@ -68,7 +68,7 @@ get-opts() {
       -v) verbose_mode=true ;;
       -x) set -x ;;
       --) break ;;
-      *) fail "Unexpected option: $option" ;;
+      *) error "unexpected option '$option'" ;;
     esac
   done
 
@@ -192,11 +192,11 @@ found-entry() {
 
 command:install() {
   [ $# -lt 1 ] &&
-    fail "Package name required"
+    error "package name required"
   local name="$1"
   shift
   [ $# -gt 0 ] &&
-    fail "Unknown args '$@'"
+    error "unknown args '$@'"
   check-index-up-to-date
 
   JSON.load "$(< $package_index)"
@@ -207,9 +207,9 @@ command:install() {
   local version="$(JSON.get -a /$full_name/0 -)"
 
   local url="$(JSON.get -a /$full_name/$version/release/url -)"
-  [ -n "$url" ] || fail "Package '$name' not found"
+  [ -n "$url" ] || error "package '$name' not found"
   local sha="$(JSON.get -a /$full_name/$version/release/sha -)"
-  [ -n "$sha" ] || fail "Package2 '$name' not found"
+  [ -n "$sha" ] || error "package '$name' not found"
   local cmd="$(JSON.get -a /$full_name/$version/install/cmd -)"
   cmd="${cmd:-make install}"
 
@@ -242,7 +242,14 @@ command:upgrade() {
 }
 
 command:env() {
-  local var="${1:?variable name required}"
+  local var="$1"
+  if [ -z "$var" ]; then
+    ( set -o posix ; set ) | grep '^BPAN_' | sort
+    return
+  fi
+  if [[ ! "$var" =~ ^BPAN_ ]] || [ -z "${!var}" ]; then
+    error "invalid env variable '$var'"
+  fi
   echo "${!var}"
 }
 
@@ -268,7 +275,7 @@ do-install() {
     git clone "$url" "$BPAN_BUILD/$repo"
     cd "$BPAN_BUILD/$repo"
     $cmd
-  ) || fail "Package '$name' failed to install"
+  ) || error "package '$name' failed to install"
   say "Package '$name' installed"
 }
 
@@ -280,7 +287,7 @@ nay() {
   echo "$@" >&2
 }
 
-fail() {
+error() {
   nay "Error: $@"
   exit 1
 }
