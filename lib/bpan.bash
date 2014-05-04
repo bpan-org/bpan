@@ -30,6 +30,7 @@ h,help      Show the command summary
  
 t,tag=      Tag to use
 q,quiet     Be more quiet
+v,verbose   Be more verbose
  
 x           Debug - Turn on Bash trace (set -x) output
 "
@@ -57,12 +58,14 @@ get-opts() {
 
   tags=()
   quiet_mode=false
+  verbose_mode=false
 
   while [ $# -gt 0 ]; do
     local option="$1"; shift
     case "$option" in
       -t) tag+=($1); shift ;;
-      -g) quiet_mode=true ;;
+      -q) quiet_mode=true ;;
+      -v) verbose_mode=true ;;
       -x) set -x ;;
       --) break ;;
       *) fail "Unexpected option: $option" ;;
@@ -103,9 +106,11 @@ do-update() {
     cd $BPAN_ROOT
     # assert-git-clean
     git fetch origin
-    git read-tree --prefix=index origin/gh-pages
-    git checkout -- index
-    git rm -r --cache index &> /dev/null
+    git read-tree --prefix=gh-pages origin/gh-pages
+    git checkout -- gh-pages
+    git rm -r --cache gh-pages &> /dev/null
+    mv gh-pages/index .
+    rm -fr gh-pages
   )
   touch $index_stamp
 }
@@ -131,12 +136,14 @@ command:find() {
         var="${BASH_REMATCH[4]}"
         var=${var//\//_}
         var=${var//=/__}
+        var=${var//-/_}
         value="${BASH_REMATCH[5]}"
         printf -v $var "$value"
       elif [[ "$line" =~ ^/([^/]+)/([^/]+)/([\.0-9]+)/([^$'\t']+)$'\t'(.*)$ ]]; then
         var="${BASH_REMATCH[4]}"
         var=${var//\//_}
         var=${var//=/__}
+        var=${var//-/_}
         value="${BASH_REMATCH[5]}"
         printf -v $var "$value"
       elif [[ "$line" =~ ^/([^/]+)$'\t'\"(.*)\"$ ]]; then
@@ -167,14 +174,20 @@ found-entry() {
   else
     echo "$count) $prev_name/$prev_owner $version - $date"
   fi
-  if [ -n "$abstract" ]; then
-    echo "   abstract: $abstract"
-  fi
-  if [ -n "$release_sha" ]; then
-    echo "   sha1: $release_sha"
-  fi
-  echo "   url: ${release_url%.git}/tree/$version"
+
+  local ver=$version
   prev_name="$name" prev_owner="$owner" name= owner= version= sha=
+
+  if $verbose_mode; then
+    if [ -n "$abstract" ]; then
+      echo "   abstract: $abstract"
+    fi
+    if [ -n "$release_sha" ]; then
+      echo "   sha1: $release_sha"
+    fi
+    echo "   url: ${release_url%.git}/tree/$ver"
+    echo
+  fi
 }
 
 command:install() {
