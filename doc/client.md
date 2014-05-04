@@ -46,6 +46,7 @@ them yourself:
 * `BPAN_MAN3`
 * `BPAN_INDEX`
 * `BPAN_BUILD`
+* `BPAN_CONFIG`
 
 These all have reasonable defaults, but feel free to do what you want.
 
