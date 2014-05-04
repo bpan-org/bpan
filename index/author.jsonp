@@ -21,6 +21,13 @@ var author = [
     "html_url": "https://github.com/bluebat"
   },
   {
+    "login": "carloslima",
+    "avatar_url": "https://avatars.githubusercontent.com/u/208456?",
+    "gravatar_id": "6ba3ab1e292e09706410df2d308a9d34",
+    "url": "https://api.github.com/users/carloslima",
+    "html_url": "https://github.com/carloslima"
+  },
+  {
     "login": "iansinnott",
     "avatar_url": "https://avatars.githubusercontent.com/u/3154865?",
     "gravatar_id": "8153887301a05048dbb0a07b9077b683",
