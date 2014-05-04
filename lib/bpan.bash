@@ -105,6 +105,7 @@ do-update() {
   (
     cd $BPAN_ROOT
     # assert-git-clean
+    rm -fr index gh-pages
     git fetch origin
     git read-tree --prefix=gh-pages origin/gh-pages
     git checkout -- gh-pages
