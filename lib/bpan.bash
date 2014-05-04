@@ -14,12 +14,15 @@ Commands:
   install   Install a BPAN package
   update    Update the BPAN indexes
   upgrade   Upgrade 'bpan' (BPAN client)
-  env       Get value of BPAN_XXX variable
   version   Show 'bpan' version
 
 Dev Commands:
-  makefile  Generate a Makefile for your BPAN Package
+  release   Release the next version of a package to BPAN
   register  Register your BPAN package with bpan.org
+  makefile  Generate a Makefile for your BPAN Package
+
+Miscellaneous Commands:
+  env       Get value of BPAN_XXX variable
 
 Options:
 --
@@ -236,6 +239,14 @@ command:version() {
 
 command:makefile() {
   bpan-makefile
+}
+
+command:register() {
+  bpan-register
+}
+
+command:release() {
+  bpan-release
 }
 
 do-install() {

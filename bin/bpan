@@ -27,5 +27,6 @@ BPAN_MAN1="${BPAN_MAN1:-$BPAN_MAN/man1}"
 BPAN_MAN3="${BPAN_MAN3:-$BPAN_MAN/man3}"
 BPAN_INDEX="${BPAN_INDEX:-$BPAN_ROOT/index}"
 BPAN_BUILD="${BPAN_BUILD:-$BPAN_ROOT/build}"
+BPAN_CONFIG="${BPAN_CONFIG:-$BPAN_ROOT/config}"
 
-[ "${BASH_SOURCE[0]}" == "$0" ] && main "$@"
+[ "$BASH_SOURCE" != "$0" ] || main "$@"

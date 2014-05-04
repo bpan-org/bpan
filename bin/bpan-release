@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+
+set -e
+
+CONFIG=~/.bpan/config
+
+export BASHLIB="$(
+  set -- $(echo "${0%/*}"/../{,ext/*/}{bin,lib})
+  IFS=':'; echo "$*"
+)"
+export PATH="$BASHLIB:$PATH"
+
+source bash+ ':std' can
+
+main() {
+  get-config
+  get-owner-repo
+
+  local config='{"url":"http://webhook.bpan.org","content_type":"json",'
+  config+='"insecure_ssl":true}'
+  local json='{"name":"web","active":true,"events":["create","delete"],'
+  json+='"config":'"$config"'}'
+
+  local curl_args=(
+    --request POST
+    --data "$json"
+    --header "Authorization: token $token"
+    https://api.github.com/repos/$owner/$repo/hooks
+    --dump-header /tmp/curl-head
+    --output /dev/null
+    --stderr /dev/null
+    --silent
+    --show-error
+  )
+
+  (curl "${curl_args[@]}") || true
+  local status=$(cat /tmp/curl-head | head -n1 | cut -f2 -d' ')
+  if [[ "$status" =~ ^20[01]$ ]]; then
+    echo "The '$owner/$repo' repo has been registered with BPAN"
+    exit 0
+  else
+    echo "ERROR: BPAN webhook registration failed for '$owner/$repo'"
+    echo
+    cat /tmp/curl-head
+    exit 1
+  fi
+}
+
+get-config() {
+  token="$(git config -f "$CONFIG" "bpan.github-api-token" 2>/dev/null)" || {
+    cat <<...
+You need a $HOME/.bpan/config file with a GitHub API Token.
+
+The contents would look like this:
+
+    [bpan]
+            github-api-token = 01234567890abcedf01234567890abcedf012345678
+
+...
+    exit 1
+  }
+}
+
+get-owner-repo() {
+  local url="$(
+    git remote -v |
+    grep -E '^origin' |
+    head -n1 |
+    cut -f2 2>/dev/null
+  )" || true
+  [[ "$url" =~ github\.com[/:]([^/]+)/([^\ \.]+)(\ |\.|$) ]] || {
+    cat <<...
+To run this command, you need to be in a directory that is a git repo with a
+remote called 'origin'.
+...
+    exit 1
+  }
+  owner="${BASH_REMATCH[1]}" repo="${BASH_REMATCH[2]}"
+}
+
+[ "$0" != "$BASH_SOURCE" ] || main "$@"
+
+# vim: set sw=2 lisp:
