@@ -1,12 +1,9 @@
 {
   "bashplus": "bashplus/ingydotnet",
-  "bashplus/ingydotnet": [
-    "0.0.2"
-  ],
-  "bashplus/ingydotnet/0.0.2": "//github.com/ingydotnet/bashplus/9295ccf4ee2c70eb6594ebff4246564c8db00ca7",
+  "bashplus/ingydotnet": "0.0.2",
+  "bashplus/ingydotnet/0.0.2": "9295ccf4ee2c70eb6594ebff4246564c8db00ca7 1399181121 GitHub ingydotnet bashplus",
   "test-tap": "test-tap/ingydotnet",
-  "test-tap/ingydotnet": [
-    "0.0.1"
-  ],
-  "test-tap/ingydotnet/0.0.1": "//github.com/ingydotnet/test-tap-bash/4ca423cbfdfa418341a1f8fe944d56de041739f3",
+  "test-tap/ingydotnet": "0.0.1",
+  "test-tap/ingydotnet/0.0.1": "4ca423cbfdfa418341a1f8fe944d56de041739f3 1397730805 GitHub ingydotnet test-tap-bash",
+  "~~~": "THE END"
 }
