@@ -199,6 +199,8 @@ command:install() {
   [ $# -eq 0 ] ||
     error "unknown args '$@'"
 
+  check-index-up-to-date
+
   JSON.load "$(< $package_index)"
 
   local package= owner=
@@ -300,7 +302,7 @@ command:release() {
 }
 
 do-install() {
-  local build_dir="$owner,$package,$version"
+  local build_dir="build/$owner,$package,$version"
   rm -fr "$build_dir"
   (
     set -x
