@@ -116,6 +116,7 @@ do-update() {
   touch $index_stamp
 }
 
+# XXX Show version list.
 command:find() {
   search_term="$1"
   check-index-up-to-date
@@ -135,6 +136,7 @@ command:find() {
         if [ "$name" != "$prev_name" ] || [ "$owner" != "$prev_owner" ]; then
           found-entry
         fi
+        abstract="$(JSON.load < "index/package/$name/$owner,$version" | JSON.get -a /abstract)"
       elif [[ "$line" =~ ^/([^/]+)/([^/]+)/([\.0-9]+)$'\t'\"(.*)\"$ ]]; then
         local list=( ${BASH_REMATCH[4]} )
         sha1="${list[0]}"
@@ -157,8 +159,10 @@ command:find() {
 
 found-entry() {
   if [ -n "$search_term" ]; then
-    if [[ ! "$prev_name" =~ $search_term ]]; then
+    if [[ ! "$prev_name" =~ $search_term ]] &&
+       [[ ! "$abstract" =~ $search_term ]]; then
       prev_name="$name" prev_owner="$owner" prev_version="$version"
+      abstract=
       return 0
     fi
   fi
@@ -173,6 +177,9 @@ found-entry() {
   fi
 
   if $verbose_mode; then
+    if [ -n "$abstract" ]; then
+      echo "   abstract: $abstract"
+    fi
     if [ -n "$sha1" ]; then
       echo "   sha: $sha1"
     fi
@@ -182,30 +189,59 @@ found-entry() {
   fi
 
   prev_name="$name" prev_owner="$owner" prev_version="$version"
+  abstract=
 }
 
 command:install() {
-  [ $# -lt 1 ] &&
+  [ $# -ge 1 ] ||
     error "package name required"
-  local name="$1"
-  shift
-  [ $# -gt 0 ] &&
+  local name="$1"; shift
+  [ $# -eq 0 ] ||
     error "unknown args '$@'"
-  check-index-up-to-date
 
   JSON.load "$(< $package_index)"
 
+  local package= owner=
+  if [[ "$name" =~ ^(.+)/(.+)$ ]]; then
+    owner="${BASH_REMATCH[1]}"
+    package="${BASH_REMATCH[2]}"
+  else
+    package="$name"
+  fi
+  [[ "$package" =~ ^[a-zA-Z][-a-zA-Z0-9]+$ ]] ||
+    error "Invalid package name '$package'"
+  if [ -z "$owner" ]; then
+    local package_owner="$(JSON.get -a /$package -)"
+    owner="${package_owner#*/}"
+    [ -n "$owner" ] ||
+      error "Can't find package '$name'"
+  fi
+  local versions=( $(JSON.get -a /$package/$owner -) )
+  [ -n "$versions" ] ||
+    error "Can't find package versions for '$name'"
+  local version="${versions[0]}"
+  [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] ||
+    error "Invalid version '$version' for '$name'"
+
+  local info=( $(JSON.get -a /$package/$owner/$version -) )
+  [ "${#info[@]}" -eq 5 ] ||
+    error "Bad data for '$name': '${info[@]}'"
+
+  local hostid="${info[3]}"
+  local repo="${info[4]}"
+
+  check-index-up-to-date
+
+  local json_file="index/package/$package/$owner,$version"
+  [ -f "$json_file" ] ||
+    error "Can't find package meta file '$PWD/$json_file'"
+  JSON.load "$(< $json_file)"
+  local cmd="$(JSON.get -a /install/cmd -)"
+  cmd="${cmd:-make install}"
+
   # XXX resolve deps and make install list
 
-  local full_name="$(JSON.get -a /$name -)"
-  local version="$(JSON.get -a /$full_name/0 -)"
-
-  local url="$(JSON.get -a /$full_name/$version/release/url -)"
-  [ -n "$url" ] || error "package '$name' not found"
-  local sha="$(JSON.get -a /$full_name/$version/release/sha -)"
-  [ -n "$sha" ] || error "package '$name' not found"
-  local cmd="$(JSON.get -a /$full_name/$version/install/cmd -)"
-  cmd="${cmd:-make install}"
+  local url="https://github.com/$hostid/$repo.git"
 
   do-install
 }
@@ -264,10 +300,12 @@ command:release() {
 }
 
 do-install() {
+  local build_dir="$owner,$package,$version"
+  rm -fr "$build_dir"
   (
-    rm -fr "$BPAN_BUILD/$repo"
-    git clone "$url" "$BPAN_BUILD/$repo"
-    cd "$BPAN_BUILD/$repo"
+    set -x
+    git clone "$url" "$build_dir"
+    cd "$build_dir"
     $cmd
   ) || error "package '$name' failed to install"
   say "Package '$name' installed"
