@@ -302,7 +302,7 @@ command:release() {
 }
 
 do-install() {
-  local build_dir="build/$package,$owner,$version"
+  local build_dir="$BPAN_ROOT/build/$package,$owner,$version"
   rm -fr "$build_dir"
   (
     set -x
