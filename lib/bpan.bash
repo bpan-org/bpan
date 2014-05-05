@@ -136,7 +136,7 @@ command:find() {
         if [ "$name" != "$prev_name" ] || [ "$owner" != "$prev_owner" ]; then
           found-entry
         fi
-        abstract="$(JSON.load < "index/package/$name/$owner,$version" | JSON.get -a /abstract)"
+        abstract="$(JSON.load < "$BPAN_ROOT/index/package/$name/$owner,$version" | JSON.get -a /abstract)"
       elif [[ "$line" =~ ^/([^/]+)/([^/]+)/([\.0-9]+)$'\t'\"(.*)\"$ ]]; then
         local list=( ${BASH_REMATCH[4]} )
         sha1="${list[0]}"
@@ -234,7 +234,7 @@ command:install() {
 
   check-index-up-to-date
 
-  local json_file="index/package/$package/$owner,$version"
+  local json_file="$BPAN_ROOT/index/package/$package/$owner,$version"
   [ -f "$json_file" ] ||
     error "Can't find package meta file '$PWD/$json_file'"
   JSON.load "$(< $json_file)"
