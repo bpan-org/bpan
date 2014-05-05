@@ -123,35 +123,29 @@ command:find() {
   (
     count=0 name= owner= prev_name= prev_owner= short=false
     while read -r line; do
-      [[ "$line" =~ ^/([^/$'\t']+)(/([^/$'\t']+))? ]] || die
-      name="${BASH_REMATCH[1]}"
-      if [ -z "$owner" ]; then
-        owner="${BASH_REMATCH[3]}"
-      fi
-      [ -z "$prev_name" ] && prev_name="$name"
-      [ -z "$prev_owner" ] && prev_owner="$owner"
-
-      [ "$name" != "$prev_name" -o "$owner" != "$prev_owner" ] &&
-        found-entry
-
-      if [[ "$line" =~ ^/([^/]+)/([^/]+)/([\.0-9]+)/([^$'\t']+)$'\t'\"(.*)\"$ ]]; then
-        var="${BASH_REMATCH[4]}"
-        var=${var//\//_}
-        var=${var//=/__}
-        var=${var//-/_}
-        value="${BASH_REMATCH[5]}"
-        printf -v $var "$value"
-      elif [[ "$line" =~ ^/([^/]+)/([^/]+)/([\.0-9]+)/([^$'\t']+)$'\t'(.*)$ ]]; then
-        var="${BASH_REMATCH[4]}"
-        var=${var//\//_}
-        var=${var//=/__}
-        var=${var//-/_}
-        value="${BASH_REMATCH[5]}"
-        printf -v $var "$value"
+      if [[ "$line" =~ ^/([^/]+)/([^/]+)$'\t'\"([\.0-9]+)\"$ ]]; then
+        name="${BASH_REMATCH[1]}"
+        owner="${BASH_REMATCH[2]}"
+        version="${BASH_REMATCH[3]}"
+        if [ -z "$prev_name" ]; then
+          prev_name="$name"
+          prev_owner="$owner"
+          prev_version="$version"
+        fi
+        if [ "$name" != "$prev_name" ] || [ "$owner" != "$prev_owner" ]; then
+          found-entry
+        fi
+      elif [[ "$line" =~ ^/([^/]+)/([^/]+)/([\.0-9]+)$'\t'\"(.*)\"$ ]]; then
+        local list=( ${BASH_REMATCH[4]} )
+        sha1="${list[0]}"
+        stamp="${list[1]}"
+        host="${list[2]}"
+        hostid="${list[3]}"
+        repo="${list[4]}"
       elif [[ "$line" =~ ^/([^/]+)$'\t'\"(.*)\"$ ]]; then
         short=true
       else
-        : echo ">>$line"
+        die "Error parsing package index: '$line'"
       fi
     done
     found-entry
@@ -163,33 +157,31 @@ command:find() {
 
 found-entry() {
   if [ -n "$search_term" ]; then
-    [[ "$prev_name" =~ $search_term ]] ||
-    [[ "$abstract" =~ $search_term ]] ||
+    if [[ ! "$prev_name" =~ $search_term ]]; then
+      prev_name="$name" prev_owner="$owner" prev_version="$version"
       return 0
+    fi
   fi
 
-  date="$(date -d @$release_timestamp +%F)"
+  date="$(date -d @$stamp +%F)"
 
   : $((count++))
   if $short; then
-    echo "$count) $prev_name ($prev_owner/$prev_name) $version - $date"
+    echo "$count) $prev_name ($prev_owner/$prev_name) $prev_version - $date"
   else
-    echo "$count) $prev_name/$prev_owner $version - $date"
+    echo "$count) $prev_name/$prev_owner $prev_version - $date"
   fi
-
-  local ver=$version
-  prev_name="$name" prev_owner="$owner" name= owner= version= sha=
 
   if $verbose_mode; then
-    if [ -n "$abstract" ]; then
-      echo "   abstract: $abstract"
+    if [ -n "$sha1" ]; then
+      echo "   sha: $sha1"
     fi
-    if [ -n "$release_sha" ]; then
-      echo "   sha1: $release_sha"
-    fi
-    echo "   url: ${release_url%.git}/tree/$ver"
+    echo "   url: https://github.com/$hostid/$repo/#readme"
+    echo "   src: git@github.com:$hostid/$repo"
     echo
   fi
+
+  prev_name="$name" prev_owner="$owner" prev_version="$version"
 }
 
 command:install() {
