@@ -22,7 +22,7 @@ post '/?' do
   request.body.rewind  # in case someone already read it
   data = body_json
 
-  if data['action'] =~ /^star[ref_type]ed$/
+  if data['action'] == 'started'
     sender = data['sender']
     logger.debug "Received star from #{sender['login'].inspect}"
     add_author sender
