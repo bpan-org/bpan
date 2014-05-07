@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+
+require_relative '../bpan-server'
+
+token = `git config -f ~/.git-hub/config github.api-token`.chomp
+
+json = `curl --silent --request GET https://api.github.com/repos/bpan-org/bpan/stargazers?per_page=1000 --header "Authorization: token #{token}"`
+
+index = JSON.parse(json)
+
+index.collect!{|a| format_author a}
+
+$logger = Logger.new STDOUT
+def logger
+  $logger
+end
+
+ensure_ghpages_branch_updated
+save_author_index index, "[BPAN] Prune/resync author directory"

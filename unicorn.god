@@ -1,23 +1,23 @@
-BPAN = '/var/www/bpan-org'
-BIN_PATH = "#{BPAN}/vendor/bundle/ruby/2.1.0/bin/"
-PID_DIR = "#{BPAN}/pid"
+BPAN_ROOT = '/var/www/bpan-org'
+BPAN_BIN = "#{BPAN_ROOT}/vendor/bundle/ruby/2.1.0/bin/"
+BPAN_PID = "#{BPAN_ROOT}/pid"
 
 God.watch do |w|
   w.name = "unicorn"
   w.interval = 30.seconds # default
 
-  # unicorn needs to be run from the rails root
-  w.start = "cd #{BPAN} && bundle exec #{BIN_PATH}/unicorn -c #{BPAN}/unicorn.rb -E 'production' -D"
+  # unicorn needs to be run from the bpan root
+  w.start = "cd #{BPAN_ROOT} && bundle exec #{BPAN_BIN}/unicorn -c #{BPAN_ROOT}/unicorn.rb -E 'production' -D"
 
   # QUIT gracefully shuts down workers
-  w.stop = "kill -QUIT `cat #{PID_DIR}/unicorn.pid`"
+  w.stop = "kill -QUIT `cat #{BPAN_PID}/unicorn.pid`"
 
   # USR2 causes the master to re-create itself and spawn a new worker pool
-  w.restart = "kill -USR2 `cat #{PID_DIR}/unicorn.pid`"
+  w.restart = "kill -USR2 `cat #{BPAN_PID}/unicorn.pid`"
 
   w.start_grace = 10.seconds
   w.restart_grace = 10.seconds
-  w.pid_file = "#{PID_DIR}/unicorn.pid"
+  w.pid_file = "#{BPAN_PID}/unicorn.pid"
 
   w.uid = 'www-data'
   w.gid = 'www-data'

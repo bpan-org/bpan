@@ -13,7 +13,7 @@ end
 ENV['RACK_ENV'] = 'test'
 
 Bundler.require
-require_relative '../bpan'
+require_relative '../bpan-server'
 require 'test/unit'
 require 'rack/test'
 

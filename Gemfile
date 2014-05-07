@@ -5,7 +5,7 @@ gem 'sinatra'
 gem 'git'
 gem 'unicorn'
 
-group :development do 
+group :development do
   gem 'shotgun'
   gem 'pry'
 end
