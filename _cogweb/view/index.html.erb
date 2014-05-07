@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- THIS HTML IS GENERATED. DO NOT EDIT INGY -->
+<!-- THIS HTML IS GENERATED. DO NOT EDIT -->
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -67,8 +67,8 @@
         <div class="col-lg-6">
           <h4>Authors</h4>
           <ul id="author" class="list-unstyled">
-            <% author.each do |object| %>
-              <li class="author"><a href="https://github.com/<%=h object['login']%>/"><%=h object['login']%><br /><img src="https://secure.gravatar.com/avatar/<%=object['gravatar_id']%>?d=retro" /></a></li>
+            <% author.keys.sort.each do |k| %>
+              <li class="author"><a href="https://github.com/<%=h author[k]['login']%>/"><%=h author[k]['login']%><br /><img src="https://secure.gravatar.com/avatar/<%=author[k]['gravatar_id']%>?d=retro" /></a></li>
             <%end%>
           </ul>
         </div>
