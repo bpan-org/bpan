@@ -68,7 +68,7 @@
           <h4>Authors</h4>
           <ul id="author" class="list-unstyled">
             <% author.keys.sort.each do |k| %>
-              <li class="author"><a href="https://github.com/<%=h author[k]['login']%>/"><%=h author[k]['login']%><br /><img src="https://secure.gravatar.com/avatar/<%=author[k]['gravatar_id']%>?d=retro" /></a></li>
+              <li class="author"><a href="https://github.com/<%=h author[k]['github-id']%>/"><%=h author[k]['github-id']%><br /><img src="https://secure.gravatar.com/avatar/<%=author[k]['gravatar-id']%>?d=retro" /></a></li>
             <%end%>
           </ul>
         </div>
