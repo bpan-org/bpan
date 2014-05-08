@@ -19,7 +19,6 @@ Commands:
 Dev Commands:
   release   Release the next version of a package to BPAN
   register  Register your BPAN package with bpan.org
-  makefile  Generate a Makefile for your BPAN Package
 
 Miscellaneous Commands:
   env       Get value of BPAN_XXX variable
@@ -43,7 +42,7 @@ main() {
   if can "command:$command"; then
     "command:$command" "${command_arguments[@]}"
   else
-    error "unknown command '$command'"
+    error "unknown bpan command '$command'"
   fi
 }
 
@@ -124,14 +123,16 @@ command:find() {
   (
     count=0 name= owner= prev_name= prev_owner= short=false
     while read -r line; do
-      if [[ "$line" =~ ^/([^/]+)/([^/]+)$'\t'\"([\.0-9]+)\"$ ]]; then
+      if [[ "$line" =~ ^/([^/]+)/([^/]+)$'\t'\"([\.0-9\ ]+)\"$ ]]; then
         name="${BASH_REMATCH[1]}"
         owner="${BASH_REMATCH[2]}"
-        version="${BASH_REMATCH[3]}"
+        versions="${BASH_REMATCH[3]}"
+        version="${versions% *}"
         if [ -z "$prev_name" ]; then
           prev_name="$name"
           prev_owner="$owner"
           prev_version="$version"
+          prev_versions="$versions"
         fi
         if [ "$name" != "$prev_name" ] || [ "$owner" != "$prev_owner" ]; then
           found-entry
@@ -162,7 +163,7 @@ found-entry() {
     if [[ ! "$prev_name" =~ $search_term ]] &&
        [[ ! "$abstract" =~ $search_term ]]; then
       prev_name="$name" prev_owner="$owner" prev_version="$version"
-      abstract=
+      abstract= versions=
       return 0
     fi
   fi
@@ -185,11 +186,14 @@ found-entry() {
     fi
     echo "   url: https://github.com/$hostid/$repo/#readme"
     echo "   src: git@github.com:$hostid/$repo"
+    if [[ "$prev_versions" =~ [[:space:]] ]]; then
+      echo "   versions: ${prev_versions// /, }"
+    fi
     echo
   fi
 
   prev_name="$name" prev_owner="$owner" prev_version="$version"
-  abstract=
+  prev_versions="$versions" abstract=
 }
 
 command:install() {
@@ -287,10 +291,6 @@ command:env() {
 
 command:version() {
   echo "BPAN — version $(BPAN:VERSION)"
-}
-
-command:makefile() {
-  bpan-makefile
 }
 
 command:register() {
