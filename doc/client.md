@@ -32,8 +32,8 @@ all the occurences of `~/.bpan` below to your choice:
     # Clone the 'bpan' repo:
     git clone http://github.com/bpan-org/bpan ~/.bpan
     # Add these commands to your shell initialization:
-    export PATH=~/.bpan/bin:~/.bpan/lib:$PATH
-    export MANPATH=~/.bpan/man:$MANPATH
+    export PATH=~/.bpan/bin:~/.bpan/lib:"$PATH"
+    export MANPATH=~/.bpan/man:"$MANPATH"
 
 You can even have many different BPAN installs.  Wherever `bpan` is found in
 your `PATH`, the entire BPAN environment will be set up for that location.
