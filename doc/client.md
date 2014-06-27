@@ -7,7 +7,7 @@ This is the command line tool for installing packages from BPAN.
 
 General command-line usage:
 
-    bapn --help
+    bpan --help
     bpan find json
     bpan install json
     bpan update
