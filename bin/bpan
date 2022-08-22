@@ -1,0 +1,166 @@
+#!/usr/bin/env bash
+
+# shellcheck disable=2030,2031
+
+VERSION=0.1.0
+
+app=bpan
+APP=${app^^}
+ROOT=${APP}_ROOT
+[[ ${!ROOT-} ]] ||
+  { echo "$ROOT not set. 'source /path/to/$app/.rc'"; exit 1; }
+
+source "${!ROOT}/.bpan/lib/bpan.bash" --prelude
+
+bpan:use getopt "\
+$app [<options>] <cmd> [<cmd-opts...>] [<cmd-args>]
+
+System Commands:
+  search        Search for $APP packages
+  install       Install a $APP package
+  list          List all installed Bash modules
+  config        $APP configuration
+  complete      Shell tab completion for $app
+
+Project Commands:
+  new           Create a new Bash project
+  init          Create a '.$app/' project dir
+  add           Add a package to a Bash project
+  update        Update project $APP assets
+  test          Run the project tests
+  push          Push repo with tag
+  register      Register a project with $APP
+  publish       Publish the package to $APP
+  clean         Remove the build files and dirs
+
+Information Commands:
+  help          Get help for a '$app' command
+  cmds          List available '$app' commands
+  upgrade       Upgrade the $APP installation
+
+Options:
+--
+v,verbose     Print more output
+q,quiet       Print less output
+
+h,help        Show the command summary
+V,version     Display $app version
+x,debug       Print lots of debugging info
+"
+
+main() (
+  get-options "$@"
+  set -- "${args[@]}"
+
+  source1 "$command"
+  "$command:main" "$@"
+)
+
+get-options() {
+  local getopt_default_help=false getopt_args='@args' getopt_debug=debug
+
+  root=${!ROOT}
+  [[ -f $root/bin/$app ]] ||
+    error "$ROOT variable is has bad value '$root'"
+
+  if [[ $# -eq 0 ]]; then
+    set -- --help
+  fi
+
+  # shellcheck disable=2207
+  cmds=($(grep -E '^  \w+  ' <<<"$getopt" | cut -d' ' -f3))
+
+  option_quiet=false
+  local words=()
+  while [[ $# -gt 0 ]]; do
+    if [[ $1 =~ ^[a-z]+$ ]]; then
+      command=$1; shift
+      [[ " ${cmds[*]} " == *\ $command\ * ]] ||
+        error "Invalid $app command '$command'"
+      break
+    fi
+    words+=("$1"); shift
+  done
+  local cmd_opts=("$@")
+  set -- "${words[@]}"
+
+  getopt "$@"
+  $option_debug && set -x
+
+  args+=("${cmd_opts[@]}")
+
+  if $option_version; then
+    command=version
+  fi
+
+  if ! [[ ${command-} ]]; then
+    if [[ ${option_server-} ]]; then
+      command=server
+      server_command=$option_server
+      [[ $server_command =~ ^(start|stop|restart|status)$ ]] ||
+        error "--server=... must be 'start', 'stop', 'restart' or 'status'"
+    elif [[ ${option_run-} ]]; then
+      command=run
+    else
+      error "You must specify a command option"
+    fi
+  fi
+
+  # Get possible sub-command options:
+  source1 "$command"
+  if is-func "$command:getopt"; then
+    unset sub_command
+    local getopt_default_help=false
+    local getopt_args='@args'
+    local getopt_cmds
+    getopt_cmds=()
+
+    "$command:getopt"
+
+    set -- "${args[@]}"
+    args=()
+
+    getopt='' getopt "$@" <<<"$getopt_spec"
+
+    if [[ ${#getopt_cmds[*]} -gt 0 ]]; then
+      local cmd
+      for cmd in "${getopt_cmds[@]}"; do
+        local var=option_$cmd
+        if "${!var}"; then
+          sub_command=$cmd
+        fi
+      done
+
+      [[ ${sub_command-} ]] ||
+        getopt -h <<<"$getopt_spec"
+    fi
+  fi
+}
+
+source1() {
+  local var=_sourced_$1
+  if [[ -z ${!var-} ]]; then
+    source "$root/lib/$1.bash"
+    printf -v "$var" 1
+  fi
+}
+
+todo() (
+  error "'$app $command' not yet implemented\n"
+)
+
+error() (
+  echo-r "Error: $1" >&2
+  exit 1
+)
+
+R='\e[1;31m'
+G='\e[1;32m'
+Y='\e[1;33m'
+Z='\e[0m'
+echo-e() ( $option_quiet || echo -e "$*$Z" )
+echo-r() ( $option_quiet || echo -e "$R$*$Z" )
+echo-g() ( $option_quiet || echo -e "$G$*$Z" )
+echo-y() ( $option_quiet || echo -e "$Y$*$Z" )
+
+main "$@"

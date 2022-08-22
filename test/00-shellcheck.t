@@ -1,0 +1,1 @@
+../share/project/test/00-shellcheck.t

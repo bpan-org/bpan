@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+source "$BPAN_ROOT/.bpan/lib/bpan.bash" --
+
+bpan:use test-more

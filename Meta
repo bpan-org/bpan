@@ -1,0 +1,34 @@
+[bpan]
+name = bpan
+version = 0.1.0
+abstract = Bash Package Manager
+license = MIT
+copyright = 2014-2022
+
+site = $repo
+repo = https://github.com/bpan-org/$name
+bug = $repo/issues/
+irc = irc.libera.chat/bpan
+
+[author]
+name = Ingy döt Net
+email = ingy@ingy.net
+github = ingydotnet
+twitter = ingydotnet
+libera = ingy
+site = http://ingy.net
+
+[require "bpan"]
+prelude-bash = 0.1.0+
+getopt-bash = 0.1.0+
+
+[require "test"]
+test-more-bash = 0.1.0+
+
+[require "commands"]
+bash = 3.2
+git = 2.7+
+make = 3.81+
+perl = 5.10.1+
+
+# vim: ft=gitconfig:

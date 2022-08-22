@@ -1,0 +1,10 @@
+# shellcheck shell=bash
+
+BPAN_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)
+PATH=$BPAN_ROOT/bin:$BPAN_ROOT/local/bin:$PATH
+MANPATH=$BPAN_ROOT/man:$BPAN_ROOT/local/man:$MANPATH
+MANPATH=${MANPATH%:}
+
+export BPAN_ROOT PATH MANPATH
+
+source "$BPAN_ROOT/share/complete.sh"
