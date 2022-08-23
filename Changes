@@ -1,3 +1,9 @@
+[version "0.1.1"]
+  date = Tue 23 Aug 2022 08:26:43 AM PDT
+  done = Use index file from https://raw.githubusercontent.com/bpan-org/bpan-index/main/index.ini
+  done = Use Meta file to get `bpan --version` version
+  done = Fix bug in 'bpan push'
+
 [version "0.1.0"]
   date = Tue 16 Aug 2022 09:22:29 AM PDT
   done = Initial release
