@@ -2,8 +2,6 @@
 
 # shellcheck disable=2030,2031
 
-VERSION=0.1.0
-
 app=bpan
 APP=${app^^}
 ROOT=${APP}_ROOT

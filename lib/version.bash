@@ -1,5 +1,5 @@
 version:main() (
   cat <<...
-bpan $VERSION
+bpan $(bpan:config bpan.version)
 ...
 )
