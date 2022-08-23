@@ -12,6 +12,8 @@ h,help        Get help for $command command
 }
 
 push:main() (
+  bpan:config-read .bpan/config
+
   [[ $(git diff --stat) ]] &&
     error "Can't push repo with uncommitted changes"
 
@@ -19,7 +21,7 @@ push:main() (
   [[ $branch == HEAD ]] &&
     error "Can't push. Not checked out to a branch."
 
-  tag=$(bpan config bpan.version)
+  tag=$(bpan:config bpan.version)
   [[ $tag ]] ||
     error "No config 'bpan.version' to make tag with." \
       "Try --tag=..."
