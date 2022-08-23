@@ -17,9 +17,11 @@ Use the `bpan` Bash library in your Bash code:
 ```
 #!/usr/bin/env bash
 
-source "$MY_PROJECT_ROOT/.bpan/lib/bpan.bash" --prelude
-bpan:use getopt=0.1.0
-bpan:use ingydotnet/json
+source "$MY_PROJECT_ROOT/.bpan/lib/bpan.bash" --
+
+bpan:use prelude=0.1.0
+bpan:use bpan-org/getopt
+bpan:use github:ingydotnet/json
 ```
 
 Publish your Bash packages:
@@ -34,7 +36,7 @@ BPAN is the "Missing Bash Package Manager".
 
 It does 3 big things for you and your Bash code:
 
-* Find and install CLI programs written in Bash
+* Find/install CLI programs/libaries written in Bash
 * Install, manage, bundle Bash deps for a project
 * Register and publish Bash packages that you make
 
@@ -190,11 +192,7 @@ libera = ingy
 twitter = ingydotnet
 site = https://github.com/${author.github}
 
-[auto]
-do = source prelude.bash
-do = source getopt.bash
-
-[require]
+[require "bpan"]
 prelude-bash = 0.1.0+
 getopt-bash = 0.1.0+
 
