@@ -18,6 +18,8 @@ install:main() (
   [[ $# -gt 0 ]] ||
     error "'$app $command' requires one or more packages"
 
+  get-index-file
+
   for target; do
     install:parse-vars "$target"
 
@@ -82,7 +84,7 @@ install:parse-vars() {
 
   if [[ -z $commit ]]; then
     version=$(
-      git config -lf- < "$root/Index" |
+      git config -lf- < "$index_file" |
         grep -F "pkg.$domain:$name.version"
     ) || error "No package '$domain:$name' found"
     commit=${version#*=}

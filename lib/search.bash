@@ -5,9 +5,11 @@ search:main() (
   term=$(IFS='|'; echo "$*")
   pattern="=.*($term)"
 
+  get-index-file
+
   # shellcheck disable=2207
   found=($(
-    git config -l -f "$root/Index" |
+    git config -l -f "$index_file" |
       grep -i -E "$pattern" |
       cut -d. -f2 |
       sort |

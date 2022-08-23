@@ -63,6 +63,9 @@ get-options() {
   [[ -f $root/bin/$app ]] ||
     error "$ROOT variable is has bad value '$root'"
 
+  index_file=$root/local/index.ini
+  index_url=https://raw.githubusercontent.com/bpan-org/bpan-index/main/index.ini
+
   if [[ $# -eq 0 ]]; then
     set -- --help
   fi
@@ -136,6 +139,20 @@ get-options() {
     fi
   fi
 }
+
+get-index-file() (
+  if [[ ! -f $index_file ]] ||
+     [[ $(find "$index_file" -mmin +1440) ]]
+  then
+    echo-y "Updating BPAN package index..."
+    mkdir -p "$root/local"
+    curl --fail -s "$index_url" > "$index_file" ||
+      rm -f "$index_file"
+  fi
+
+  [[ -f $index_file ]] ||
+    die "BPAN package index file not available"
+)
 
 source1() {
   local var=_sourced_$1
