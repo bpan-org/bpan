@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-# shellcheck disable=2030,2031
-
 app=bpan
 APP=${app^^}
 ROOT=${APP}_ROOT
@@ -68,7 +66,6 @@ get-options() {
     set -- --help
   fi
 
-  # shellcheck disable=2207
   cmds=($(grep -E '^  \w+  ' <<<"$getopt" | cut -d' ' -f3))
 
   option_quiet=false

@@ -1,6 +1,6 @@
 update:getopt() {
   getopt_spec="\
-$app [<$app-opts>] $command <key> [<value>]
+$app [<$app-opts>] $command [<cmd-opts>]
 
 '$app $command' Options:
 --
@@ -97,6 +97,6 @@ update:man() (
     export MD2MAN_NUM MD2MAN_NAME MD2MAN_DESC MD2MAN_PROG
 
     warn "+md2man < $md > $man"
-    md2man < "$md" > "$man"
+    "$root/local/bin/md2man" < "$md" > "$man"
   done
 )

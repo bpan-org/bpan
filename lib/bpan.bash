@@ -47,6 +47,7 @@ bpan:config() (
     fi
   elif [[ $# -eq 2 ]]; then
     git config -f "$config_file" "$@"
+    perl -pi -e 's/^\t//' "$config_file"
   fi
 )
 

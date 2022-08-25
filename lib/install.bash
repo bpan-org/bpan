@@ -36,7 +36,7 @@ install:main() (
       ) || error "Can't 'git clone $repo'"
       [[ $(git -C "$src" rev-parse HEAD) == "$commit" ]] || {
         rm -fr "$src"
-        error "Commit mismatch for package '$domain:$name' version '$version' commit '$commit'"
+        error "Bad commit: package '$full' version '$ref' commit '$commit'"
       }
     fi
 
@@ -85,16 +85,16 @@ install:parse-vars() {
   ref=${BASH_REMATCH[4]:-''}
   ref=${ref#=}
   name=$owner/$pkg
+  full=$domain:$name
 
   if [[ -z $ref ]]; then
-    index=$(< "$index_file")
-    version=$(
-      git config -f- "pkg.$domain:$name.version" <<<"$index"
-    ) || error "No package '$domain:$name' found"
+    ref=$(
+      git config -f "$index_file" "pkg.$full.version"
+    ) || error "No package '$full' found"
+    ref=${ref#*=}
     commit=$(
-      git config -f- "pkg.$domain:$name.commit" <<<"$index"
-    ) || error "No 'commit' field in index for entry '$domain:$name'"
-    ref=${version#*=}
+      git config -f "$index_file" "pkg.$full.commit"
+    ) || error "No 'commit' field in index for entry '$full'"
   fi
 
   if [[ $domain == github ]]; then
