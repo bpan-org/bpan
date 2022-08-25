@@ -1,3 +1,8 @@
+[version "0.1.2"]
+  date = Thu 25 Aug 2022 09:51:34 AM PDT
+  done = Support `bpan add <pkg...>`
+  done = Check commit sha1 during package install
+
 [version "0.1.1"]
   date = Tue 23 Aug 2022 08:26:43 AM PDT
   done = Use index file from https://raw.githubusercontent.com/bpan-org/bpan-index/main/index.ini
