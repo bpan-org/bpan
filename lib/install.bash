@@ -31,9 +31,13 @@ install:main() (
         git clone \
           --quiet \
           --depth 1 \
-          --branch "$commit" \
+          --branch "$ref" \
           "$repo" "$src" 2>/dev/null
       ) || error "Can't 'git clone $repo'"
+      [[ $(git -C "$src" rev-parse HEAD) == "$commit" ]] || {
+        rm -fr "$src"
+        error "Commit mismatch for package '$domain:$name' version '$version' commit '$commit'"
+      }
     fi
 
     (
@@ -55,7 +59,7 @@ install:main() (
           (
             echo-y "Installing '$root/local/$file'"
             $option_verbose && set -x
-            ln -s "$prefix/src/$name/$commit/$file" "$root/local/$file"
+            ln -s "$prefix/src/$name/$ref/$file" "$root/local/$file"
           )
         fi
       done < <(
@@ -78,16 +82,19 @@ install:parse-vars() {
   owner=${BASH_REMATCH[2]:-bpan-org}
   owner=${owner%/}
   pkg=${BASH_REMATCH[3]}
-  commit=${BASH_REMATCH[4]:-''}
-  commit=${commit#=}
+  ref=${BASH_REMATCH[4]:-''}
+  ref=${ref#=}
   name=$owner/$pkg
 
-  if [[ -z $commit ]]; then
+  if [[ -z $ref ]]; then
+    index=$(< "$index_file")
     version=$(
-      git config -lf- < "$index_file" |
-        grep -F "pkg.$domain:$name.version"
+      git config -f- "pkg.$domain:$name.version" <<<"$index"
     ) || error "No package '$domain:$name' found"
-    commit=${version#*=}
+    commit=$(
+      git config -f- "pkg.$domain:$name.commit" <<<"$index"
+    ) || error "No 'commit' field in index for entry '$domain:$name'"
+    ref=${version#*=}
   fi
 
   if [[ $domain == github ]]; then
@@ -102,6 +109,6 @@ install:parse-vars() {
     [[ -d $src ]] ||
       error "No directory '$src'"
   else
-    src=$root/local/src/$name/$commit
+    src=$root/local/src/$name/$ref
   fi
 }

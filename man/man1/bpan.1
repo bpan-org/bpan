@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH "bpan" 1 "2022-08-23" "md2man v0.1.0" "Bash Package Manager"
+.TH "bpan" 1 "2022-08-25" "md2man v0.1.0" "Bash Package Manager"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -157,9 +157,11 @@ Use the \f(CW\*(C`bpan\*(C'\fR Bash library in your Bash code:
 .Vb 1
 \&    #!/usr/bin/env bash
 \&
-\&    source "$MY_PROJECT_ROOT/.bpan/lib/bpan.bash" \-\-prelude
-\&    bpan:use getopt=0.1.0
-\&    bpan:use ingydotnet/json
+\&    source "$MY_PROJECT_ROOT/.bpan/lib/bpan.bash" \-\-
+\&
+\&    bpan:use prelude=0.1.0
+\&    bpan:use bpan\-org/getopt
+\&    bpan:use github:ingydotnet/json
 .Ve
 .PP
 Publish your Bash packages:
@@ -174,7 +176,7 @@ Publish your Bash packages:
 .PP
 It does 3 big things for you and your Bash code:
 .IP "\(bu" 4
-Find and install \s-1CLI\s0 programs written in Bash
+Find/install \s-1CLI\s0 programs/libaries written in Bash
 .IP "\(bu" 4
 Install, manage, bundle Bash deps for a project
 .IP "\(bu" 4
@@ -376,11 +378,7 @@ A typical \s-1BPAN\s0 \f(CW\*(C`config\*(C'\fR file looks like:
 \&    twitter = ingydotnet
 \&    site = https://github.com/${author.github}
 \&
-\&    [auto]
-\&    do = source prelude.bash
-\&    do = source getopt.bash
-\&
-\&    [require]
+\&    [require "bpan"]
 \&    prelude\-bash = 0.1.0+
 \&    getopt\-bash = 0.1.0+
 \&
