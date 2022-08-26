@@ -15,6 +15,8 @@ bpan:main() {
 
   bpan:config-read "$root/.bpan/config"
 
+  BPAN_VERSION="$(bpan:config bpan.version)"
+
   local arg
   for arg; do
     if [[ $arg == -- ]]; then

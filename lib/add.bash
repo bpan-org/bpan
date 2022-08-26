@@ -17,7 +17,7 @@ add:main() (
     install:parse-vars "$pkg"
     ref=$ref+
     previous=$(bpan:config "require.bpan.$pkg")
-    if [[ $previous == $ref ]]; then
+    if [[ $previous == "$ref" ]]; then
       echo-y "'require.bpan.$pkg=$ref' is already in '$config_file'"
       continue
     fi

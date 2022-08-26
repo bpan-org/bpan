@@ -11,14 +11,12 @@ h,help        Get help for $command command
 }
 
 install:main() (
-  export GIT_TERMINAL_PROMPT=0
-
   mkdir -p "$root"/local/{bin,lib,man/man{1,3},share,src,tmp}
 
   [[ $# -gt 0 ]] ||
     error "'$app $command' requires one or more packages"
 
-  get-index-file
+  source1 index
 
   for target; do
     install:parse-vars "$target"
@@ -28,7 +26,7 @@ install:main() (
       rm -fr "$src"
       (
         $option_verbose && set -x
-        git clone \
+        GIT_TERMINAL_PROMPT=0 git clone \
           --quiet \
           --depth 1 \
           --branch "$ref" \
