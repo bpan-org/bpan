@@ -1,11 +1,13 @@
 SHELL := bash
 
-o ?=
+BPAN_CMDS := $(shell bpan cmds -q | grep -v '^test$$')
 
 default:
-
-BPAN_CMDS := $(shell bpan -q cmds)
+	$(info $(BPAN_CMDS))
 
 .PHONY: test
+test:
+	bpan $@ -v
+
 $(BPAN_CMDS)::
-	bpan $@ $o
+	bpan $@

@@ -1,12 +1,39 @@
 # shellcheck shell=bash
 
-BPAN_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)
+# Bash shell:
+test -n "$BASH_VERSION" && eval '
+BPAN_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+export BPAN_ROOT
+source <("$BPAN_ROOT/bin/bpan" rc --bash)
+'
 
-PATH=$BPAN_ROOT/bin:$BPAN_ROOT/local/bin:$PATH
+# Fish shell:
+test -n "$FISH_VERSION" && eval '
+set BPAN_ROOT (cd (dirname (status filename)) && pwd)
+export BPAN_ROOT
+source ("$BPAN_ROOT/bin/bpan" rc --fish | psub)
+'
 
-MANPATH=$BPAN_ROOT/man:$BPAN_ROOT/local/man:$MANPATH
-MANPATH=${MANPATH%:}
+# Ksh shell:
+test -n "$KSH_VERSION" && eval '
+BPAN_ROOT=$(
+  cd "$(
+    dirname "$(
+      fc -l |
+        tail -2 |
+        head -1 |
+        awk '"'"'{print $NF}'"'"'
+    )"
+  )" && pwd
+)
+export BPAN_ROOT
+source <("$BPAN_ROOT/bin/bpan" rc --ksh)
+'
 
-export BPAN_ROOT PATH MANPATH
-
-source "$BPAN_ROOT/share/complete.sh"
+# Zsh shell:
+test -n "$ZSH_VERSION" && eval '
+BPAN_ROOT=$(cd "$(dirname "$0")" && pwd)
+export BPAN_ROOT
+source <("$BPAN_ROOT/bin/bpan" rc --zsh)
+'
+# vim: ft=sh:

@@ -2,11 +2,10 @@
 
 app=bpan
 APP=${app^^}
-ROOT=${APP}_ROOT
-[[ ${!ROOT-} ]] ||
-  { echo "$ROOT not set. 'source /path/to/$app/.rc'"; exit 1; }
+[[ ${BPAN_ROOT:-} ]] ||
+  { echo "BPAN_ROOT not set. 'source /path/to/$app/.rc'"; exit 1; }
 
-source "${!ROOT}/.bpan/lib/bpan.bash" --prelude
+source "$BPAN_ROOT/.bpan/lib/bpan.bash" --prelude
 
 bpan:use getopt "\
 $app [<options>] <cmd> [<cmd-opts...>] [<cmd-args>]
@@ -14,8 +13,10 @@ $app [<options>] <cmd> [<cmd-opts...>] [<cmd-args>]
 System Commands:
   search        Search for $APP packages
   install       Install a $APP package
-  list          List all installed Bash modules
-  config        $APP configuration
+  uninstall     Uninstall a $APP package
+  list          List all installed $APP packages
+  config        Manage $APP config settings
+  rc            Print startup shell commands
   complete      Shell tab completion for $app
 
 Project Commands:
@@ -55,11 +56,21 @@ main() (
 get-options() {
   local getopt_default_help=false getopt_args='@args' getopt_debug=debug
 
-  root=${!ROOT}
+  root=$BPAN_ROOT
   [[ -f $root/bin/$app ]] ||
-    error "$ROOT variable is has bad value '$root'"
+    error "BPAN_ROOT variable has bad value '$root'"
 
-  index_file=$root/local/index.ini
+  if [[ ${BPAN_INSTALL-} ]]; then
+    [[ -d $BPAN_INSTALL ]] ||
+      error "BPAN_INSTALL='$BPAN_INSTALL' - directory not found"
+  else
+    BPAN_INSTALL=$root/local
+    export BPAN_INSTALL
+  fi
+
+  BPAN_INDEX_API_VERSION=1
+
+  index_file=$BPAN_INSTALL/index.ini
   index_url=https://raw.githubusercontent.com/bpan-org/bpan-index/main/index.ini
 
   if [[ $# -eq 0 ]]; then
@@ -148,17 +159,66 @@ todo() (
 )
 
 error() (
-  echo-r "Error: $1" >&2
+  say-r "Error: $1" >&2
   exit 1
 )
 
-R='\e[1;31m'
-G='\e[1;32m'
-Y='\e[1;33m'
-Z='\e[0m'
-echo-e() ( $option_quiet || echo -e "$*$Z" )
-echo-r() ( $option_quiet || echo -e "$R$*$Z" )
-echo-g() ( $option_quiet || echo -e "$G$*$Z" )
-echo-y() ( $option_quiet || echo -e "$Y$*$Z" )
+# TODO Move to package say-color-bash
+{
+  D='\e[30m'
+  R='\e[31m'
+  G='\e[32m'
+  Y='\e[33m'
+  B='\e[34m'
+  M='\e[35m'
+  C='\e[36m'
+  W='\e[37m'
+  D1='\e[30;1m'
+  R1='\e[31;1m'
+  G1='\e[32;1m'
+  Y1='\e[33;1m'
+  B1='\e[34;1m'
+  M1='\e[35;1m'
+  C1='\e[36;1m'
+  W1='\e[37;1m'
+  Z='\e[0m'
+
+  say-color() (
+    ${option_quiet:-false} && return
+    color=$1; shift
+    if [[ -t 1 ]]; then
+      echo -e "$Z$color$*$Z"
+    else
+      echo -e "$*"
+    fi
+  )
+
+  say() (
+    if [[ ${1-} == [-+]? ]]; then
+      color=$1; shift
+      "say$color" "$@"
+    else
+      say-color "" "$@"
+    fi
+  )
+
+  say-d() ( say-color "$D" "$@" )
+  say-r() ( say-color "$R" "$@" )
+  say-g() ( say-color "$G" "$@" )
+  say-y() ( say-color "$Y" "$@" )
+  say-b() ( say-color "$B" "$@" )
+  say-m() ( say-color "$M" "$@" )
+  say-c() ( say-color "$C" "$@" )
+  say-w() ( say-color "$W" "$@" )
+
+  say+d() ( say-color "$D1" "$@" )
+  say+r() ( say-color "$R1" "$@" )
+  say+g() ( say-color "$G1" "$@" )
+  say+y() ( say-color "$Y1" "$@" )
+  say+b() ( say-color "$B1" "$@" )
+  say+m() ( say-color "$M1" "$@" )
+  say+c() ( say-color "$C1" "$@" )
+  say+w() ( say-color "$W1" "$@" )
+}
 
 main "$@"

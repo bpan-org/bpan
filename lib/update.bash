@@ -4,7 +4,8 @@ $app [<$app-opts>] $command [<cmd-opts>]
 
 '$app $command' Options:
 --
-l,local       Symlink install to local repos
+I,index       Refresh index file
+L,local       Symlink install to local repos
 
 h,help        Get help for $command command
 "
@@ -19,6 +20,7 @@ update:require() (
   [[ -d .bpan ]] ||
     error "Can't 'bpan update'. No '.bpan/' directory"
 
+  source1 pkg
   source1 install
 
   (
@@ -27,7 +29,7 @@ update:require() (
       ! [[ -h .bpan/$file ]]
     then
       (
-        echo-y "Updating '.bpan/$file'"
+        say-y "Updating '.bpan/$file'"
         $option_verbose && set -x
         cp -Lp "$root/$file" ".bpan/$file"
       )
@@ -39,8 +41,9 @@ update:require() (
     pkg=${pkg#require.test.}
     pkg=${pkg%%=*}
 
-    install:main "$pkg"
-    install:parse-vars "$pkg"
+    $option_local ||
+      install:main "$pkg"
+    pkg:parse-id "$pkg"
 
     while read -r file; do
       rm -f ".bpan/$file"
@@ -48,9 +51,9 @@ update:require() (
 
       if $option_local; then
         (
-          echo-y "Updating '.bpan/$file' (local)"
+          say-y "Updating '.bpan/$file' -> '$local_root/$name/$file' (local)"
           $option_verbose && set -x
-          ln -s "$root/local/$file" ".bpan/$file"
+          ln -s "$local_root/$name/$file" ".bpan/$file"
         )
       else
         n=${file//[^\/]/}
@@ -59,7 +62,7 @@ update:require() (
         for (( i = 1; i < n; i++ )); do prefix+=/..; done
 
         (
-          echo-y "Updating '.bpan/$file'"
+          say-y "Updating '.bpan/$file' from '$root/local/$file'"
           $option_verbose && set -x
           cp -Lp "$root/local/$file" ".bpan/$file"
         )
@@ -77,7 +80,12 @@ update:require() (
 )
 
 update:man() (
-  ([[ -d doc ]] && is-cmd md2man) || return
+  [[ -d doc ]] || return 0
+
+  if ! is-cmd md2man; then
+    say -r "Run 'bpan install md2man' to update man pages"
+    return
+  fi
 
   # shellcheck disable=2044
   for md in $(find doc -type f -name '*.md'); do

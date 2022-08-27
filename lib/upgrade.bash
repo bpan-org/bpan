@@ -1,6 +1,5 @@
 upgrade:main() (
   cd "$BPAN_ROOT" || exit
-  option_local=false
 
   if [[ $(git diff --stat) ]]; then
     error "Can't upgrade, '$BPAN_ROOT' git repo has uncommitted changes"
@@ -15,22 +14,19 @@ upgrade:main() (
   [[ $branch == main ]] ||
     error "'$BPAN_ROOT' must be on branch 'main' to 'bpan upgrade'"
 
-  echo-y "Pulling '$repo' in '$BPAN_ROOT'..."
+  say -y "Pulling '$repo' in '$BPAN_ROOT'..."
 
   git pull --quiet --ff-only origin "$branch" ||
     error "Could not git pull '$BPAN_ROOT'"
 
   if [[ $(git rev-parse HEAD) == "$commit" ]]; then
-    echo-y "No upstream changes found"
+    say -y "No upstream changes found"
   else
-    echo-y "Pulled new changes to '$BPAN_ROOT'"
+    say -y "Pulled new changes to '$BPAN_ROOT'"
   fi
 
-  echo-y "Updating BPAN index file..."
+  say-y "Updating BPAN index file..."
   rm -f "$index_file"
-  source lib/index.bash
-
-  echo-y "Updating packages used by BPAN:"
-  source1 update
-  update:main
+  source lib/pkg.bash
+  pkg:get-index
 )

@@ -26,6 +26,19 @@ push:main() (
     error "No config 'bpan.version' to make tag with." \
       "Try --tag=..."
 
+  if [[ -f Changes ]]; then
+    change_version=$(
+      git config -f Changes --get-regexp '^version\.' | head -n1
+    )
+    change_version=${change_version#version.}
+    change_version=${change_version%%.d*}
+
+    if [[ $change_version ]]; then
+      [[ $tag == "$change_version" ]] ||
+        error "Package version '$tag' does not match Changes version '$change_version'"
+    fi
+  fi
+
   if $option_force; then
     (
       set -x
@@ -35,11 +48,9 @@ push:main() (
     error "Tag '$tag' already exists. Try --force."
   fi
 
-
   (
     set -x
     git tag --force "$tag"
     git push --force-with-lease --tag origin "$branch"
   )
 )
-

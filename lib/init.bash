@@ -53,7 +53,7 @@ init:copy() (
     meta=$(init:render "$share_base/$file")
     head -n2 <<<"$meta" > "$file"
     echo "${meta/base = ..\/Meta$'\n\n'/}" > Meta
-    echo-y "UPDATED 'Meta'"
+    say-y "UPDATED 'Meta'"
   elif grep -q -E '\(\%.*\%\)' "$share_base/$file"; then
     init:render "$share_base/$file" > "$file"
   else
@@ -61,9 +61,9 @@ init:copy() (
   fi
 
   if $existed; then
-    echo-y "UPDATED '$file'"
+    say-y "UPDATED '$file'"
   else
-    echo-y "CREATED '$file'"
+    say-y "CREATED '$file'"
   fi
 )
 

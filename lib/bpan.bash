@@ -10,6 +10,7 @@ bpan:main() {
   [[ $(dirname "$self") == */.bpan/lib ]] ||
     bpan:die "bpan.bash is in an unsupported place!"
   root=$(cd "$(dirname "$self")/../.." && pwd -P)
+  local_root=$(cd "$(dirname "$self")/../../.." && pwd)
 
   export PATH=$root/.bpan/lib:$root/.bpan/bin:$PATH
 

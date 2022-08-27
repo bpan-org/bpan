@@ -7,7 +7,7 @@ like "$(bpan cmds)" \
    "'bpan cmds' works"
 
 like "$(bpan cmds -q | xargs)" \
-   "search install list config" \
+   "search.*install.*uninstall.*list.*config" \
    "'bpan cmds' works"
 
 ok "$([[ $(bpan cmds | wc -l) -gt 15 ]])" \
