@@ -44,6 +44,11 @@ update:require() (
     $option_local ||
       install:main "$pkg"
     pkg:parse-id "$pkg"
+    if ! $option_local; then
+      if [[ ! $ver ]]; then
+        src+=$(pkg:get-version "$full")
+      fi
+    fi
 
     while read -r file; do
       rm -f ".bpan/$file"
