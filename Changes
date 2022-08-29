@@ -1,3 +1,8 @@
+[version "0.1.5"]
+  date = Mon 29 Aug 2022 07:42:17 AM PDT
+  done = Fix bug in 'bpan update' not finding src version
+  done = Fixed accidental commit of local symlinks
+
 [version "0.1.4"]
   date = Sun 28 Aug 2022 03:00:23 PM PDT
   done = Lots more implemented
