@@ -1,3 +1,7 @@
+[version "0.1.7"]
+date = Tue 30 Aug 2022 07:44:48 AM PDT
+done = Update getopt with with for usage blan lines
+
 [version "0.1.6"]
 date = Mon 29 Aug 2022 10:31:03 PM PDT
 done = Make .rc work for 8 different shells
