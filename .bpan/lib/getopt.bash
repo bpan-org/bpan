@@ -1,6 +1,20 @@
 # getopt-long library based around `git rev-parse --parseopt`
 
-[[ ${1-} ]] && getopt=$1
+getopt:error() (
+  die "[getopt] Error: $1"
+)
+
+getopt:source() {
+  for arg; do
+    if [[ $arg == break ]]; then
+      break
+    elif [[ $arg == *$'\n--\n'* ]]; then
+      getopt=$arg
+    else
+      getopt:error "Invalid source arg '$arg'. Use '--' if no args."
+    fi
+  done
+}
 
 getopt() {
   local opts_prefix=option
@@ -12,7 +26,7 @@ getopt() {
   getopt_spec=${GETOPT_SPEC:-${getopt:-$(cat)}}
 
   [[ $getopt_spec ]] ||
-    die "No getopt 'spec' provided"
+    getopt:error "No getopt 'spec' provided"
 
   local spec
   spec=$(
@@ -30,7 +44,8 @@ getopt() {
 
   local parsed
   parsed=$(
-    echo "$getopt_spec" |
+    getopt:parse "$getopt_spec" |
+    #echo "$getopt_spec" |
       git rev-parse --parseopt -- "$@"
   ) || true
 
@@ -82,7 +97,7 @@ getopt() {
           wants_value=true
         fi
       else
-        die "Invalid getopt_spec option line: '$line'"
+        getopt:error "Invalid getopt_spec option line: '$line'"
       fi
 
       if [[ $option == "$match" ]]; then
@@ -102,7 +117,7 @@ getopt() {
       fi
     done <<<"$spec"
 
-    $found || die "Unexpected option: '$option'"
+    $found || getopt:error "Unexpected option: '$option'"
   done
 
   local i arg_name arg_var required=false array=false re1='^\+'
@@ -131,13 +146,35 @@ getopt() {
       fi
     fi
     if $required && [[ -z ${!arg_var-} ]]; then
-      die "'$arg_name' is required"
+      getopt:error "'$arg_name' is required"
     fi
   done
 
-  [[ $# -eq 0 ]] || die "Unexpected arguments: '$*'"
+  [[ $# -eq 0 ]] ||
+    getopt:error "Unexpected arguments: '$*'"
 }
+
+getopt:parse() (
+  option_section=false
+  while IFS=$'\n' read -r line; do
+    if $option_section; then
+      if [[ $line = '' ]]; then
+        echo ' '
+      else
+        echo "$line"
+      fi
+    else
+      if [[ $line == -- ]]; then
+        option_section=true
+      fi
+      echo "$line"
+    fi
+  done <<<"$1"
+)
 
 getopt:pager() (
   less -FRX
 )
+
+[[ $0 == "${BASH_SOURCE[0]}" ]] ||
+  getopt:source "$@"

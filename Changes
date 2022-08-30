@@ -1,32 +1,32 @@
 [version "0.1.6"]
-  date = Mon 29 Aug 2022 10:31:03 PM PDT
-  done = Make .rc work for 8 different shells
+date = Mon 29 Aug 2022 10:31:03 PM PDT
+done = Make .rc work for 8 different shells
 
 [version "0.1.5"]
-  date = Mon 29 Aug 2022 07:42:17 AM PDT
-  done = Fix bug in 'bpan update' not finding src version
-  done = Fixed accidental commit of local symlinks
+date = Mon 29 Aug 2022 07:42:17 AM PDT
+done = Fix bug in 'bpan update' not finding src version
+done = Fixed accidental commit of local symlinks
 
 [version "0.1.4"]
-  date = Sun 28 Aug 2022 03:00:23 PM PDT
-  done = Lots more implemented
-  done = More tests
+date = Sun 28 Aug 2022 03:00:23 PM PDT
+done = Lots more implemented
+done = More tests
 
 [version "0.1.3"]
-  date = Fri 26 Aug 2022 09:43:27 AM PDT
-  done = Implementation for 'bpan upgrade'
+date = Fri 26 Aug 2022 09:43:27 AM PDT
+done = Implementation for 'bpan upgrade'
 
 [version "0.1.2"]
-  date = Thu 25 Aug 2022 09:51:34 AM PDT
-  done = Support `bpan add <pkg...>`
-  done = Check commit sha1 during package install
+date = Thu 25 Aug 2022 09:51:34 AM PDT
+done = Support `bpan add <pkg...>`
+done = Check commit sha1 during package install
 
 [version "0.1.1"]
-  date = Tue 23 Aug 2022 08:26:43 AM PDT
-  done = Use index file from https://raw.githubusercontent.com/bpan-org/bpan-index/main/index.ini
-  done = Use Meta file to get `bpan --version` version
-  done = Fix bug in 'bpan push'
+date = Tue 23 Aug 2022 08:26:43 AM PDT
+done = Use index file from https://raw.githubusercontent.com/bpan-org/bpan-index/main/index.ini
+done = Use Meta file to get `bpan --version` version
+done = Fix bug in 'bpan push'
 
 [version "0.1.0"]
-  date = Tue 16 Aug 2022 09:22:29 AM PDT
-  done = Initial release
+date = Tue 16 Aug 2022 09:22:29 AM PDT
+done = Initial release

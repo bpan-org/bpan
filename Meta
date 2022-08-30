@@ -20,7 +20,7 @@ site = http://ingy.net
 
 [require "bpan"]
 prelude-bash = 0.1.0+
-getopt-bash = 0.1.0+
+getopt-bash = 0.1.1+
 
 [require "test"]
 test-more-bash = 0.1.0+
