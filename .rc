@@ -1,39 +1,63 @@
-# shellcheck shell=bash
+#!/bash
 
-# Bash shell:
-test -n "$BASH_VERSION" && eval '
-BPAN_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-export BPAN_ROOT
-source <("$BPAN_ROOT/bin/bpan" rc --bash)
+# source this file in any of the following shells to activate bpan
+
+# tcsh
+test -n "$tcsh" && eval '\
+setenv BPAN_SHELL tcsh \
+set s = ($_) \
+@ i = $#s - 1 \
+set d = `dirname $s[$i]` \
+setenv BPAN_ROOT `cd $d && pwd` \
+setenv PATH "$BPAN_ROOT/bin:$BPAN_ROOT/local/bin:$PATH" \
+setenv MANPATH "$BPAN_ROOT/man:$BPAN_ROOT/local/man:`manpath`" \
+exit 0 \
 '
 
-# Fish shell:
+# fish
 test -n "$FISH_VERSION" && eval '
+set BPAN_SHELL fish
 set BPAN_ROOT (cd (dirname (status filename)) && pwd)
-export BPAN_ROOT
-source ("$BPAN_ROOT/bin/bpan" rc --fish | psub)
+set PATH $BPAN_ROOT/bin:$BPAN_ROOT/local/bin:$PATH
+set MANPATH $BPAN_ROOT/man:$BPAN_ROOT/local/man:(manpath)
+export BPAN_SHELL BPAN_ROOT PATH MANPATH
+# source "$BPAN_ROOT/share/complete.fish"  # TODO
 '
 
-# Ksh shell:
-test -n "$KSH_VERSION" && eval '
-BPAN_ROOT=$(
-  cd "$(
-    dirname "$(
-      fc -l |
-        tail -2 |
-        head -1 |
-        awk '"'"'{print $NF}'"'"'
-    )"
-  )" && pwd
-)
-export BPAN_ROOT
-source <("$BPAN_ROOT/bin/bpan" rc --ksh)
+# bash
+test -n "$BASH_VERSION" && eval '
+BPAN_SHELL=bash
+BPAN_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+PATH=$BPAN_ROOT/bin:$BPAN_ROOT/local/bin:$PATH
+MANPATH=$BPAN_ROOT/man:$BPAN_ROOT/local/man:$(manpath 2>/dev/null)
+export BPAN_SHELL BPAN_ROOT PATH MANPATH
+source "$BPAN_ROOT/share/complete.sh"
 '
 
-# Zsh shell:
+# zsh
 test -n "$ZSH_VERSION" && eval '
+BPAN_SHELL=zsh
 BPAN_ROOT=$(cd "$(dirname "$0")" && pwd)
-export BPAN_ROOT
-source <("$BPAN_ROOT/bin/bpan" rc --zsh)
+PATH=$BPAN_ROOT/bin:$BPAN_ROOT/local/bin:$PATH
+MANPATH=$BPAN_ROOT/man:$BPAN_ROOT/local/man:$(manpath)
+export BPAN_SHELL BPAN_ROOT PATH MANPATH
+source "$BPAN_ROOT/share/complete.sh"
 '
+
+# ash, dash, ksh or posh
+test "$0" = ash -o "$0" = dash -o "$0" = ksh -o "$0" = posh && eval '
+if [ -d "$BPAN_ROOT" ]; then
+  BPAN_SHELL=$0
+  PATH=$BPAN_ROOT/bin:$BPAN_ROOT/local/bin:$PATH
+  MANPATH=$BPAN_ROOT/man:$BPAN_ROOT/local/man:$(manpath)
+  export BPAN_SHELL BPAN_ROOT PATH MANPATH
+else
+  echo "ERROR: for $0, set BPAN_ROOT=/path/to/bpan before sourcing .rc"
+  return 1
+fi
+'
+
+test -n "$BPAN_SHELL" || \
+  echo "BPAN setup failed.  Unable to determine your shell."
+
 # vim: ft=sh:

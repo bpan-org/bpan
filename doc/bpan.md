@@ -42,17 +42,31 @@ It does 3 big things for you and your Bash code:
 
 ## Installation
 
+BPAN, works and is tested under the following shells: `bash`, `zsh`, `fish`,
+`ksh`, `tcsh`, `ash`, `dash` and `posh`.
+
 1. Clone the BPAN repo:
    ```
-   git clone https://github.com/bpan-org/bpan ~/.bpan
+   git clone https://github.com/bpan-org/bpan "$HOME/.bpan"
    ```
+
 2. Source the BPAN `.rc` file to use `bpan` immediately:
    ```
-   source ~/.bpan/.rc
+   source "$HOME/.bpan/.rc"
    ```
-3. Add the command in step 2 to your shell's startup file (`~/.bashrc`, etc).
 
-NOTE: `~/.bpan/` can be changed above to any other location that you wish to
+   For `ksh`, `ash`, `dash` and `posh`: set `BPAN_ROOT` first, and use `.`
+   instead of `source`:
+   ```
+   BPAN_ROOT=$HOME/.bpan/.rc
+   . "$HOME/.bpan/.rc"
+   # or:
+   BPAN_ROOT=$HOME/.bpan/.rc source "$HOME/.bpan/.rc"
+   ```
+
+3. Add the command in step 2 to your shell's startup file (`$HOME/.bashrc`, etc).
+
+NOTE: `$HOME/.bpan/` can be changed above to any other location that you wish to
 install BPAN.
 
 ### Prerequisites
@@ -119,10 +133,10 @@ bpan update
 ### System-wide BPAN Directory and File Layout
 
 When you install packages system-wide with BPAN, things are stored under the
-`~/.bpan/local/` directory.
+`$HOME/.bpan/local/` directory.
 
-There are several `~/.bpan/local/` subdirectories where things get installed
-into:
+There are several `$HOME/.bpan/local/` subdirectories where things get
+installed into:
 
 * `bin/` - Executable Bash programs (in `$PATH`)
 * `lib/` - Supporting Bash libraries

@@ -14,4 +14,3 @@ ok "$([[ $(bpan cmds | wc -l) -gt 15 ]])" \
    "'bpan cmds' has more than 15 entries"
 
 done-testing
-

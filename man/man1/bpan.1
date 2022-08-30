@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH "bpan" 1 "2022-08-29" "md2man v0.1.0" "Bash Package Manager"
+.TH "bpan" 1 "2022-08-30" "md2man v0.1.0" "Bash Package Manager"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -183,22 +183,32 @@ Install, manage, bundle Bash deps for a project
 Register and publish Bash packages that you make
 .SS "\s-1INSTALLATION\s0"
 .IX Subsection "INSTALLATION"
+\&\s-1BPAN,\s0 works and is tested under the following shells: \f(CW\*(C`bash\*(C'\fR, \f(CW\*(C`zsh\*(C'\fR, \f(CW\*(C`fish\*(C'\fR, \f(CW\*(C`ksh\*(C'\fR, \f(CW\*(C`tcsh\*(C'\fR, \f(CW\*(C`ash\*(C'\fR, \f(CW\*(C`dash\*(C'\fR and \f(CW\*(C`posh\*(C'\fR.
 .IP "1. Clone the \s-1BPAN\s0 repo:" 4
 .IX Item "1. Clone the BPAN repo:"
 .Vb 1
-\&    git clone https://github.com/bpan\-org/bpan ~/.bpan
+\&    git clone https://github.com/bpan\-org/bpan "$HOME/.bpan"
 .Ve
 .ie n .IP "1. Source the \s-1BPAN\s0 "".rc"" file to use ""bpan"" immediately:" 4
 .el .IP "1. Source the \s-1BPAN\s0 \f(CW.rc\fR file to use \f(CWbpan\fR immediately:" 4
 .IX Item "1. Source the BPAN .rc file to use bpan immediately:"
 .Vb 1
-\&    source ~/.bpan/.rc
+\&    source "$HOME/.bpan/.rc"
 .Ve
-.ie n .IP "1. Add the command in step 2 to your shell's startup file (""~/.bashrc"", etc)." 4
-.el .IP "1. Add the command in step 2 to your shell's startup file (\f(CW~/.bashrc\fR, etc)." 4
-.IX Item "1. Add the command in step 2 to your shell's startup file (~/.bashrc, etc)."
+.Sp
+For \f(CW\*(C`ksh\*(C'\fR, \f(CW\*(C`ash\*(C'\fR, \f(CW\*(C`dash\*(C'\fR and \f(CW\*(C`posh\*(C'\fR: set \f(CW\*(C`BPAN_ROOT\*(C'\fR first, and use \f(CW\*(C`.\*(C'\fR instead of \f(CW\*(C`source\*(C'\fR:
+.Sp
+.Vb 4
+\&    BPAN_ROOT=$HOME/.bpan/.rc
+\&    . "$HOME/.bpan/.rc"
+\&    # or:
+\&    BPAN_ROOT=$HOME/.bpan/.rc source "$HOME/.bpan/.rc"
+.Ve
+.ie n .IP "1. Add the command in step 2 to your shell's startup file (""$HOME/.bashrc"", etc)." 4
+.el .IP "1. Add the command in step 2 to your shell's startup file (\f(CW$HOME/.bashrc\fR, etc)." 4
+.IX Item "1. Add the command in step 2 to your shell's startup file ($HOME/.bashrc, etc)."
 .PP
-\&\s-1NOTE:\s0 \f(CW\*(C`~/.bpan/\*(C'\fR can be changed above to any other location that you wish to install \s-1BPAN.\s0
+\&\s-1NOTE:\s0 \f(CW\*(C`$HOME/.bpan/\*(C'\fR can be changed above to any other location that you wish to install \s-1BPAN.\s0
 .PP
 \fIPrerequisites\fR
 .IX Subsection "Prerequisites"
@@ -303,9 +313,9 @@ To update the \s-1BPAN\s0 dependency files and generate man pages:
 \fISystem-wide \s-1BPAN\s0 Directory and File Layout\fR
 .IX Subsection "System-wide BPAN Directory and File Layout"
 .PP
-When you install packages system-wide with \s-1BPAN,\s0 things are stored under the \f(CW\*(C`~/.bpan/local/\*(C'\fR directory.
+When you install packages system-wide with \s-1BPAN,\s0 things are stored under the \f(CW\*(C`$HOME/.bpan/local/\*(C'\fR directory.
 .PP
-There are several \f(CW\*(C`~/.bpan/local/\*(C'\fR subdirectories where things get installed into:
+There are several \f(CW\*(C`$HOME/.bpan/local/\*(C'\fR subdirectories where things get installed into:
 .IP "\(bu" 4
 \&\f(CW\*(C`bin/\*(C'\fR \- Executable Bash programs (in \f(CW$PATH\fR)
 .IP "\(bu" 4
