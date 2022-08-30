@@ -1,3 +1,7 @@
+[version "0.1.6"]
+  date = Mon 29 Aug 2022 10:31:03 PM PDT
+  done = Make .rc work for 8 different shells
+
 [version "0.1.5"]
   date = Mon 29 Aug 2022 07:42:17 AM PDT
   done = Fix bug in 'bpan update' not finding src version
