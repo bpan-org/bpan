@@ -1,3 +1,8 @@
+[version "0.1.8"]
+date = Tue 30 Aug 2022 07:44:48 AM PDT
+done = Use the new getopt.bash
+done = Queen Elizabeth
+
 [version "0.1.7"]
 date = Tue 30 Aug 2022 07:44:48 AM PDT
 done = Update getopt with with for usage blan lines
