@@ -8,6 +8,10 @@ APP=${app^^}
 source "$BPAN_ROOT/.bpan/lib/bpan.bash" --prelude
 
 bpan:use getopt "\
+getopt_default=--help
+getopt_cmds_find=true
+getopt_cmds_spec=getopt-cmds-spec
+
 $app [<options>] <cmd> [<cmd-opts...>] [<cmd-args>]
 
 System Commands:
@@ -16,7 +20,6 @@ System Commands:
   uninstall     Uninstall a $APP package
   list          List all installed $APP packages
   config        Manage $APP config settings
-  rc            Print startup shell commands
   complete      Shell tab completion for $app
 
 Project Commands:
@@ -46,23 +49,32 @@ x,debug       Print lots of debugging info
 "
 
 main() (
-  get-options "$@"
+  set-env
+
+  getopt "$@"
   set -- "${args[@]}"
 
-  source1 "$command"
-  "$command:main" "$@"
+  if $option_version; then
+    echo "$app $(bpan:config bpan.version)"
+    exit
+  fi
+
+  source-once "$cmd"
+  "$cmd:main" "$@"
 )
 
-get-options() {
-  local getopt_default_help=false getopt_args='@args' getopt_debug=debug
-
+set-env() {
   root=$BPAN_ROOT
   [[ -f $root/bin/$app ]] ||
     error "BPAN_ROOT variable has bad value '$root'"
 
   if [[ ${BPAN_INSTALL-} ]]; then
-    [[ -d $BPAN_INSTALL ]] ||
-      error "BPAN_INSTALL='$BPAN_INSTALL' - directory not found"
+    if [[ $BPAN_INSTALL == $root/local ]]; then
+      mkdir -p "$BPAN_INSTALL"
+    else
+      [[ -d $BPAN_INSTALL ]] ||
+        error "BPAN_INSTALL='$BPAN_INSTALL' - directory not found"
+    fi
   else
     BPAN_INSTALL=$root/local
     export BPAN_INSTALL
@@ -72,81 +84,16 @@ get-options() {
 
   index_file=$BPAN_INSTALL/index.ini
   index_url=https://raw.githubusercontent.com/bpan-org/bpan-index/main/index.ini
+}
 
-  if [[ $# -eq 0 ]]; then
-    set -- --help
-  fi
-
-  cmds=($(grep -E '^  \w+  ' <<<"$getopt" | cut -d' ' -f3))
-
-  option_quiet=false
-  local words=()
-  while [[ $# -gt 0 ]]; do
-    if [[ $1 =~ ^[a-z]+$ ]]; then
-      command=$1; shift
-      [[ " ${cmds[*]} " == *\ $command\ * ]] ||
-        error "Invalid $app command '$command'"
-      break
-    fi
-    words+=("$1"); shift
-  done
-  local cmd_opts=("$@")
-  set -- "${words[@]}"
-
-  getopt "$@"
-  $option_debug && set -x
-
-  args+=("${cmd_opts[@]}")
-
-  if $option_version; then
-    command=version
-  fi
-
-  if ! [[ ${command-} ]]; then
-    if [[ ${option_server-} ]]; then
-      command=server
-      server_command=$option_server
-      [[ $server_command =~ ^(start|stop|restart|status)$ ]] ||
-        error "--server=... must be 'start', 'stop', 'restart' or 'status'"
-    elif [[ ${option_run-} ]]; then
-      command=run
-    else
-      error "You must specify a command option"
-    fi
-  fi
-
-  # Get possible sub-command options:
-  source1 "$command"
-  if is-func "$command:getopt"; then
-    unset sub_command
-    local getopt_default_help=false
-    local getopt_args='@args'
-    local getopt_cmds
-    getopt_cmds=()
-
-    "$command:getopt"
-
-    set -- "${args[@]}"
-    args=()
-
-    getopt='' getopt "$@" <<<"$getopt_spec"
-
-    if [[ ${#getopt_cmds[*]} -gt 0 ]]; then
-      local cmd
-      for cmd in "${getopt_cmds[@]}"; do
-        local var=option_$cmd
-        if "${!var}"; then
-          sub_command=$cmd
-        fi
-      done
-
-      [[ ${sub_command-} ]] ||
-        getopt -h <<<"$getopt_spec"
-    fi
+getopt-cmds-spec() {
+  source-once "$cmd"
+  if is-func "$cmd:getopt"; then
+    "$cmd:getopt"
   fi
 }
 
-source1() {
+source-once() {
   local var=_sourced_$1
   if [[ -z ${!var-} ]]; then
     source "$root/lib/$1.bash"
@@ -155,7 +102,7 @@ source1() {
 }
 
 todo() (
-  error "'$app $command' not yet implemented\n"
+  error "'$app $cmd' not yet implemented\n"
 )
 
 error() (

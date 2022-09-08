@@ -1,17 +1,17 @@
-init:getopt() {
-  getopt_spec="\
-$app [<$app-opts>] $command <$command-opts>
+init:getopt() (
+  echo "\
+$app [<$app-opts>] $cmd <$cmd-opts>
 
-'$app $command' Options:
+'$app $cmd' Options:
 --
 f,force       Force an action
 
-h,help        Get help for $command command
+h,help        Get help for $cmd command
 "
-}
+)
 
 init:main() (
-  share_base=$BPAN_ROOT/share/project
+  share_base=$BPAN_ROOT/share/init
   [[ -d $share_base ]] || die "'$share_base' does not exist"
 
   files=($(
@@ -68,7 +68,7 @@ init:copy() (
 )
 
 init:render() (
-  source1 env
+  source-once env
 
   text=$(< "$1")
 

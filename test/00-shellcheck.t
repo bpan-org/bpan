@@ -1,1 +1,1 @@
-../share/project/test/00-shellcheck.t
+../share/template/test/00-shellcheck.t

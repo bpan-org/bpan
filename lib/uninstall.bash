@@ -17,9 +17,9 @@ $app uninstall github:bpan-org/prelude-bash=0.1.0
 
 uninstall:main() (
   [[ $# -gt 0 ]] ||
-    error "'$app $command' requires one or more packages"
+    error "'$app $cmd' requires one or more packages"
 
-  source1 pkg
+  source-once pkg
 
   for target; do
     pkg:parse-id "$target"

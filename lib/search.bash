@@ -5,7 +5,7 @@ search:main() (
   term=$(IFS='|'; echo "$*")
   pattern="=.*($term)"
 
-  source1 index
+  source-once index
 
   # shellcheck disable=2207
   found=($(

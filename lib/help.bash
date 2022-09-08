@@ -6,7 +6,7 @@ help:main() (
 
   lib=$BPAN_ROOT/lib/$cmd.bash
   if [[ -f $lib ]]; then
-    source1 "$cmd"
+    source-once "$cmd"
   else
     error "'$cmd' is not a valid $app command"
   fi

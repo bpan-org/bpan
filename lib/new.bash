@@ -16,7 +16,7 @@ new:main() (
   fi
 
   option_force=false
-  source1 init
+  source-once init
 
   init:main
 )

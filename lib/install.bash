@@ -15,24 +15,24 @@ $app install github:bpan-org/prelude-bash=0.1.0
 ...
 )
 
-install:getopt() {
-  getopt_spec="\
-$app [<$app-opts>] $command [<cmd-opts>] <pkg-id...>
+install:getopt() (
+  echo "\
+$app [<$app-opts>] $cmd [<cmd-opts>] <pkg-id...>
 
-'$app $command' Options:
+'$app $cmd' Options:
 --
 U,unsafe      Install an unindexed package
 I,index       Refresh index file
 
-h,help        Get help for $command command
+h,help        Get help for $cmd command
 "
-}
+)
 
 install:main() (
   [[ $# -gt 0 ]] ||
-    error "'$app $command' requires one or more packages"
+    error "'$app $cmd' requires one or more packages"
 
-  source1 pkg
+  source-once pkg
 
   pkg:get-index
 
@@ -50,10 +50,10 @@ install:main() (
           --branch "$ver" \
           "$repo" "$src" 2>/dev/null
       ) || error "Can't 'git clone $repo'"
-      [[ $(git -C "$src" rev-parse HEAD) == "$commit" ]] || {
+      if [[ $(git -C "$src" rev-parse HEAD) != "$commit" ]]; then
         rm -fr "$src"
         error "Bad commit: package '$full' version '$ver' commit '$commit'"
-      }
+      fi
     fi
 
     (

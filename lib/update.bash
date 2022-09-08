@@ -1,15 +1,15 @@
-update:getopt() {
-  getopt_spec="\
-$app [<$app-opts>] $command [<cmd-opts>]
+update:getopt() (
+  echo "\
+$app [<$app-opts>] $cmd [<cmd-opts>]
 
-'$app $command' Options:
+'$app $cmd' Options:
 --
 I,index       Refresh index file
 L,local       Symlink install to local repos
 
-h,help        Get help for $command command
+h,help        Get help for $cmd command
 "
-}
+)
 
 update:main() (
   update:require
@@ -20,8 +20,8 @@ update:require() (
   [[ -d .bpan ]] ||
     error "Can't 'bpan update'. No '.bpan/' directory"
 
-  source1 pkg
-  source1 install
+  source-once pkg
+  source-once install
 
   (
     file=lib/bpan.bash

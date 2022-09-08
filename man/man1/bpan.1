@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH "bpan" 1 "2022-08-30" "md2man v0.1.0" "Bash Package Manager"
+.TH "bpan" 1 "2022-09-06" "md2man v0.1.0" "Bash Package Manager"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -183,7 +183,7 @@ Install, manage, bundle Bash deps for a project
 Register and publish Bash packages that you make
 .SS "\s-1INSTALLATION\s0"
 .IX Subsection "INSTALLATION"
-\&\s-1BPAN,\s0 works and is tested under the following shells: \f(CW\*(C`bash\*(C'\fR, \f(CW\*(C`zsh\*(C'\fR, \f(CW\*(C`fish\*(C'\fR, \f(CW\*(C`ksh\*(C'\fR, \f(CW\*(C`tcsh\*(C'\fR, \f(CW\*(C`ash\*(C'\fR, \f(CW\*(C`dash\*(C'\fR and \f(CW\*(C`posh\*(C'\fR.
+\&\s-1BPAN,\s0 works and is tested under the following shells: \f(CW\*(C`bash\*(C'\fR, \f(CW\*(C`zsh\*(C'\fR, \f(CW\*(C`fish\*(C'\fR, \f(CW\*(C`ksh\*(C'\fR, \f(CW\*(C`mksh\*(C'\fR, \f(CW\*(C`tcsh\*(C'\fR, \f(CW\*(C`ash\*(C'\fR, \f(CW\*(C`dash\*(C'\fR, \f(CW\*(C`posh\*(C'\fR and \f(CW\*(C`sh\*(C'\fR.
 .IP "1. Clone the \s-1BPAN\s0 repo:" 4
 .IX Item "1. Clone the BPAN repo:"
 .Vb 1
@@ -196,13 +196,10 @@ Register and publish Bash packages that you make
 \&    source "$HOME/.bpan/.rc"
 .Ve
 .Sp
-For \f(CW\*(C`ksh\*(C'\fR, \f(CW\*(C`ash\*(C'\fR, \f(CW\*(C`dash\*(C'\fR and \f(CW\*(C`posh\*(C'\fR: set \f(CW\*(C`BPAN_ROOT\*(C'\fR first, and use \f(CW\*(C`.\*(C'\fR instead of \f(CW\*(C`source\*(C'\fR:
+For \f(CW\*(C`ksh\*(C'\fR, \f(CW\*(C`mksh\*(C'\fR, \f(CW\*(C`ash\*(C'\fR, \f(CW\*(C`dash\*(C'\fR, \f(CW\*(C`posh\*(C'\fR and \f(CW\*(C`sh\*(C'\fR: set \f(CW\*(C`BPAN_ROOT\*(C'\fR first, and use \f(CW\*(C`.\*(C'\fR instead of \f(CW\*(C`source\*(C'\fR:
 .Sp
-.Vb 4
-\&    BPAN_ROOT=$HOME/.bpan/.rc
-\&    . "$HOME/.bpan/.rc"
-\&    # or:
-\&    BPAN_ROOT=$HOME/.bpan/.rc source "$HOME/.bpan/.rc"
+.Vb 1
+\&    BPAN_ROOT=$HOME/.bpan/.rc . "$HOME/.bpan/.rc"
 .Ve
 .ie n .IP "1. Add the command in step 2 to your shell's startup file (""$HOME/.bashrc"", etc)." 4
 .el .IP "1. Add the command in step 2 to your shell's startup file (\f(CW$HOME/.bashrc\fR, etc)." 4
@@ -397,6 +394,11 @@ A typical \s-1BPAN\s0 \f(CW\*(C`config\*(C'\fR file looks like:
 \&    git = 2.25+
 \&    perl = 5.28.3+
 .Ve
+.SS "\s-1BPAN SOURCES\s0"
+.IX Subsection "BPAN SOURCES"
+Currently, all \s-1BPAN\s0 installable packages are specific commits in public Git repositories.
+.PP
+The \s-1BPAN\s0 index lives here: <https://github.com/bpan\-org/bpan\-index>
 .SS "\s-1COPYRIGHT AND LICENSE\s0"
 .IX Subsection "COPYRIGHT AND LICENSE"
 Copyright 2022 by Ingy do\*:t Net

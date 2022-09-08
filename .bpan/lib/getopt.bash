@@ -1,180 +1,362 @@
 # getopt-long library based around `git rev-parse --parseopt`
 
-getopt:error() (
-  die "[getopt] Error: $1"
-)
+getopt() {
+  [[ ${getopt_spec-} ]] ||
+    getopt_spec=$(cat)
+
+  [[ $getopt_spec ]] ||
+    getopt:error "No getopt 'spec' provided"
+
+  getopt:set-vars
+
+  getopt:parse-spec "$getopt_spec"
+
+  [[ $# -gt 0 ]] ||
+    set -- "${getopt_default[@]}"
+
+  if [[ ${#getopt_cmds[*]} -gt 0 ]]; then
+    local words=()
+    while [[ $# -gt 0 ]]; do
+      if [[ " ${getopt_cmds[*]} " == *" $1 "* ]]; then
+        cmd=$1
+        shift
+        words+=( -- "$@" )
+        break
+      else
+        words+=( "$1" )
+        shift
+      fi
+    done
+    set -- "${words[@]}"
+  fi
+
+  local output
+  output=$(
+    echo "$getopt_parseopt" |
+      git rev-parse --parseopt --stuck-long -- "$@"
+  ) || true
+
+  if [[ $output =~ ^cat ]]; then
+    eval "$output" | getopt:pager
+    exit 0
+  else
+    eval "$output"
+  fi
+
+  getopt:set-opts "$@"
+
+  if [[ $cmd && $getopt_cmds_spec ]]; then
+    getopt:cmd-getopt "${args[@]}"
+  else
+    local debug_var=$getopt_prefix$getopt_debug
+    if [[ ${!debug_var-} == true ]]; then
+      set -x
+    fi
+  fi
+}
+
+getopt:cmd-getopt() {
+  is-func "$getopt_cmds_spec" ||
+    getopt:error \
+      "getopt_cmds_spec='$getopt_cmds_spec' must be a function name"
+  local getopt_spec=''
+  local getopt_default=()
+  local getopt_cmds=()
+  local getopt_cmds_find=''
+  getopt_spec=$("$getopt_cmds_spec" "$cmd")
+
+  if [[ $getopt_spec ]]; then
+    local getopt_cmds_spec=''
+    local cmd=''
+    getopt "$@"
+  fi
+}
+
+getopt:set-vars() {
+  getopt_parseopt=''
+  getopt_required=()
+  getopt_database=''
+
+  [[ ${getopt_cmds[*]+x} ]] || getopt_cmds=()
+  [[ ${getopt_cmds_find+x} ]] || getopt_cmds_find=''
+  [[ ${getopt_cmds_spec+x} ]] || getopt_cmds_spec=''
+
+  cmd=''
+  args=()
+}
+
+getopt:reset() {
+  unset getopt_spec
+  getopt_default=()
+  getopt_debug=debug
+  getopt_prefix=option_
+  getopt_args=args
+
+  cmd=''
+  getopt_cmds=()
+  getopt_cmds_find=''
+  getopt_cmds_spec=''
+}
 
 getopt:source() {
+  if [[ $# -eq 0 ]]; then
+    getopt:error "Use '--' (source getopt.bash --) if no args for source."
+  fi
+  getopt:reset
   for arg; do
-    if [[ $arg == break ]]; then
+    if [[ $arg == -- ]]; then
       break
     elif [[ $arg == *$'\n--\n'* ]]; then
-      getopt=$arg
+      getopt_spec=$arg
     else
       getopt:error "Invalid source arg '$arg'. Use '--' if no args."
     fi
   done
 }
 
-getopt() {
-  local opts_prefix=option
-  local args_var=
-  local default_arg='--help'
-  local catch_error=false
+# Read through the provided 'getopt_spec' to collect the various instructions.
+# Save all the instructions in a structured format in 'getopt_database'.
+# Create a new spec 'getopt_parseopt' that is compliant with rev-parse's needs.
+getopt:parse-spec() {
+  local option_section=false
+  local top=true
+  local var count
 
-  local getopt_spec
-  getopt_spec=${GETOPT_SPEC:-${getopt:-$(cat)}}
-
-  [[ $getopt_spec ]] ||
-    getopt:error "No getopt 'spec' provided"
-
-  local spec
-  spec=$(
-    echo "$getopt_spec" |
-      grep -A999999 '^--$' |
-      grep -v '^\s*$' |
-      tail -n+2
-  )
-
-  if ${getopt_default_help:-true}; then
-    if [[ $# -eq 0 ]];then
-      set -- --help
-    fi
-  fi
-
-  local parsed
-  parsed=$(
-    getopt:parse "$getopt_spec" |
-    #echo "$getopt_spec" |
-      git rev-parse --parseopt -- "$@"
-  ) || true
-
-  if [[ $parsed =~ ^cat ]]; then
-    eval "$parsed" | getopt:pager
-    exit 0
-  else
-    eval "$parsed"
-  fi
-
-  while IFS= read -r line; do
-    if [[ $line =~ ^([-a-zA-Z]+)(,([-a-z]+))?(=?)\  ]]; then
-      opt_var=option_${BASH_REMATCH[1]}
-      if [[ ${BASH_REMATCH[3]} ]]; then
-        opt_var=option_${BASH_REMATCH[3]}
-      fi
-      opt_var=${opt_var//-/_}
-      if [[ -z ${BASH_REMATCH[4]} ]]; then
-        printf -v "$opt_var" false
+  while IFS=$'\n' read -r line; do
+    # Look for getopt config variables at top of spec:
+    if $top; then
+      if [[ $line == getopt_* ]]; then
+        eval "$line"
+        continue
+      elif [[ $line == '' ]]; then
+        top=false
+        continue
       else
-        lines_var=${opt_var}_lines
-        if [[ ${!lines_var-} ]]; then
-          eval "$opt_var+=()"
-        fi
+        top=false
       fi
     fi
-  done <<<"$spec"
+
+    # Check for start of options section:
+    if ! $option_section; then
+      if [[ $line == -- ]]; then
+        option_section=true
+      fi
+      if [[ $getopt_cmds_find == true && $line == \ * ]]; then
+        local cmd rest
+        read -r cmd rest <<<"$line"
+        getopt_cmds+=("$cmd")
+      elif [[ $getopt_cmds_find && $line =~ $getopt_cmds_find ]]; then
+        local match
+        for match in "${BASH_REMATCH[@]}"; do
+          if [[ $match =~ ^[-a-z0-9]+$ ]]; then
+            getopt_cmds+=("$match")
+          fi
+        done
+      fi
+      getopt_parseopt+=$line$'\n'
+      continue
+    fi
+
+    # Change an empty line to ' ' so it will appear in error messages:
+    if [[ $line == '' ]]; then
+      getopt_parseopt+=$' \n'
+      continue
+    fi
+
+    # if 's,long...' (short,long)
+    if [[ $line =~ ^([a-zA-Z0-9]),([a-z][-a-z0-9]+)([=?][^\ ]*)?\  ]]; then
+      short=${BASH_REMATCH[1]}
+      long=${BASH_REMATCH[2]}
+      kind=${BASH_REMATCH[3]:0:1}
+      flag=${BASH_REMATCH[3]:1}
+      name=$long
+
+    # if 's...' (short only)
+    elif [[ $line =~ ^([a-zA-Z0-9])([=?][^\ ]*)?\  ]]; then
+      short=${BASH_REMATCH[1]}
+      long=''
+      kind=${BASH_REMATCH[2]}
+      flag=${BASH_REMATCH[2]:1}
+      name=$short
+
+    # if 'long...' (long only)
+    elif [[ $line =~ ^([a-z][-a-z0-9]+)([=?][^\ ]*)?\  ]]; then
+      short=''
+      long=${BASH_REMATCH[1]}
+      kind=${BASH_REMATCH[2]}
+      flag=${BASH_REMATCH[2]:1}
+      name=$long
+
+    else
+      getopt:error "Bad line in getopt spec '$line'"
+    fi
+
+    var=$getopt_prefix${long:-$short}
+    count=${getopt_prefix}count_${long:-$short}
+
+    printf -v "$count" 0
+
+    if [[ $kind == '='* ]]; then
+      kind=value
+      declare -a "$var"
+    elif [[ $kind == '?'* ]]; then
+      kind=dual
+      printf -v "$var" false
+    else
+      kind=bool
+      if [[ ${!var-} != true ]]; then
+        printf -v "$var" false
+      fi
+    fi
+
+    type='' mult=false
+
+    orig=flag
+    while [[ $flag ]]; do
+      if [[ ${flag:0:1} == '+' ]]; then
+        getopt_required+=("$name")
+        flag=${flag:1}
+        line=${line/+/}
+      elif [[ ${flag:0:1} == '@' ]] && ! $mult; then
+        mult=true
+        flag=${flag:1}
+        line=${line/@/}
+      elif [[ $flag =~ ^(str|num|file|dir|path) ]] ||
+        [[ $flag =~ ^([0-9]+\.\.([0-9]+)?) ]]
+      then
+        type=${BASH_REMATCH[1]}
+        flag=${flag:${#type}}
+        line=${line/$type\ /\ }
+      else
+        getopt:error "Can't parse getopt flags '$orig' at '$flag'"
+        flag=''
+        exit 1
+      fi
+    done
+
+    getopt_parseopt+=$line$'\n'
+
+    getopt_database+="$name ${short:-_} ${long:=_} $kind ${type:-_} $mult"$'\n'
+  done <<<"$1"
+}
+
+getopt:set-opts() {
+  local option name var
+  local need=" ${getopt_required[*]}"
+  local _name short long kind type mult
+
+  option-vars() {
+    name=${1#-}
+    name=${name#-}
+    unset value
+    if [[ $name == *=* ]]; then
+      value=${name#*=}
+      name=${name%%=*}
+    fi
+    spec=$(grep "^$name " <<<"$getopt_database") ||
+      die "Can't grep '^$name ' in:" "$getopt_database"
+    read -r _name short long kind type mult <<<"$spec"
+    long=${long#_}
+    short=${short#_}
+    show=${long:+"--$long=…"}
+    show=${show:-"-$short …"}
+  }
 
   while [[ $# -gt 0 ]]; do
-    local option=$1; shift
+    option=$1; shift
 
-    [[ $option != -- ]] || break
-
-    local found=false line=
-    while IFS= read -r line; do
-      local wants_value=false match opt_var
-      if [[ $line =~ ^([-a-zA-Z]+)(,([-a-z]+))?(=?)\  ]]; then
-        if [[ ${#BASH_REMATCH[1]} -gt 1 ]]; then
-          match=--${BASH_REMATCH[1]}
-        else
-          match=-${BASH_REMATCH[1]}
-        fi
-        opt_var=option_${BASH_REMATCH[1]}
-        if [[ ${BASH_REMATCH[3]} ]]; then
-          opt_var=option_${BASH_REMATCH[3]}
-        fi
-        opt_var=${opt_var//-/_}
-        if [[ ${BASH_REMATCH[4]} ]]; then
-          wants_value=true
-        fi
-      else
-        getopt:error "Invalid getopt_spec option line: '$line'"
-      fi
-
-      if [[ $option == "$match" ]]; then
-        if $wants_value; then
-          lines_var=${opt_var}_lines
-          if [[ ${!lines_var-} ]]; then
-            eval "$opt_var+=('$1')"
-          else
-            printf -v "$opt_var" "%s" "$1"
-          fi
-          shift
-        else
-          printf -v "$opt_var" true
-        fi
-        found=true
-        break
-      fi
-    done <<<"$spec"
-
-    $found || getopt:error "Unexpected option: '$option'"
-  done
-
-  local i arg_name arg_var required=false array=false re1='^\+'
-  for arg_name in ${getopt_args-}; do
-    arg_var=${arg_name//-/_}
-    if [[ $arg_var =~ ^@ ]]; then
-      array=true
-      arg_var=${arg_var#@}
-      printf -v "$arg_var"'[0]' xxx
-      unset "$arg_var"'[0]'
-    fi
-    if [[ $arg_var =~ $re1 ]]; then
-      required=true
-      arg_var=${arg_var#+}
-    fi
-
-    if [[ $# -gt 0 ]]; then
-      if $array; then
-        for ((i = 1; i <= $#; i++)); do
-          read -r "${arg_var[i-1]}" <<< "${!i}"
+    if [[ $option == -- ]]; then
+      if [[ ${need##\ } ]]; then
+        for option in $need; do
+          option-vars "$option"
+          echo "* Option '$show' is required" >&2
         done
-        set --
+        getopt:error 'Missing required options'
+      fi
+
+      # TODO use getopt_args here
+      args=("$@")
+      return
+    fi
+
+    option-vars "$option"
+
+    need=${need/\ $name/}
+
+    var=$getopt_prefix${long:-$short}
+    count=${getopt_prefix}count_${long:-$short}
+
+    # Set bool option variable to 'true':
+    if [[ $kind == bool ]]; then
+      printf -v "$var" true
+
+    # Push value onto option array:
+    elif [[ $kind == value ]]; then
+      [[ $type ]] && getopt:validate
+      IFS=$'\n' read -r -d '' "${var}[${!count}]" <<<"$value" || true
+
+    elif [[ $kind == dual ]]; then
+      if [[ ${value-} ]]; then
+        [[ $type ]] && getopt:validate
+        if [[ ${!var} == false ]]; then
+          printf -v "$var" '%s' "$value"
+        fi
       else
-        printf -v "$arg_var" "%s" "$1"
-        shift
+        printf -v "$var" true
       fi
     fi
-    if $required && [[ -z ${!arg_var-} ]]; then
-      getopt:error "'$arg_name' is required"
-    fi
+
+    # Increment option_count_<name>
+    # shellcheck disable=2004
+    : $(( ${count} = ${!count} + 1 ))
   done
 
   [[ $# -eq 0 ]] ||
     getopt:error "Unexpected arguments: '$*'"
 }
 
-getopt:parse() (
-  option_section=false
-  while IFS=$'\n' read -r line; do
-    if $option_section; then
-      if [[ $line = '' ]]; then
-        echo ' '
+getopt:validate() (
+  case "$type" in
+    _) ;;
+    str) ;;
+    file) [[ -f "$value" ]] ||
+      getopt:error "$(getopt:msg) file does not exist";;
+    dir) [[ -d "$value" ]] ||
+      getopt:error "$(getopt:msg) directory does not exist";;
+    path) [[ -e "$value" ]] ||
+      getopt:error "$(getopt:msg) path does not exist";;
+    *)
+      if [[ $type == num ]] &&
+         [[ ! $value =~ ^-?[0-9]+$ ]]
+      then
+        getopt:error "$(getopt:msg) is not a number"
+      elif [[ $type =~ ^([0-9]+)\.\.([0-9]+)$ ]]; then
+        lower=${BASH_REMATCH[1]}
+        upper=${BASH_REMATCH[2]}
+        if [[ ! $value =~ ^-?[0-9]+$ ]] ||
+           [[ $value -lt $lower ]] ||
+           [[ $value -gt $upper ]]
+        then
+          getopt:error "$(getopt:msg) is not in the range"
+        fi
       else
-        echo "$line"
+        getopt:error "Validation type '$type' not yet supported"
       fi
-    else
-      if [[ $line == -- ]]; then
-        option_section=true
-      fi
-      echo "$line"
-    fi
-  done <<<"$1"
+      ;;
+  esac
 )
 
-getopt:pager() (
-  less -FRX
+getopt:msg() (
+  echo "$option is type '$type', but value '$value'"
 )
+
+getopt:error() {
+  die "[getopt] Error: $1"
+}
+
+getopt:pager() {
+  less -FRX
+}
 
 [[ $0 == "${BASH_SOURCE[0]}" ]] ||
   getopt:source "$@"

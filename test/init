@@ -11,7 +11,7 @@ online() (
 test-errors() {
   while read -r cmd && read -r msg; do
     cmd=${cmd#> }
-    is "$($cmd 2>&1)" "$msg" \
+    is "$(BPAN_TESTING=1 $cmd 2>&1)" "$msg" \
       "'$cmd' fails with: $msg"
   done
 }

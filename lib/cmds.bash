@@ -1,14 +1,15 @@
-cmds:getopt() {
-  getopt_spec="\
-$app [<$app-opts>] $command <key> [<value>]
+cmds:getopt() (
+  echo "\
+getopt_default=()
+$app [<$app-opts>] $cmd <key> [<value>]
 
-'$app $command' Options:
+'$app $cmd' Options:
 --
 q,quiet       Print only the command names
 
-h,help        Get help for $command command
+h,help        Get help for $cmd command
 "
-}
+)
 
 cmds:main() (
   i=1
@@ -21,5 +22,5 @@ cmds:main() (
     else
       printf '%2d) %-10s - %s\n' $((i++)) "$name" "$desc"
     fi
-  done <<<"$(grep -E '^  \w+  ' <<<"$getopt")"
+  done <<<"$(grep -E '^  \w+  ' <<<"$getopt_spec")"
 )

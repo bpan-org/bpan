@@ -43,7 +43,7 @@ It does 3 big things for you and your Bash code:
 ## Installation
 
 BPAN, works and is tested under the following shells: `bash`, `zsh`, `fish`,
-`ksh`, `tcsh`, `ash`, `dash` and `posh`.
+`ksh`, `mksh`, `tcsh`, `ash`, `dash`, `posh` and `sh`.
 
 1. Clone the BPAN repo:
    ```
@@ -55,13 +55,10 @@ BPAN, works and is tested under the following shells: `bash`, `zsh`, `fish`,
    source "$HOME/.bpan/.rc"
    ```
 
-   For `ksh`, `ash`, `dash` and `posh`: set `BPAN_ROOT` first, and use `.`
-   instead of `source`:
+   For `ksh`, `mksh`, `ash`, `dash`, `posh` and `sh`: set `BPAN_ROOT` first,
+   and use `.` instead of `source`:
    ```
-   BPAN_ROOT=$HOME/.bpan/.rc
-   . "$HOME/.bpan/.rc"
-   # or:
-   BPAN_ROOT=$HOME/.bpan/.rc source "$HOME/.bpan/.rc"
+   BPAN_ROOT=$HOME/.bpan/.rc . "$HOME/.bpan/.rc"
    ```
 
 3. Add the command in step 2 to your shell's startup file (`$HOME/.bashrc`, etc).
@@ -215,6 +212,13 @@ bash = 4.4+
 git = 2.25+
 perl = 5.28.3+
 ```
+
+## BPAN Sources
+
+Currently, all BPAN installable packages are specific commits in public Git
+repositories.
+
+The BPAN index lives here: https://github.com/bpan-org/bpan-index
 
 ## Copyright and License
 

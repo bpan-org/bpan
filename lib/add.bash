@@ -1,17 +1,17 @@
-add:getopt() {
-  getopt_spec="\
-$app [<$app-opts>] $command <pkg...>
+add:getopt() (
+  echo "\
+$app [<$app-opts>] $cmd <pkg...>
 
-'$app $command' Options:
+'$app $cmd' Options:
 --
 I,index       Refresh index file
 
-h,help        Get help for $command command
+h,help        Get help for $cmd command
 "
-}
+)
 
 add:main() (
-  source1 pkg
+  source-once pkg
   update=false
 
   for pkg; do
@@ -32,7 +32,7 @@ add:main() (
   done
 
   if $update; then
-    source1 update
+    source-once update
     update:main
   fi
 )

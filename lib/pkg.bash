@@ -56,7 +56,8 @@ pkg:get-index() (
         "$(git config -f "$index_file" bpan.index.api-version || echo 0)" \
      ]]
   then
-    say-y "Updating BPAN package index..."
+    [[ ${BPAN_TESTING-} ]] ||
+      say-y "Updating BPAN package index..."
     mkdir -p "$root/local"
     curl --fail -s "$index_url" > "$index_file" ||
       rm -f "$index_file"

@@ -1,15 +1,15 @@
-push:getopt() {
-  getopt_spec="\
-$app [<$app-opts>] $command <key> [<value>]
+push:getopt() (
+  echo "\
+$app [<$app-opts>] $cmd <key> [<value>]
 
-'$app $command' Options:
+'$app $cmd' Options:
 --
 f,force       Force push
 t,tag=        Tag to use
 
-h,help        Get help for $command command
+h,help        Get help for $cmd command
 "
-}
+)
 
 push:main() (
   bpan:config-read .bpan/config

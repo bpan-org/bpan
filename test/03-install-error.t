@@ -2,6 +2,9 @@
 
 source test/init
 
+online ||
+  skip-all "These tests need to be run online"
+
 test-errors <<'...'
 > bpan install foo
 Error: No package 'github:bpan-org/foo' found

@@ -1,14 +1,14 @@
-test:getopt() {
-  getopt_spec="\
-$app [<$app-opts>] $command [<cmd-opt...>] [<test-file...>]
+test:getopt() (
+  echo "\
+$app [<$app-opts>] $cmd [<cmd-opt...>] [<test-file...>]
 
-'$app $command' Options:
+'$app $cmd' Options:
 --
-v             Use 'prove' option '-v'
+v,verbose     Use 'prove' option '-v'
 
-h,help        Get help for $command command
+h,help        Get help for $cmd command
 "
-}
+)
 
 test:main() (
   if [[ $# -eq 0 ]]; then
@@ -17,7 +17,7 @@ test:main() (
     set -- test/*.t
   fi
 
-  if $option_v; then
+  if $option_verbose; then
     set -- -v "$@"
   fi
 
