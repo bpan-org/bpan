@@ -49,18 +49,22 @@ x,debug       Print lots of debugging info
 "
 
 main() (
-  set-env
+  set-env "$@"
 
+  opts=$*
   getopt "$@"
   set -- "${args[@]}"
 
   if $option_version; then
     echo "$app $(bpan:config bpan.version)"
-    exit
-  fi
 
-  source-once "$cmd"
-  "$cmd:main" "$@"
+  elif [[ $cmd ]]; then
+    source-once "$cmd"
+    "$cmd:main" "$@"
+
+  else
+    error "Invalid command '$app $opts'"
+  fi
 )
 
 set-env() {
