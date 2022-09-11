@@ -1,3 +1,7 @@
+[version "0.1.12"]
+date = Sun Sep 11 01:46:27 PM EDT 2022
+done = Run bpan update and test before bump
+
 [version "0.1.11"]
 date = Sun Sep 11 01:25:05 PM EDT 2022
 done = Fix for lib/bump.bash version regex
