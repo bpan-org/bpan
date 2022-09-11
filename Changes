@@ -1,3 +1,11 @@
+[version "0.1.9"]
+date = Sun Sep 11 01:08:26 PM EDT 2022
+done = Set var 'app' in bpan.bash
+done = Remove .bpan/lib/bpan.bash symlink
+done = Add the 'bump' command
+done = Error if no command provided
+done = Version 0.1.8
+
 [version "0.1.8"]
 date = Thu Sep  8 02:16:19 PM EDT 2022
 done = Use the new getopt.bash
