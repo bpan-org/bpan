@@ -32,6 +32,8 @@ bpan:main() {
       bpan:die "Unknown argument '$arg' for '$self'"
     fi
   done
+
+  app=$(basename "$0")
 }
 
 bpan:die() ( printf '%s\n' "$@" >&2; exit 1 )
