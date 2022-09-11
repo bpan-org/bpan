@@ -7,6 +7,7 @@ bump:main() (
     error "'$app $cmd' require './.git/' directory"
   [[ $(git status -s) ]] &&
     error "Can't '$app $cmd' with uncommited changes"
+
   [[ -f Changes ]] ||
     error "'$app $cmd' require './Changes' file"
   [[ -f Meta ]] ||
@@ -37,6 +38,12 @@ bump:main() (
     [[ $branch != HEAD ]] ||
       error "Can't push. Not checked out to a branch."
   fi
+
+  say -y "Running 'bpan update'"
+  bpan update
+
+  say -y "Make sure 'bpan test' passes"
+  bpan test
 
   say -y "Bumping to version '$version2'"
 
