@@ -1,3 +1,7 @@
+[version "0.1.10"]
+date = Sun Sep 11 01:10:10 PM EDT 2022
+done = Remove bad line from Changes
+
 [version "0.1.9"]
 date = Sun Sep 11 01:08:26 PM EDT 2022
 done = Set var 'app' in bpan.bash
