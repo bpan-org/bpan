@@ -23,7 +23,7 @@ prelude-bash = 0.1.0+
 getopt-bash = 0.1.1+
 
 [require "test"]
-test-more-bash = 0.1.0+
+test-tap-bash = 0.1.0+
 
 [require "commands"]
 bash = 3.2
