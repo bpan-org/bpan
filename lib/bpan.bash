@@ -7,10 +7,10 @@ shopt -s inherit_errexit 2>/dev/null || true
 bpan:main() {
   local self root
   self=${BASH_SOURCE[0]}
-  [[ $(dirname "$self") == */.bpan/lib ]] ||
+  [[ $self == */lib/bpan.bash ]] ||
     bpan:die "bpan.bash is in an unsupported place!"
-  root=$(cd "$(dirname "$self")/../.." && pwd -P)
-  local_root=$(cd "$(dirname "$self")/../../.." && pwd)
+  root=$(cd "$(dirname "$self")/.." && pwd -P)
+  local_root=$(cd "$(dirname "$self")/../.." && pwd)
 
   export PATH=$root/.bpan/lib:$root/.bpan/bin:$PATH
 
@@ -22,8 +22,12 @@ bpan:main() {
   for arg; do
     if [[ $arg == -- ]]; then
       :
+    elif [[ $arg == --getopt ]]; then
+      source "${BPAN_ROOT?}/.bpan/lib/getopt.bash" --
     elif [[ $arg == --prelude ]]; then
       source "${BPAN_ROOT?}/.bpan/lib/prelude.bash" --
+    elif [[ $arg == --say ]]; then
+      source "${BPAN_ROOT?}/.bpan/lib/say.bash" --
     else
       bpan:die "Unknown argument '$arg' for '$self'"
     fi

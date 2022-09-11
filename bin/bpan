@@ -5,7 +5,7 @@ APP=${app^^}
 [[ ${BPAN_ROOT:-} ]] ||
   { echo "BPAN_ROOT not set. 'source /path/to/$app/.rc'"; exit 1; }
 
-source "$BPAN_ROOT/.bpan/lib/bpan.bash" --
+source "$BPAN_ROOT/lib/bpan.bash" --
 
 bpan:use prelude
 bpan:use say

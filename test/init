@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-source "$BPAN_ROOT/.bpan/lib/bpan.bash" --
+source "$BPAN_ROOT/lib/bpan.bash" --
 
-bpan:use test-more
+bpan:use test-tap
 
 online() (
   ping -q -c1 8.8.8.8 &>/dev/null
