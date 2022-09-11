@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$BPAN_ROOT/lib/bpan.bash" --
+source "$BPAN_ROOT/lib/bpan.bash" --prelude
 
 bpan:use test-tap
 
