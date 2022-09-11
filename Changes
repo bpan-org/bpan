@@ -1,3 +1,8 @@
+[version "0.1.11"]
+date = Sun Sep 11 01:25:05 PM EDT 2022
+done = Fix for lib/bump.bash version regex
+done = Update to latest test-tap-bash
+
 [version "0.1.10"]
 date = Sun Sep 11 01:10:10 PM EDT 2022
 done = Remove bad line from Changes
