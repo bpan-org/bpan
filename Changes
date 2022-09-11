@@ -1,3 +1,7 @@
+[version "0.1.13"]
+date = Sun Sep 11 01:48:53 PM EDT 2022
+done = Include prelude.bash in testing
+
 [version "0.1.12"]
 date = Sun Sep 11 01:46:27 PM EDT 2022
 done = Run bpan update and test before bump
