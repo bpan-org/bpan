@@ -15,7 +15,7 @@ bump:main() (
   version1=$(bpan config -f Meta bpan.version)
   [[ $version1 ]] ||
     error "No 'bpan.version' found in '$config_file'"
-  [[ $version1 =~ ^[0-9]+\.[0-9]+\.[0-9]$ ]] ||
+  [[ $version1 =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] ||
     error "Unrecognized version '$version1'"
   git rev-parse "$version1" &>/dev/null ||
     die "No git tag found for version '$version1'"
