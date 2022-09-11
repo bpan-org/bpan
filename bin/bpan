@@ -5,7 +5,10 @@ APP=${app^^}
 [[ ${BPAN_ROOT:-} ]] ||
   { echo "BPAN_ROOT not set. 'source /path/to/$app/.rc'"; exit 1; }
 
-source "$BPAN_ROOT/.bpan/lib/bpan.bash" --prelude
+source "$BPAN_ROOT/.bpan/lib/bpan.bash" --
+
+bpan:use prelude
+bpan:use say
 
 bpan:use getopt "\
 getopt_default=--help
@@ -28,7 +31,7 @@ Project Commands:
   add           Add a package to a Bash project
   update        Update project $APP assets
   test          Run the project tests
-  push          Push repo with tag
+  bump          Prepare next version
   register      Register a project with $APP
   publish       Publish the package to $APP
   clean         Remove the build files and dirs
@@ -90,18 +93,37 @@ set-env() {
   index_url=https://raw.githubusercontent.com/bpan-org/bpan-index/main/index.ini
 }
 
-getopt-cmds-spec() {
-  source-once "$cmd"
-  if is-func "$cmd:getopt"; then
-    "$cmd:getopt"
-  fi
-}
-
 source-once() {
   local var=_sourced_$1
   if [[ -z ${!var-} ]]; then
     source "$root/lib/$1.bash"
     printf -v "$var" 1
+  fi
+}
+
+getopt-cmds-spec() {
+  source-once "$cmd"
+  if is-func "$cmd:getopt"; then
+    "$cmd:getopt"
+
+  else
+    local usage options
+    if is-func "$cmd:usage"; then
+      usage=$("$cmd:usage")
+    else
+      usage="$app [<$app-opts>] $cmd [<$cmd-opts>]"
+    fi
+    if is-func "$cmd:options"; then
+      options=$("$cmd:options")
+    fi
+    echo "\
+$usage
+
+'$app $cmd' Options:
+--
+${options+$options$'\n'}
+h,help        Get help for $cmd command
+"
   fi
 }
 
@@ -113,63 +135,5 @@ error() (
   say-r "Error: $1" >&2
   exit 1
 )
-
-# TODO Move to package say-color-bash
-{
-  D='\e[30m'
-  R='\e[31m'
-  G='\e[32m'
-  Y='\e[33m'
-  B='\e[34m'
-  M='\e[35m'
-  C='\e[36m'
-  W='\e[37m'
-  D1='\e[30;1m'
-  R1='\e[31;1m'
-  G1='\e[32;1m'
-  Y1='\e[33;1m'
-  B1='\e[34;1m'
-  M1='\e[35;1m'
-  C1='\e[36;1m'
-  W1='\e[37;1m'
-  Z='\e[0m'
-
-  say-color() (
-    ${option_quiet:-false} && return
-    color=$1; shift
-    if [[ -t 1 ]]; then
-      echo -e "$Z$color$*$Z"
-    else
-      echo -e "$*"
-    fi
-  )
-
-  say() (
-    if [[ ${1-} == [-+]? ]]; then
-      color=$1; shift
-      "say$color" "$@"
-    else
-      say-color "" "$@"
-    fi
-  )
-
-  say-d() ( say-color "$D" "$@" )
-  say-r() ( say-color "$R" "$@" )
-  say-g() ( say-color "$G" "$@" )
-  say-y() ( say-color "$Y" "$@" )
-  say-b() ( say-color "$B" "$@" )
-  say-m() ( say-color "$M" "$@" )
-  say-c() ( say-color "$C" "$@" )
-  say-w() ( say-color "$W" "$@" )
-
-  say+d() ( say-color "$D1" "$@" )
-  say+r() ( say-color "$R1" "$@" )
-  say+g() ( say-color "$G1" "$@" )
-  say+y() ( say-color "$Y1" "$@" )
-  say+b() ( say-color "$B1" "$@" )
-  say+m() ( say-color "$M1" "$@" )
-  say+c() ( say-color "$C1" "$@" )
-  say+w() ( say-color "$W1" "$@" )
-}
 
 main "$@"

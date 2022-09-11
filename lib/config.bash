@@ -22,6 +22,8 @@ config:main() (
       config_file=~/.bpan/config
     fi
   fi
+  config_file=$(readlink -f "$config_file")
+  config=$(< "$config_file")
 
   bpan:config "$@"
 )
