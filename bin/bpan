@@ -16,6 +16,7 @@ getopt_cmds_find=true
 getopt_cmds_spec=getopt-cmds-spec
 
 $app [<options>] <cmd> [<cmd-opts...>] [<cmd-args>]
+$app <cmd> --help
 
 System Commands:
   search        Search for $APP packages
@@ -28,6 +29,7 @@ System Commands:
 Project Commands:
   new           Create a new Bash project
   init          Create a '.$app/' project dir
+  file          Create or update a project file
   add           Add a package to a Bash project
   update        Update project $APP assets
   test          Run the project tests
@@ -103,6 +105,8 @@ source-once() {
 
 getopt-cmds-spec() {
   source-once "$cmd"
+  local help="h,help  Get help for $cmd command"
+
   if is-func "$cmd:getopt"; then
     "$cmd:getopt"
 
@@ -122,7 +126,7 @@ $usage
 '$app $cmd' Options:
 --
 ${options+$options$'\n'}
-h,help        Get help for $cmd command
+$help
 "
   fi
 }

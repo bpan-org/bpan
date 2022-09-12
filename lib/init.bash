@@ -1,13 +1,5 @@
-init:getopt() (
-  echo "\
-$app [<$app-opts>] $cmd <$cmd-opts>
-
-'$app $cmd' Options:
---
-f,force       Force an action
-
-h,help        Get help for $cmd command
-"
+init:options() (
+  echo "f,force   Force an action"
 )
 
 init:main() (

@@ -1,0 +1,1 @@
+../../template/test/00-shellcheck.t
