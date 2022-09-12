@@ -1,3 +1,7 @@
+[version "0.1.16"]
+date = Mon Sep 12 01:47:37 PM EDT 2022
+done = Convert cmd:getopt usage to smaller builders
+
 [version "0.1.15"]
 date = Mon Sep 12 01:10:14 PM EDT 2022
 done = Implement `bpan file` command
