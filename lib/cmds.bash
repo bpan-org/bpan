@@ -1,14 +1,5 @@
-cmds:getopt() (
-  echo "\
-getopt_default=()
-$app [<$app-opts>] $cmd <key> [<value>]
-
-'$app $cmd' Options:
---
-q,quiet       Print only the command names
-
-h,help        Get help for $cmd command
-"
+cmds:options() (
+  echo "q,quiet       Print only the command names"
 )
 
 cmds:main() (

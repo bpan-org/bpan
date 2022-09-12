@@ -1,16 +1,14 @@
-config:getopt() (
-  echo "\
-getopt_default=--help
+config:default() (
+  echo --help
+)
 
-$app [<$app-opts>] $cmd <key> [<value>]
+config:usage() (
+  echo "$app [<$app-opts>] $cmd <key> [<value>]"
+)
 
-'$app $cmd' Options:
---
-f,file=       Config file to use
-s,system      Use system config file
-
-h,help        Get help for $cmd command
-"
+config:options() (
+  echo "f,file=       Config file to use"
+  echo "s,system      Use system config file"
 )
 
 config:main() (

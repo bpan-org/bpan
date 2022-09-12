@@ -1,16 +1,14 @@
-file:getopt() (
-  echo "\
-getopt_default=--help
+file:default() (
+  echo --help
+)
 
-$app <opts> $cmd <file-to-update...>
-$app $cmd --list
+file:usage() (
+  echo "$app <opts> $cmd <file-to-update...>"
+  echo "$app $cmd --list"
+)
 
-'$app $cmd' Options:
---
-l,list  List files that can be used
-
-$help
-"
+file:options() (
+  echo "l,list  List files that can be used"
 )
 
 file:main() (

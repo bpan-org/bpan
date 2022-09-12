@@ -1,13 +1,13 @@
-add:getopt() (
-  echo "\
-$app [<$app-opts>] $cmd <pkg...>
+add:default() (
+  echo --help
+)
 
-'$app $cmd' Options:
---
-I,index       Refresh index file
+add:usage() (
+  echo "$app [<opts>] $cmd <$cmd-opts> <pkg...>"
+)
 
-h,help        Get help for $cmd command
-"
+add:options() (
+  echo "I,index   Refresh index file"
 )
 
 add:main() (

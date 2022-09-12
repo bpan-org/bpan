@@ -15,17 +15,13 @@ $app install github:bpan-org/prelude-bash=0.1.0
 ...
 )
 
-install:getopt() (
-  echo "\
-$app [<$app-opts>] $cmd [<cmd-opts>] <pkg-id...>
+install:usage() (
+  echo "$app [<$app-opts>] $cmd [<cmd-opts>] <pkg-id...>"
+)
 
-'$app $cmd' Options:
---
-U,unsafe      Install an unindexed package
-I,index       Refresh index file
-
-h,help        Get help for $cmd command
-"
+install:options() (
+  echo "U,unsafe      Install an unindexed package"
+  echo "I,index       Refresh index file"
 )
 
 install:main() (

@@ -1,13 +1,9 @@
-test:getopt() (
-  echo "\
-$app [<$app-opts>] $cmd [<cmd-opt...>] [<test-file...>]
+test:usage() (
+  echo "$app [<$app-opts>] $cmd [<$cmd-opts>] [<test-file...>]"
+)
 
-'$app $cmd' Options:
---
-v,verbose     Use 'prove' option '-v'
-
-h,help        Get help for $cmd command
-"
+test:options() (
+  echo "v,verbose   Use 'prove' option '-v'"
 )
 
 test:main() (

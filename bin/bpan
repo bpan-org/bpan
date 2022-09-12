@@ -111,11 +111,14 @@ getopt-cmds-spec() {
     "$cmd:getopt"
 
   else
-    local usage options
+    local usage='' options=''
+    if is-func "$cmd:default"; then
+      usage+="getopt_default=($("$cmd:default"))"$'\n\n'
+    fi
     if is-func "$cmd:usage"; then
-      usage=$("$cmd:usage")
+      usage+=$("$cmd:usage")
     else
-      usage="$app [<$app-opts>] $cmd [<$cmd-opts>]"
+      usage+="$app [<$app-opts>] $cmd [<$cmd-opts>]"
     fi
     if is-func "$cmd:options"; then
       options=$("$cmd:options")

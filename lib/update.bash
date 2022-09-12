@@ -1,14 +1,6 @@
-update:getopt() (
-  echo "\
-$app [<$app-opts>] $cmd [<cmd-opts>]
-
-'$app $cmd' Options:
---
-I,index       Refresh index file
-L,local       Symlink install to local repos
-
-h,help        Get help for $cmd command
-"
+update:options() (
+  echo "I,index   Refresh index file"
+  echo "L,local   Symlink install to local repos"
 )
 
 update:main() (
