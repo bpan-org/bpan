@@ -1,61 +1,55 @@
-if type complete &>/dev/null
-then
-  _bpan_completion () {
+if type complete &>/dev/null; then
+  _bpan_completion() {
     local words cword
     if type _get_comp_words_by_ref &>/dev/null; then
       _get_comp_words_by_ref -n = -n @ -n : -w words -i cword
     else
-      cword="$COMP_CWORD"
+      cword=$COMP_CWORD
       words=("${COMP_WORDS[@]}")
     fi
 
-    local si="$IFS"
-    if ! IFS=$'\n' COMPREPLY=($(COMP_CWORD="$cword" \
-                           COMP_LINE="$COMP_LINE" \
-                           COMP_POINT="$COMP_POINT" \
-                           bpan complete -- "${words[@]}" \
-                           2>/dev/null)); then
-      local ret=$?
-      IFS="$si"
-      return $ret
-    fi
-    IFS="$si"
+    COMPREPLY=($(
+      IFS=$'\n' \
+      COMP_CWORD=$cword \
+      COMP_LINE=$COMP_LINE \
+      COMP_POINT=$COMP_POINT \
+      bpan complete -- "${words[@]}" \
+        2>/dev/null
+    )) || return
+
     if type __ltrim_colon_completions &>/dev/null; then
       __ltrim_colon_completions "${words[cword]}"
     fi
   }
   complete -o default -F _bpan_completion bpan
+
 elif type compdef &>/dev/null; then
   _bpan_completion() {
-    local si=$IFS
-    compadd -- $(COMP_CWORD=$((CURRENT-1)) \
-                 COMP_LINE=$BUFFER \
-                 COMP_POINT=0 \
-                 bpan complete -- "${words[@]}" \
-                 2>/dev/null)
-    IFS=$si
+    compadd -- "$(
+      COMP_CWORD=$((CURRENT-1)) \
+      COMP_LINE=$BUFFER \
+      COMP_POINT=0 \
+      bpan complete -- "${words[@]}" \
+        2>/dev/null
+    )"
   }
   compdef _bpan_completion bpan
-elif type compctl &>/dev/null; then
-  _bpan_completion () {
-    local cword line point words si
-    read -Ac words
-    read -cn cword
-    let cword-=1
-    read -l line
-    read -ln point
-    si="$IFS"
-    if ! IFS=$'\n' reply=($(COMP_CWORD="$cword" \
-                       COMP_LINE="$line" \
-                       COMP_POINT="$point" \
-                       bpan complete -- "${words[@]}" \
-                       2>/dev/null)); then
 
-      local ret=$?
-      IFS="$si"
-      return $ret
-    fi
-    IFS="$si"
+elif type compctl &>/dev/null; then
+  _bpan_completion() {
+    local cword line point words si
+    read -rAc words
+    read -rcn cword
+    let cword-=1
+    read -rl line
+    read -rln point
+    reply=($(
+      COMP_CWORD="$cword" \
+      COMP_LINE="$line" \
+      COMP_POINT="$point" \
+      bpan complete -- "${words[@]}" \
+        2>/dev/null
+    )) || return
   }
   compctl -K _bpan_completion bpan
 fi
