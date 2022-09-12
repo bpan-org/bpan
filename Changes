@@ -1,3 +1,8 @@
+[version "0.1.15"]
+date = Mon Sep 12 01:10:14 PM EDT 2022
+done = Implement `bpan file` command
+done = Add tab completion for fish
+
 [version "0.1.14"]
 date = Mon Sep 12 09:09:39 AM EDT 2022
 done = Refactor completion setup code
