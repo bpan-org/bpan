@@ -1,3 +1,7 @@
+[version "0.1.18"]
+date = Tue Sep 13 12:58:25 PM EDT 2022
+done = Don't allow 'bpan bump' if there are WIP commits
+
 [version "0.1.17"]
 date = Tue Sep 13 12:39:17 PM EDT 2022
 done = Major refactoring; config.bash as library
