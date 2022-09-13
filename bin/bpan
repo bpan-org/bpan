@@ -1,16 +1,14 @@
 #!/usr/bin/env bash
 
-app=bpan
-APP=${app^^}
 [[ ${BPAN_ROOT:-} ]] ||
-  { echo "BPAN_ROOT not set. 'source /path/to/$app/.rc'"; exit 1; }
+  { echo "BPAN_ROOT not set. 'source /path/to/bpan/.rc'"; exit 1; }
 
-source "$BPAN_ROOT/lib/bpan.bash" --
-
-bpan:use prelude
-bpan:use say
-
-bpan:use getopt "\
+source "$BPAN_ROOT/lib/bpan.bash" --app
+bpan:source prelude
+bpan:source config
+bpan:source say
+bpan:source git-utils
+bpan:source getopt "\
 getopt_default=--help
 getopt_cmds_find=true
 getopt_cmds_spec=getopt-cmds-spec
@@ -24,6 +22,7 @@ System Commands:
   uninstall     Uninstall a $APP package
   list          List all installed $APP packages
   config        Manage $APP config settings
+  setup         Setup / configure 'bpan' itself
   complete      Shell tab completion for $app
 
 Project Commands:
@@ -54,25 +53,40 @@ x,debug       Print lots of debugging info
 "
 
 main() (
-  set-env "$@"
+  set-env
 
-  opts=$*
   getopt "$@"
-  set -- "${args[@]}"
 
   if $option_version; then
-    echo "$app $(bpan:config bpan.version)"
+    BPAN_VERSION=$(
+      config_file=$BPAN_ROOT/.bpan/config \
+        config:get bpan.version
+    )
+    echo "$app $BPAN_VERSION"
 
   elif [[ $cmd ]]; then
     source-once "$cmd"
-    "$cmd:main" "$@"
+    "$cmd:main" "${args[@]}"
 
   else
-    error "Invalid command '$app $opts'"
+    error "Invalid $app command '$app $*'"
   fi
 )
 
 set-env() {
+  BPAN_PROJECT_ROOT=''
+  local dir
+  if git:in-repo . &&
+     dir=$(git:top-dir) &&
+     [[ -f $dir/.bpan/config ]]
+  then
+    BPAN_PROJECT_ROOT=$dir
+  fi
+
+  config_files=( "$BPAN_ROOT/config" )
+  [[ $BPAN_PROJECT_ROOT ]] &&
+    config_files+=( "$BPAN_PROJECT_ROOT/.bpan/config" )
+
   root=$BPAN_ROOT
   [[ -f $root/bin/$app ]] ||
     error "BPAN_ROOT variable has bad value '$root'"
@@ -139,7 +153,7 @@ todo() (
 )
 
 error() (
-  say-r "Error: $1" >&2
+  say-r "[$app] Error: $1" >&2
   exit 1
 )
 

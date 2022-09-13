@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-source "$BPAN_ROOT/lib/bpan.bash" --prelude
-
-bpan:use test-tap
+source "$BPAN_ROOT/lib/bpan.bash" --
+bpan:source prelude
+bpan:source config
+bpan:source test-tap
 
 online() (
   ping -q -c1 8.8.8.8 &>/dev/null

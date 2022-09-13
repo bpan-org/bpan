@@ -5,8 +5,6 @@ search:main() (
   term=$(IFS='|'; echo "$*")
   pattern="=.*($term)"
 
-  source-once index
-
   # shellcheck disable=2207
   found=($(
     git config -l -f "$index_file" |

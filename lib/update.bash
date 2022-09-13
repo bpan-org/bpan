@@ -70,8 +70,7 @@ update:require() (
     )
 
   done < <(
-    bpan:config-read
-    git config -lf- <<<"$config" |
+    config:list |
       grep -E '^require\.(bpan|test)\.'
   )
 )

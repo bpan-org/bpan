@@ -9,7 +9,7 @@ env:author-email() (
 )
 
 env:copyright-year() (
-  year=$(bpan config bpan.copyright)
+  year=$(bpan config bpan.copyright || true)
   echo "${year:-$(date +%Y)}"
 )
 

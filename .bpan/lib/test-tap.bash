@@ -48,6 +48,7 @@ has() {
   local want=$2
   local label
   label=$(test-tap:label "$3")
+  n=$'\n'
 
   if [[ $got == *"$want"* ]]; then
     pass "$label"

@@ -3,9 +3,9 @@ bump:options() (
 )
 
 bump:main() (
-  [[ -d .git ]] ||
-    error "'$app $cmd' require './.git/' directory"
-  [[ $(git status -s) ]] &&
+  git:in-top-dir ||
+    error "'$app $cmd' must be at repo toplevel"
+  git:is-clean ||
     error "Can't '$app $cmd' with uncommited changes"
 
   [[ -f Changes ]] ||
@@ -18,13 +18,13 @@ bump:main() (
     error "No 'bpan.version' found in '$config_file'"
   [[ $version1 =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] ||
     error "Unrecognized version '$version1'"
-  git rev-parse "$version1" &>/dev/null ||
+  git:has-ref "$version1" ||
     die "No git tag found for version '$version1'"
 
   version2=${version1%.*}.$(( ${version1##*.} + 1))
 
   list=$(
-    git log --pretty --format='%s' "$version1.." |
+    git:subject-lines "$version1.." |
       while read -r line; do
         echo "done = $line"
       done
@@ -34,8 +34,7 @@ bump:main() (
     error "No changes commited since version '$version1'"
 
   if $option_push; then
-    branch=$(git rev-parse --abbrev-ref HEAD)
-    [[ $branch != HEAD ]] ||
+    [[ $(git:branch-name) ]] ||
       error "Can't push. Not checked out to a branch."
   fi
 
@@ -68,7 +67,7 @@ $list"
 
   git commit -q -a -m "Version $version2"
 
-  commit=$(git rev-parse HEAD)
+  commit=$(git:commit-sha)
   say -y "Changes committed '${commit:0:8}'"
 
   git tag "$version2"

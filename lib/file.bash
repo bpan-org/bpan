@@ -3,27 +3,38 @@ file:default() (
 )
 
 file:usage() (
-  echo "$app <opts> $cmd <file-to-update...>"
+  echo "$app <opts> $cmd <$cmd-opts> <file-to-update...>"
   echo "$app $cmd --list"
 )
 
 file:options() (
   echo "l,list  List files that can be used"
+  echo "type=   file | new | init | update | setup"
 )
 
 file:main() (
-  share_base=$BPAN_ROOT/share/file
+  type=${option_type:-file}
+  share_base=$BPAN_ROOT/share/$type
 
   if $option_list; then
     file:list
     return
   fi
 
-  [[ -d .git ]] ||
-    error "Must be in root directory of repo"
+  case "$type" in
+    setup)
+      cd "$BPAN_ROOT" || exit;;
+    file | new | update)
+      [[ -d .git ]] ||
+        error "Must be in root directory of repo";;
+    *) error "Invalid value '--type=$type'";;
+  esac
+
+  [[ $# -gt 0 ]] ||
+    error "'$app $cmd' requires one or more files"
 
   for file; do
-    from=$BPAN_ROOT/share/file/$file
+    from=$share_base/$file
     if [[ -f $from ]]; then
       file:copy "$file"
     else

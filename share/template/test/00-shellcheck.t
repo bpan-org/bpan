@@ -17,7 +17,6 @@ while read -r file; do
 done < <(
   find . -type f \
          -not -path '*/\.git/*' \
-         -not -path '*/.bpan/*' \
          -not -path '*/local/*' |
     grep -v '\.sw[op]' |
     grep -v '\.bpan/src/' |

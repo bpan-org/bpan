@@ -1,87 +1,67 @@
 #!/bash
 
-# Set Bash strict settings:
-set -e -u -o pipefail
-shopt -s inherit_errexit 2>/dev/null || true
-
 bpan:main() {
-  local self root
-  self=${BASH_SOURCE[0]}
-  [[ $self == */lib/bpan.bash ]] ||
-    bpan:die "bpan.bash is in an unsupported place!"
-  root=$(cd "$(dirname "$self")/.." && pwd -P)
-  local_root=$(cd "$(dirname "$self")/../.." && pwd)
+  # Require Bash 3.2+
+  bpan:bash32+ ||
+    die "Bash 3.2 or higher is required"
+
+  # Settings to make Bash as strict as possible:
+  {
+    set -e
+    set -u
+    set -o pipefail
+    shopt -s inherit_errexit
+  } 2>/dev/null || true
+
+  local root
+  root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)
+  [[ ${BPAN_ROOT-} && $root == "$BPAN_ROOT" ]] ||
+    root=${root%/.bpan}
 
   export PATH=$root/.bpan/lib:$root/.bpan/bin:$PATH
 
-  bpan:config-read "$root/.bpan/config"
-
-  BPAN_VERSION="$(bpan:config bpan.version)"
-
   local arg
   for arg; do
-    if [[ $arg == -- ]]; then
-      :
-    elif [[ $arg == --getopt ]]; then
-      source "${BPAN_ROOT?}/.bpan/lib/getopt.bash" --
-    elif [[ $arg == --prelude ]]; then
-      source "${BPAN_ROOT?}/.bpan/lib/prelude.bash" --
-    elif [[ $arg == --say ]]; then
-      source "${BPAN_ROOT?}/.bpan/lib/say.bash" --
-    else
-      bpan:die "Unknown argument '$arg' for '$self'"
-    fi
-  done
+    case "$arg" in
+      --) :;;
 
-  app=$(basename "$0")
+      --app)
+        app=$(basename "$0")
+        if bpan:bash40+; then
+          App=${app^}
+          APP=${app^^}
+        else
+          App=$app
+          APP=$app
+        fi
+        ;;
+
+      --prelude) bpan:source prelude;;
+
+      *) die "Unknown argument '$arg' for '${BASH_SOURCE[0]}'";;
+    esac
+  done
 }
 
-bpan:die() ( printf '%s\n' "$@" >&2; exit 1 )
+bpan:bash32+() ( shopt -s compat31 2>/dev/null )
+bpan:bash40+() ( shopt -s compat32 2>/dev/null )
+bpan:bash41+() ( shopt -s compat40 2>/dev/null )
+bpan:bash42+() ( shopt -s compat41 2>/dev/null )
+bpan:bash43+() ( shopt -s compat42 2>/dev/null )
+bpan:bash44+() ( shopt -s compat43 2>/dev/null )
+bpan:bash50+() ( shopt -s compat44 2>/dev/null )
+
+bpan:source() {
+  local name=$1; shift
+  source "${BPAN_ROOT?}/.bpan/lib/$name.bash" "$@"
+}
 
 bpan:use() {
-  local library=$1; shift
-  source "$library.bash" "$@"
+  local name=$1; shift
+  source "$name.bash" "$@"
 }
 
-bpan:config() (
-  if [[ $# -eq 1 ]]; then
-    if [[ $1 == *.* ]]; then
-      git config -f- "$1" <<<"$config" 2>/dev/null || true
-    else
-      (
-        git config -lf- <<<"$config" 2>/dev/null |
-          grep "^$1=" |
-          cut -d= -f2
-      ) || true
-    fi
-  elif [[ $# -eq 2 ]]; then
-    git config -f "$config_file" "$@"
-    sed -i 's/^\t//' "$config_file"
-  fi
-)
-
-bpan:config-read() {
-  config=''
-  config_file=$(readlink -f "${1:-.bpan/config}")
-  if [[ -f $config_file ]]; then
-    config_file=$(readlink -f "$config_file")
-    config=$(< "$config_file")
-    local from_file
-    from_file=$(bpan:config from)
-    if [[ $from_file ]]; then
-      config=$(
-        cd "$(dirname "$config_file")"
-        cat "$from_file"
-        echo
-        echo "$config"
-      )
-      config_file=$from_file
-    fi
-  else
-    config_file=''
-  fi
-}
-
+# Move to prelude
 bpan:require-commands() (
   while read -r line; do
     [[ $line ]] || break
@@ -91,10 +71,55 @@ bpan:require-commands() (
     command=${command%%=*}
     require-command-version "$command" "$version"
   done < <(
-    bpan:config-read
     git config -lf- <<<"$config" |
       grep "^require\.command\."
   )
+)
+
+# Global functions
+
+die() {
+  local level=0
+  local args=()
+  local arg msg
+
+  for arg; do
+    if [[ $arg =~ ^--level=([0-9]+)$ ]]; then
+      level=${BASH_REMATCH[1]}
+    else
+      args+=("$arg")
+    fi
+  done
+  set -- "${args[@]}"
+
+  if [[ $# -eq 0 ]]; then
+    set -- Died
+  elif [[ $# -eq 1 ]]; then
+    msg=$1
+    set -- "${msg//\\n/$'\n'}"
+  fi
+
+  printf "%s\n" "$@" >&2
+
+  if [[ $# -eq 1 && $1 == *$'\n' ]]; then
+    exit 1
+  fi
+
+  local c
+  IFS=' ' read -r -a c <<< "$(caller "$level")"
+  if (( ${#c[@]} == 2 )); then
+    printf ' at line %d of %s\n' "${c[@]}" >&2
+  else
+    printf ' at line %d in %s of %s\n' "${c[@]}" >&2
+  fi
+
+  exit 1
+}
+
+warn() (
+  [[ $# -gt 0 ]] ||
+    set -- Warning
+  printf '%s\n' "$@" >&2
 )
 
 bpan:main "$@"
