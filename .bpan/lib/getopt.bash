@@ -31,14 +31,19 @@ getopt() {
   fi
 
   local output
+  local rc=0
   output=$(
     echo "$getopt_parseopt" |
       git rev-parse --parseopt --stuck-long -- "$@"
-  ) || true
+  ) || rc=$?
 
-  if [[ $output =~ ^cat ]]; then
-    eval "$output" | getopt:pager
-    exit 0
+  if [[ $rc -ne 0 ]]; then
+    if [[ $output == cat* ]]; then
+      eval "$output" | getopt:pager
+    elif [[ $output ]]; then
+      die "Unexpected results from 'git rev-parse --parseopt'"
+    fi
+    exit $rc
   else
     eval "$output"
   fi
