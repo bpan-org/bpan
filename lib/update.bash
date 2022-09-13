@@ -35,6 +35,7 @@ update:require() (
 
     $option_local ||
       install:main "$pkg"
+    option_index=false
     pkg:parse-id "$pkg"
     if ! $option_local; then
       if [[ ! $ver ]]; then

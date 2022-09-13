@@ -57,7 +57,7 @@ pkg:get-index() (
      ]]
   then
     [[ ${BPAN_TESTING-} ]] ||
-      say-y "Updating BPAN package index..."
+      say+y "Updating BPAN package index..."
     mkdir -p "$root/local"
     curl --fail -s "$index_url" > "$index_file" ||
       rm -f "$index_file"
