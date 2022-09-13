@@ -39,7 +39,8 @@ git:has-ref() (
 
 git:branch-name() (
   git:assert-in-repo .
-  name=$(git rev-parse --abbref-ref HEAD)
+  name=$(git rev-parse --abbrev-ref HEAD)
+  [[ $name ]] || die
   [[ $name == HEAD ]] && name=''
   echo "$name"
 )

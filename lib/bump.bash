@@ -33,8 +33,12 @@ bump:main() (
   [[ $list ]] ||
     error "No changes commited since version '$version1'"
 
+  grep -q -i '^wip\>' <<<"$list" &&
+    error "Can't '$app $cmd' with WIP commits"
+
   if $option_push; then
-    [[ $(git:branch-name) ]] ||
+    branch=$(git:branch-name)
+    [[ $branch ]] ||
       error "Can't push. Not checked out to a branch."
   fi
 
