@@ -48,6 +48,7 @@ has() {
   local want=$2
   local label
   label=$(test-tap:label "$3")
+  local n=$'\n'
 
   if [[ $got == *"$want"* ]]; then
     pass "$label"
@@ -58,7 +59,27 @@ has() {
     else
       got="'$got'"
     fi
-    diag "Text '$want' not found in: $got"
+    diag "Text '$want' NOT found in: $got"
+  fi
+}
+
+hasnt() {
+  local got=$1
+  local want=$2
+  local label
+  label=$(test-tap:label "$3")
+  local n=$'\n'
+
+  if [[ $got != *"$want"* ]]; then
+    pass "$label"
+  else
+    fail "$label"
+    if [[ $got == *"$n"* ]]; then
+      got="'$n$got$n'"
+    else
+      got="'$got'"
+    fi
+    diag "Text '$want' WAS found in: $got"
   fi
 }
 
