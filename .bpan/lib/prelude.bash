@@ -4,6 +4,53 @@
 
 prelude:VERSION() ( echo 0.1.0 )
 
+prelude:main() (
+  unset -f prelude:main
+)
+
+warn() (
+  if [[ $# -eq 0 ]]; then
+    set -- Warning
+  fi
+  printf '%s\n' "$@" >&2
+)
+
+die() (
+  level=0
+  args=()
+  for arg; do
+    if [[ $arg =~ ^--level=([0-9]+)$ ]]; then
+      level=${BASH_REMATCH[1]}
+    else
+      args+=("$arg")
+    fi
+  done
+  set -- "${args[@]}"
+
+  if [[ $# -eq 0 ]]; then
+    set -- Died
+  elif [[ $# -eq 1 ]]; then
+    msg=$1
+    set -- "${msg//\\n/$'\n'}"
+  fi
+
+  printf "%s\n" "$@" >&2
+
+  if [[ $# -eq 1 && $1 == *$'\n' ]]; then
+    exit 1
+  fi
+
+  local c
+  IFS=' ' read -r -a c <<< "$(caller "$level")"
+  if (( ${#c[@]} == 2 )); then
+    printf ' at line %d of %s\n' "${c[@]}" >&2
+  else
+    printf ' at line %d in %s of %s\n' "${c[@]}" >&2
+  fi
+
+  exit 1
+)
+
 is-func() {
   [[ $(type -t "${1:?is-func requires a function name}") == function ]]
 }
@@ -69,3 +116,5 @@ find-lib() (
     grep -E "$library_name\$" |
     head -n1
 )
+
+prelude:main "$@"

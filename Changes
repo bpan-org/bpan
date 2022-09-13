@@ -1,3 +1,7 @@
+[version "0.1.17"]
+date = Tue Sep 13 12:39:17 PM EDT 2022
+done = Major refactoring; config.bash as library
+
 [version "0.1.16"]
 date = Mon Sep 12 01:47:37 PM EDT 2022
 done = Convert cmd:getopt usage to smaller builders
