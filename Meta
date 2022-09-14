@@ -5,9 +5,9 @@ abstract = Bash Package Manager
 license = MIT
 copyright = 2014-2022
 
-site = $repo
-repo = https://github.com/bpan-org/$name
-bug = $repo/issues/
+site = $bpan.repo
+repo = https://github.com/bpan-org/$bpan.name
+bug = $bpan.repo/issues/
 irc = irc.libera.chat/bpan
 
 [author]
