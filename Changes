@@ -1,3 +1,7 @@
+[version "0.1.20"]
+date = Wed Sep 14 04:07:50 PM EDT 2022
+done = Make lib/bpan.bash leaner and meaner
+
 [version "0.1.19"]
 date = Wed Sep 14 09:58:21 AM EDT 2022
 done = Add variable expansion to config
