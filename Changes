@@ -1,3 +1,10 @@
+[version "0.1.19"]
+date = Wed Sep 14 09:58:21 AM EDT 2022
+done = Add variable expansion to config
+done = Updates for latest prelude and getopt releases
+done = Update test-tap.bash
+done = Don't update index multiple times for update
+
 [version "0.1.18"]
 date = Tue Sep 13 12:58:25 PM EDT 2022
 done = Don't allow 'bpan bump' if there are WIP commits
