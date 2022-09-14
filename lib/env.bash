@@ -65,6 +65,12 @@ env:github-user-url() (
   echo "$user"
 )
 
+env:markdown-title() (
+  len=${#name}
+  line=$(eval "printf '%.0s=' {1..$len}")
+  printf '%s\n%s' "$name" "$line"
+)
+
 env:readme-title() (
   name=$(env:repo-name)
   len=${#name}

@@ -13,6 +13,14 @@ new:main() (
   [[ $# -eq 1 ]] ||
     error "'$app new' requires a directory name argument"
 
+  if $option_bin; then
+    type=bin
+  elif $option_lib; then
+    type=lib
+  else
+    error "'$app $cmd' requires --bin or --lib"
+  fi
+
   dir=$1
   [[ $dir == . ]] && name=$(pwd -P)
 
@@ -86,6 +94,11 @@ new:copy() (
 
   elif [[ $from == */doc/NAME.md ]]; then
     ln -s "$from" ReadMe.md
+    say-y "CREATED 'ReadMe.md'"
+
+  elif [[ $from == */gitignore ]]; then
+    mv gitignore .gitignore
+    to=.gitignore
   fi
 
   say-y "CREATED '$to'"
