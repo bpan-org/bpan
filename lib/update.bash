@@ -1,11 +1,33 @@
+: "
+bpan update --all
+- Update all files 
+bpan update --file=Makefile
+
+
+"
+
 update:options() (
+  echo "l,list    List files to update"
+  echo "f,file    File to update"
+  echo "t,type=   pkg | file | man | new | init | global"
+  echo "a,all     All types"
   echo "I,index   Refresh index file"
   echo "L,local   Symlink install to local repos"
 )
 
 update:main() (
+  update:file
   update:require
   update:man
+)
+
+update:file() (
+  while read -r file; do
+    :
+  done < <(
+    config:list |
+      grep -E '^file.bpan.update'
+  )
 )
 
 update:require() (
@@ -101,7 +123,7 @@ update:man() (
     MD2MAN_PROG="md2man v0.1.0"
     export MD2MAN_NUM MD2MAN_NAME MD2MAN_DESC MD2MAN_PROG
 
-    warn "+md2man < $md > $man"
+    say -y "Updating '$man' from '$md'"
     "$root/local/bin/md2man" < "$md" > "$man"
   done
 )

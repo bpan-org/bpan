@@ -1,1 +1,1 @@
-../../template/test/00-shellcheck.t
+../../template/test-shellcheck.bash

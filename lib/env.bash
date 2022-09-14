@@ -1,3 +1,7 @@
+env:package-name() (
+  echo "${name:-???}"
+)
+
 env:author-name() (
   name=${GIT_AUTHOR_NAME:-$(git config user.name || true)}
   echo "${name:-???}"
@@ -9,8 +13,7 @@ env:author-email() (
 )
 
 env:copyright-year() (
-  year=$(bpan config bpan.copyright || true)
-  echo "${year:-$(date +%Y)}"
+  date '+%Y'
 )
 
 env:date-time() (
