@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 
+( shopt -s compat31 2>/dev/null ) ||
+  { echo "bpan requires bash version 3.2 or higher">&2; exit 1; }
+
 [[ ${BPAN_ROOT:-} ]] ||
-  { echo "BPAN_ROOT not set. 'source /path/to/bpan/.rc'"; exit 1; }
+  { echo "BPAN_ROOT not set. 'source /path/to/bpan/.rc'">&2; exit 1; }
 
 source "$BPAN_ROOT/lib/bpan.bash" --app
 bpan:source prelude
 bpan:source config
 bpan:source say
+bpan:source bpan-util
 bpan:source git-utils
 bpan:source getopt "\
 getopt_default=--help

@@ -1,0 +1,7 @@
++is-bash32+() ( shopt -s compat31 2>/dev/null )
++is-bash40+() ( shopt -s compat32 2>/dev/null )
++is-bash41+() ( shopt -s compat40 2>/dev/null )
++is-bash42+() ( shopt -s compat41 2>/dev/null )
++is-bash43+() ( shopt -s compat42 2>/dev/null )
++is-bash44+() ( shopt -s compat43 2>/dev/null )
++is-bash50+() ( shopt -s compat44 2>/dev/null )

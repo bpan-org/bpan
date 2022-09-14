@@ -1,33 +1,38 @@
 #!/bash
 
-bpan:main() {
-  # Require Bash 3.2+
-  bpan:bash32+ ||
-    die "Bash 3.2 or higher is required"
+( shopt -s compat31 2>/dev/null ) ||
+  { echo "bpan.bash requires bash version 3.2 or higher">&2; exit 1; }
 
+bpan:main() {
   # Settings to make Bash as strict as possible:
   {
-    set -e
-    set -u
+    set -o errexit
+    set -o nounset
     set -o pipefail
     shopt -s inherit_errexit
   } 2>/dev/null || true
 
+  # Determine the app project/install's root directory:
   local root
   root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)
+  # Account for .bpan/ dir in project directories:
   [[ ${BPAN_ROOT-} && $root == "$BPAN_ROOT" ]] ||
     root=${root%/.bpan}
 
-  export PATH=$root/.bpan/lib:$root/.bpan/bin:$PATH
+  # Add the app's BPAN dependency dir to PATH:
+  export PATH=$root/.bpan/lib:$PATH
 
+  # 'source bpan.bash ...' can take arguments:
   local arg
   for arg; do
     case "$arg" in
-      --) :;;
+      # No arguments intended. Needed to ignore global '$@':
+      --) break;;
 
+      # Export the 'app', 'App', and 'APP' variables:
       --app)
         app=$(basename "$0")
-        if bpan:bash40+; then
+        if ( shopt -s compat31 2>/dev/null ); then  # bash 4.0+
           App=${app^}
           APP=${app^^}
         else
@@ -36,6 +41,8 @@ bpan:main() {
         fi
         ;;
 
+      # Source BPAN's prelude.bash library:
+      # XXX This should likely be tossed soon.
       --prelude) bpan:source prelude;;
 
       *) die "Unknown argument '$arg' for '${BASH_SOURCE[0]}'";;
@@ -43,40 +50,22 @@ bpan:main() {
   done
 }
 
-bpan:bash32+() ( shopt -s compat31 2>/dev/null )
-bpan:bash40+() ( shopt -s compat32 2>/dev/null )
-bpan:bash41+() ( shopt -s compat40 2>/dev/null )
-bpan:bash42+() ( shopt -s compat41 2>/dev/null )
-bpan:bash43+() ( shopt -s compat42 2>/dev/null )
-bpan:bash44+() ( shopt -s compat43 2>/dev/null )
-bpan:bash50+() ( shopt -s compat44 2>/dev/null )
-
+# This sources libraries from installed BPAN's .bpan/lib/ dir:
 bpan:source() {
   local name=$1; shift
   source "${BPAN_ROOT?}/.bpan/lib/$name.bash" "$@"
 }
 
+# XXX This should likely be removed soon:
 bpan:use() {
   local name=$1; shift
   source "$name.bash" "$@"
 }
 
-# Move to prelude
-bpan:require-commands() (
-  while read -r line; do
-    [[ $line ]] || break
-    command=${line#require.commands.}
-    version=${command#*=}
-    version=${version%+}
-    command=${command%%=*}
-    require-command-version "$command" "$version"
-  done < <(
-    git config -lf- <<<"$config" |
-      grep "^require\.command\."
-  )
-)
-
 # Global functions
+#
+# The following functions are used constantly in most Bash programs (including
+# this file) so we declare them up front:
 
 die() {
   local level=0
