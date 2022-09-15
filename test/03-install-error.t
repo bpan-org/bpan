@@ -2,7 +2,7 @@
 
 source test/init
 
-online ||
++is-online ||
   skip-all "These tests need to be run online"
 
 test-errors <<'...'
