@@ -1,3 +1,7 @@
+[version "0.1.23"]
+date = Thu Sep 15 07:49:01 PM EDT 2022
+done = Fix bug in tests
+
 [version "0.1.22"]
 date = Thu Sep 15 04:50:32 PM EDT 2022
 done = Improvements for 'bpan update'
