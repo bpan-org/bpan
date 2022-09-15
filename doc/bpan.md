@@ -19,9 +19,9 @@ Use the `bpan` Bash library in your Bash code:
 
 source "$MY_PROJECT_ROOT/.bpan/lib/bpan.bash" --
 
-bpan:use prelude=0.1.0
-bpan:use bpan-org/getopt
-bpan:use github:ingydotnet/json
+bpan:source bashplus=0.1.0
+bpan:source bpan-org/getopt
+bpan:source github:ingydotnet/json
 ```
 
 Publish your Bash packages:
@@ -119,7 +119,7 @@ bpan init
 
 To add a BPAN dependency to a project:
 ```
-bpan add prelude-bash getopt-bash
+bpan add bashplus getopt-bash
 ```
 
 To update the BPAN dependency files and generate man pages:
@@ -204,7 +204,7 @@ twitter = ingydotnet
 site = https://github.com/${author.github}
 
 [require "bpan"]
-prelude-bash = 0.1.0+
+bashplus = 0.1.0+
 getopt-bash = 0.1.0+
 
 [require "command"]

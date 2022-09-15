@@ -101,7 +101,7 @@ update:require() (
 update:man() (
   [[ -d doc ]] || return 0
 
-  if ! is-cmd md2man; then
+  if ! +is-cmd md2man; then
     say -r "Run 'bpan install md2man' to update man pages"
     return
   fi

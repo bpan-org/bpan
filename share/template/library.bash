@@ -1,9 +1,9 @@
-(% package-name %):main() (
+(% pkg %):main() (
   true
 )
 
-(% package-name %):run() (
+(% pkg %):run() (
   true
 )
 
-(% package-name %) "$@"
+(% pkg %) "$@"

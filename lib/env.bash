@@ -1,5 +1,19 @@
-env:package-name() (
-  echo "${name:-???}"
+env:pkg() (
+  [[ ${name-} ]] ||
+    die "'\$name' not defined"
+  [[ $name =~ ^[a-z][-a-z0-9]*$ ]] ||
+    die "Bad pkg name '$name'"
+  echo "$name"
+)
+
+env:PKG() (
+  [[ ${name-} ]] ||
+    die "'\$name' not defined"
+  [[ $name =~ ^[a-z][-a-z0-9]*$ ]] ||
+    die "Bad pkg name '$name'"
+  NAME=${name^^}
+  NAME=${NAME//-/_}
+  echo "$NAME"
 )
 
 env:author-name() (
@@ -21,6 +35,7 @@ env:date-time() (
 )
 
 env:github-user-id() (
+  
   if id=$(git hub config login 2>/dev/null); then
     echo "$id"
     return

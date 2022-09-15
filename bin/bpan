@@ -7,7 +7,7 @@
   { echo "BPAN_ROOT not set. 'source /path/to/bpan/.rc'">&2; exit 1; }
 
 source "$BPAN_ROOT/lib/bpan.bash" --app
-bpan:source prelude
+bpan:source bashplus
 bpan:source config
 bpan:source say
 bpan:source bpan-util
@@ -125,20 +125,20 @@ getopt-cmds-spec() {
   source-once "$cmd"
   local help="h,help  Get help for $cmd command"
 
-  if is-func "$cmd:getopt"; then
+  if +is-func "$cmd:getopt"; then
     "$cmd:getopt"
 
   else
     local usage='' options=''
-    if is-func "$cmd:default"; then
+    if +is-func "$cmd:default"; then
       usage+="getopt_default=($("$cmd:default"))"$'\n\n'
     fi
-    if is-func "$cmd:usage"; then
+    if +is-func "$cmd:usage"; then
       usage+=$("$cmd:usage")
     else
       usage+="$app [<$app-opts>] $cmd [<$cmd-opts>]"
     fi
-    if is-func "$cmd:options"; then
+    if +is-func "$cmd:options"; then
       options=$("$cmd:options")
     fi
     echo "\

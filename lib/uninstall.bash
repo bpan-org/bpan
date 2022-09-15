@@ -7,10 +7,10 @@ Uninstall BPAN Packages
 Some 'bpan uninstall ...' commands:
 
 ```
-$app uninstall prelude-bash
-$app uninstall bpan-org/prelude-bash
-$app uninstall bpan-org/prelude-bash=0.1.0
-$app uninstall github:bpan-org/prelude-bash=0.1.0
+$app uninstall getopt-bash
+$app uninstall bpan-org/getopt-bash
+$app uninstall bpan-org/getopt-bash=0.1.0
+$app uninstall github:bpan-org/getopt-bash=0.1.0
 ```
 ...
 )

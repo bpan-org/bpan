@@ -8,8 +8,8 @@
   exit 1
 }
 
-source "$BPAN_ROOT/lib/bpan.bash" --prelude
+source "$BPAN_ROOT/lib/bpan.bash" --
 
 export PATH=$PWD/lib:$PATH
 
-bpan:use test-tap
+bpan:source test-tap

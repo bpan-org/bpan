@@ -45,6 +45,18 @@ new:main() (
   for file; do
     new:copy "$file"
   done
+
+  say -y "Running 'bpan update'"
+  bpan update
+
+  git init -q
+  say -y "Initialized git repo"
+
+  # TODO add git remote here…
+
+  git add .
+  git commit -q -m 'Initial commit'
+  say -g "Committed all files to a git 'Initial commit'"
 )
 
 new:copy() (
@@ -64,14 +76,16 @@ new:copy() (
     cp -pL "$from" "$to"
   fi
 
-  if $option_meta && [[ $from == .bpan/config ]]; then
+  if $option_meta && [[ $from == */.bpan/config ]]; then
     mv .bpan/config Meta
     ln -s ../Meta .bpan/config
     say-y "CREATED 'Meta'"
-  fi
 
-  if [[ $from == bin/* ]]; then
+  elif [[ $from == */bin/NAME ]]; then
     chmod +x "$to"
+
+  elif [[ $from == */doc/NAME.md ]]; then
+    ln -s "$from" ReadMe.md
   fi
 
   say-y "CREATED '$to'"

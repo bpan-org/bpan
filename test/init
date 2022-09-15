@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 source "$BPAN_ROOT/lib/bpan.bash" --
-bpan:source prelude
+bpan:source bashplus
 bpan:source config
 bpan:source test-tap
 

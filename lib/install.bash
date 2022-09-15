@@ -7,10 +7,10 @@ Install BPAN Packages
 Some 'bpan install ...' commands:
 
 ```
-$app install prelude-bash
-$app install bpan-org/prelude-bash
-$app install bpan-org/prelude-bash=0.1.0
-$app install github:bpan-org/prelude-bash=0.1.0
+$app install getopt-bash
+$app install bpan-org/getopt-bash
+$app install bpan-org/getopt-bash=0.1.0
+$app install github:bpan-org/getopt-bash=0.1.0
 ```
 ...
 )

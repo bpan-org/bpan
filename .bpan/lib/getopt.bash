@@ -61,7 +61,7 @@ getopt() {
 }
 
 getopt:cmd-getopt() {
-  is-func "$getopt_cmds_spec" ||
+  [[ $(type -t "$getopt_cmds_spec") == function ]] ||
     getopt:error \
       "getopt_cmds_spec='$getopt_cmds_spec' must be a function name"
   local getopt_spec=''

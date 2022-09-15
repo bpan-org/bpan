@@ -2,7 +2,7 @@
 
 source test/init
 
-check-command-version shellcheck 0.8.0 ||
++is-cmd-ver shellcheck 0.8.0 ||
   plan skip-all "Test requires shellcheck 0.8.0+ to be installed"
 
 skip=1090,1091,2030,2031,2034,2154,2207,2217

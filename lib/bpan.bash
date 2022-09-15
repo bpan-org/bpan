@@ -41,10 +41,6 @@ bpan:main() {
         fi
         ;;
 
-      # Source BPAN's prelude.bash library:
-      # XXX This should likely be tossed soon.
-      --prelude) bpan:source prelude;;
-
       *) die "Unknown argument '$arg' for '${BASH_SOURCE[0]}'";;
     esac
   done
@@ -54,12 +50,6 @@ bpan:main() {
 bpan:source() {
   local name=$1; shift
   source "${BPAN_ROOT?}/.bpan/lib/$name.bash" "$@"
-}
-
-# XXX This should likely be removed soon:
-bpan:use() {
-  local name=$1; shift
-  source "$name.bash" "$@"
 }
 
 # Global functions

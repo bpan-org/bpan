@@ -2,11 +2,9 @@
 
 source test/init
 
-bpan:use prelude
-
 test() {
   shell=$1; shift
-  if can "$shell"; then
+  if +can "$shell"; then
     # shellcheck disable=2086
     is "$(
       env -i PATH=/bin:/usr/bin $shell \

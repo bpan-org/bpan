@@ -14,8 +14,8 @@ test-errors <<'...'
 [bpan] Error: Invalid package domain 'gitbub'
 > bpan install
 [bpan] Error: 'bpan install' requires one or more packages
-> bpan install prelude-bash=9.9.9
-[bpan] Error: Can't find commit for pkg 'github:bpan-org/prelude-bash' version '9.9.9'
+> bpan install getopt-bash=9.9.9
+[bpan] Error: Can't find commit for pkg 'github:bpan-org/getopt-bash' version '9.9.9'
 ...
 
 done-testing
