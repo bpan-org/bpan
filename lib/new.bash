@@ -21,6 +21,8 @@ new:main() (
     error "'$app $cmd' requires --bin or --lib"
   fi
 
+  source-once env
+
   dir=$1
   [[ $dir == . ]] && name=$(pwd -P)
 
@@ -42,31 +44,43 @@ new:main() (
   files=($(
     cd "$share_base" || exit
     find . -type f -o -type l |
-    grep -v '\.sw[po]$' |
-    grep -v config |
-    cut -c3- |
+      grep -v '\.sw[po]$' |
+      cut -c3- |
       sort
   ))
 
-  set -- .bpan/config "${files[@]}"
+  say -g "Creating new BPAN project '$name'"
 
-  for file; do
+  for file in "${files[@]}"; do
     new:copy "$file"
   done
 
   say -y "Running 'bpan update'"
-  bpan update
+  if $option_quiet; then
+    bpan --quiet update
+  else
+    bpan update
+  fi
 
   git init -q
   say -y "Initialized git repo"
 
-  # TODO add git remote here…
-
   git add .
   git commit -q -m 'Initial commit'
-  say -g "Committed all files to a git 'Initial commit'"
+  say -y "Committed all files to a git 'Initial commit'"
+
+  git branch -M main
+  say -y "Set git repo main branch name to 'main'"
+
+  github_id=$(env:github-user-id)
+  remote=git@github:$github_id/$name
+  git remote add origin "$remote"
+  say -y "Set git repo remote to '$remote'"
+
+  say -g "Created new BPAN project '$name'"
 )
 
+# TODO move following functions to lib/file.bash
 new:copy() (
   file=$1
   dir=$(dirname "$file")
@@ -78,25 +92,44 @@ new:copy() (
   from=$share_base/$file
   to=${file/NAME/$name}
 
+  if [[ $type != bin ]]; then
+    if [[ $file == .rc ]] ||
+       [[ $file == bin/NAME ]]
+    then
+      return
+    fi
+  fi
+
   if grep -q -E '\(\%.*\%\)' "$from"; then
     new:render "$from" > "$to"
   else
     cp -pL "$from" "$to"
   fi
 
-  if $option_meta && [[ $from == */.bpan/config ]]; then
+  if [[ $type != bin ]]; then
+    text=$(
+      cat .bpan/config |
+        grep -v '^update = \.rc' |
+        grep -v '^ignore = bin/'
+    )
+    echo "$text" > .bpan/config
+  fi
+
+  if $option_meta &&
+     [[ $file == .bpan/config ]]
+  then
     mv .bpan/config Meta
     ln -s ../Meta .bpan/config
     say-y "CREATED 'Meta'"
 
-  elif [[ $from == */bin/NAME ]]; then
+  elif [[ $file == bin/NAME ]]; then
     chmod +x "$to"
 
-  elif [[ $from == */doc/NAME.md ]]; then
-    ln -s "$from" ReadMe.md
+  elif [[ $file == doc/NAME.md ]]; then
+    ln -s "$to" ReadMe.md
     say-y "CREATED 'ReadMe.md'"
 
-  elif [[ $from == */gitignore ]]; then
+  elif [[ $file == gitignore ]]; then
     mv gitignore .gitignore
     to=.gitignore
   fi
@@ -109,7 +142,7 @@ new:render() (
 
   text=$(< "$1")
 
-  while [[ $text =~ \(%(\ *[-a-z0-9]+\ *)%\) ]]; do
+  while [[ $text =~ \(%(\ *[-a-zA-Z0-9]+\ *)%\) ]]; do
     match=${BASH_REMATCH[1]}
     cmd=${match##\ }
     cmd=${cmd%%\ }

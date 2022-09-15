@@ -41,7 +41,8 @@ config:all() (
 
 config:list() (
   [[ $config_file ]] && config_files=( "$config_file" )
-  git config --file <(cat "${config_files[@]?}") --list
+  git config --file <(cat "${config_files[@]?}") --list |
+    sort
 )
 
 config:die() (

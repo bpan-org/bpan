@@ -32,7 +32,6 @@ System Commands:
 Project Commands:
   new           Create a new Bash project
   init          Create a '.$app/' project dir
-  file          Create or update a project file
   add           Add a package to a Bash project
   update        Update project $APP assets
   test          Run the project tests

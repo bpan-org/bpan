@@ -35,17 +35,17 @@ env:date-time() (
 )
 
 env:github-user-id() (
-  
-  if id=$(git hub config login 2>/dev/null); then
-    echo "$id"
-    return
-  fi
-  id=$(env:github-repo-url)
-  if [[ $id == https://* ]]; then
-    id=${id%/*}
-    id=${id##*/}
-  fi
-  echo "$id"
+  id=$(config:get bpan.user.github) || {
+    rc=0
+    out=$(ssh git@github.com 2>&1) || rc=$?
+    if [[ $rc -eq 1 ]]; then
+      if [[ $out =~ Hi\ ([-a-z0-9]+)! ]]; then
+        id=${BASH_REMATCH[1]}
+      fi
+    fi
+  }
+
+  echo "${id:-github-user-id}"
 )
 
 env:github-repo-url() (

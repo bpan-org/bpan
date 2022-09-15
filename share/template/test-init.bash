@@ -12,4 +12,5 @@ source "$BPAN_ROOT/lib/bpan.bash" --
 
 export PATH=$PWD/lib:$PATH
 
+bpan:source bashplus --
 bpan:source test-tap

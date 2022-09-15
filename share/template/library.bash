@@ -1,9 +1,3 @@
-(% pkg %):main() (
-  true
-)
-
 (% pkg %):run() (
-  true
+  echo "Hello ${1:-world}!"
 )
-
-(% pkg %) "$@"
