@@ -1,15 +1,23 @@
 SHELL := bash
 
-BPAN_CMDS := $(shell bpan cmds -q | grep -v '^test$$')
+ifndef BPAN_ROOT
+$(info BPAN_ROOT variable not set)
+$(info Makefile requires BPAN to be installed)
+$(info See: https://github.com/bpan-org/bpan)
+$(error ERROR)
+endif
 
-test ?= test
+o ?=
+test ?= test/
+
 
 default:
-	$(info $(BPAN_CMDS))
+
+BPAN_CMDS := $(shell bpan -q cmds | grep -v test)
+
+$(BPAN_CMDS)::
+	bpan $@ $o
 
 .PHONY: test
 test:
-	bpan $@ -v $(test)
-
-$(BPAN_CMDS)::
-	bpan $@
+	prove -v $(test)

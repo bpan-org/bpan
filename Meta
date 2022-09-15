@@ -21,18 +21,18 @@ site = http://ingy.net
 [require "bpan"]
 ; bashplus = 0.1.0+
 getopt-bash = 0.1.1+
-
-[require "test"]
 test-tap-bash = 0.1.0+
 
-[require "commands"]
+[require "command"]
 bash = 3.2
 git = 2.7+
 make = 3.81+
 perl = 5.10.1+
 
 [file "bpan"]
-render = ReadMe.md doc/bpan.md
+update = License
+update = Makefile
+update = ReadMe.md doc/bpan.md
 update = test/00-shellcheck.t
 
 # vim: ft=gitconfig:

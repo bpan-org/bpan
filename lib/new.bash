@@ -21,6 +21,7 @@ new:main() (
     error "'$app $cmd' requires --bin or --lib"
   fi
 
+  source-once file
   source-once env
 
   dir=$1
@@ -38,11 +39,11 @@ new:main() (
 
   cd "$dir" || exit
 
-  share_base=$BPAN_ROOT/share/new
-  [[ -d $share_base ]] || die "'$share_base' does not exist"
+  base=$BPAN_ROOT/share/new
+  [[ -d $base ]] || die "'$base' does not exist"
 
   files=($(
-    cd "$share_base" || exit
+    cd "$base" || exit
     find . -type f -o -type l |
       grep -v '\.sw[po]$' |
       cut -c3- |
@@ -52,8 +53,48 @@ new:main() (
   say -g "Creating new BPAN project '$name'"
 
   for file in "${files[@]}"; do
-    new:copy "$file"
+    from=$base/$file
+    to=${file/NAME/$name}
+
+    if [[ $to == gitignore ]]; then
+      to=.gitignore
+    fi
+
+    if [[ $type != bin ]]; then
+      if [[ $to == .rc ]] ||
+         [[ $to == bin/* ]]
+      then
+        continue
+      fi
+    fi
+
+    file:copy "$from" "$to"
+
+    if [[ $to == .bpan/config ]]; then
+      if [[ $type != bin ]]; then
+        text=$(
+          cat .bpan/config |
+            grep -v '^update = \.rc' |
+            grep -v '^ignore = bin/'
+        )
+        echo "$text" > .bpan/config
+      fi
+    fi
+
+    if $option_meta &&
+      [[ $to == .bpan/config ]]
+    then
+      mv .bpan/config Meta
+      ln -s ../Meta .bpan/config
+      say-y "CREATED 'Meta'"
+
+    elif [[ $to == bin/* ]]; then
+      chmod +x "$to"
+    fi
   done
+
+  git init -q
+  say -y "Initialized git repo"
 
   say -y "Running 'bpan update'"
   if $option_quiet; then
@@ -61,9 +102,6 @@ new:main() (
   else
     bpan update
   fi
-
-  git init -q
-  say -y "Initialized git repo"
 
   git add .
   git commit -q -m 'Initial commit'
@@ -78,77 +116,4 @@ new:main() (
   say -y "Set git repo remote to '$remote'"
 
   say -g "Created new BPAN project '$name'"
-)
-
-# TODO move following functions to lib/file.bash
-new:copy() (
-  file=$1
-  dir=$(dirname "$file")
-
-  [[ -e $file ]] && existed=true || existed=false
-
-  [[ $dir == . ]] || mkdir -p "$dir"
-
-  from=$share_base/$file
-  to=${file/NAME/$name}
-
-  if [[ $type != bin ]]; then
-    if [[ $file == .rc ]] ||
-       [[ $file == bin/NAME ]]
-    then
-      return
-    fi
-  fi
-
-  if grep -q -E '\(\%.*\%\)' "$from"; then
-    new:render "$from" > "$to"
-  else
-    cp -pL "$from" "$to"
-  fi
-
-  if [[ $type != bin ]]; then
-    text=$(
-      cat .bpan/config |
-        grep -v '^update = \.rc' |
-        grep -v '^ignore = bin/'
-    )
-    echo "$text" > .bpan/config
-  fi
-
-  if $option_meta &&
-     [[ $file == .bpan/config ]]
-  then
-    mv .bpan/config Meta
-    ln -s ../Meta .bpan/config
-    say-y "CREATED 'Meta'"
-
-  elif [[ $file == bin/NAME ]]; then
-    chmod +x "$to"
-
-  elif [[ $file == doc/NAME.md ]]; then
-    ln -s "$to" ReadMe.md
-    say-y "CREATED 'ReadMe.md'"
-
-  elif [[ $file == gitignore ]]; then
-    mv gitignore .gitignore
-    to=.gitignore
-  fi
-
-  say-y "CREATED '$to'"
-)
-
-new:render() (
-  source-once env
-
-  text=$(< "$1")
-
-  while [[ $text =~ \(%(\ *[-a-zA-Z0-9]+\ *)%\) ]]; do
-    match=${BASH_REMATCH[1]}
-    cmd=${match##\ }
-    cmd=${cmd%%\ }
-
-    text=${text/\(%$match%\)/$("env:$cmd")}
-  done
-
-  echo "$text"
 )

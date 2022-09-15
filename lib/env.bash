@@ -27,7 +27,9 @@ env:author-email() (
 )
 
 env:copyright-year() (
-  date '+%Y'
+  year=$(config:get bpan.copyright)
+  year=${year:-$(date '+%Y')}
+  echo "$year"
 )
 
 env:date-time() (

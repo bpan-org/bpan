@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH "bpan" 1 "2022-09-14" "md2man v0.1.0" "Bash Package Manager"
+.TH "bpan" 1 "2022-09-15" "md2man v0.1.0" "Bash Package Manager"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -159,9 +159,9 @@ Use the \f(CW\*(C`bpan\*(C'\fR Bash library in your Bash code:
 \&
 \&    source "$MY_PROJECT_ROOT/.bpan/lib/bpan.bash" \-\-
 \&
-\&    bpan:use prelude=0.1.0
-\&    bpan:use bpan\-org/getopt
-\&    bpan:use github:ingydotnet/json
+\&    bpan:source bashplus=0.1.0
+\&    bpan:source bpan\-org/getopt
+\&    bpan:source github:ingydotnet/json
 .Ve
 .PP
 Publish your Bash packages:
@@ -298,7 +298,7 @@ To add \s-1BPAN\s0 support (\f(CW\*(C`.bpan/\*(C'\fR) to an existing project:
 To add a \s-1BPAN\s0 dependency to a project:
 .PP
 .Vb 1
-\&    bpan add prelude\-bash getopt\-bash
+\&    bpan add bashplus getopt\-bash
 .Ve
 .PP
 To update the \s-1BPAN\s0 dependency files and generate man pages:
@@ -386,7 +386,7 @@ A typical \s-1BPAN\s0 \f(CW\*(C`config\*(C'\fR file looks like:
 \&    site = https://github.com/${author.github}
 \&
 \&    [require "bpan"]
-\&    prelude\-bash = 0.1.0+
+\&    bashplus = 0.1.0+
 \&    getopt\-bash = 0.1.0+
 \&
 \&    [require "command"]

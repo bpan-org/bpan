@@ -1,80 +1,38 @@
-file:default() (
-  echo --help
-)
-
-file:usage() (
-  echo "$app <opts> $cmd <$cmd-opts> <file-to-update...>"
-  echo "$app $cmd --list"
-)
-
-file:options() (
-  echo "l,list  List files that can be used"
-  echo "type=   file | new | init | update | setup"
-)
-
-file:main() (
-  type=${option_type:-file}
-  share_base=$BPAN_ROOT/share/$type
-
-  if $option_list; then
-    file:list
-    return
-  fi
-
-  case "$type" in
-    setup)
-      cd "$BPAN_ROOT" || exit;;
-    file | new | update)
-      [[ -d .git ]] ||
-        error "Must be in root directory of repo";;
-    *) error "Invalid value '--type=$type'";;
-  esac
-
-  [[ $# -gt 0 ]] ||
-    error "'$app $cmd' requires one or more files"
-
-  for file; do
-    from=$share_base/$file
-    if [[ -f $from ]]; then
-      file:copy "$file"
-    else
-      say -r "WARNING '$from' - no such file"
-    fi
-  done
-)
-
-file:list() (
-  cd "$share_base" || exit
-  find . -type f -o -type l |
-    cut -c3- |
-    sort
-)
-
 file:copy() (
-  file=$1
-  dir=$(dirname "$file")
+  from=$1
+  to=$2
+
+  [[ -e $to ]] &&
+    action=UPDATED ||
+    action=CREATED
+
+  dir=$(dirname "$to")
+
+  [[ -e $to ]] && existed=true || existed=false
+
+  [[ $dir == . ]] || mkdir -p "$dir"
+
   temp=$(mktemp)
 
-  mkdir -p "$dir"
-
-  if grep -q -E '\(\%.*\%\)' "$share_base/$file"; then
-    file:render "$share_base/$file" > "$temp"
+  if grep -q -E '\(\%.*\%\)' "$from"; then
+    file:render "$from" > "$temp"
   else
-    cp -pL "$share_base/$file" "$temp"
+    cp -pL "$from" "$temp"
   fi
 
-  if [[ -e $file ]]; then
-    if diff -q >/dev/null "$file" "$temp"; then
+  if [[ -e $to ]]; then
+    if diff -q "$to" "$temp" &>/dev/null; then
       rm -f "$temp"
-      say-g "CURRENT '$file'"
+      action=CURRENT
     else
-      mv "$temp" "$file"
-      say-y "UPDATED '$file'"
+      mv "$temp" "$to"
     fi
+
   else
-    mv "$temp" "$file"
-    say-y "CREATED '$file'"
+    mv "$temp" "$to"
   fi
+
+  say-y "$action '$to'"
 )
 
 file:render() (
@@ -82,7 +40,7 @@ file:render() (
 
   text=$(< "$1")
 
-  while [[ $text =~ \(%(\ *[-a-z0-9]+\ *)%\) ]]; do
+  while [[ $text =~ \(%(\ *[-a-zA-Z0-9]+\ *)%\) ]]; do
     match=${BASH_REMATCH[1]}
     cmd=${match##\ }
     cmd=${cmd%%\ }

@@ -1,13 +1,17 @@
-#!/usr/bin/env bash
+#!/bash
+
+[[ ${BPAN_ROOT-} ]] || {
+  (
+    echo "Tests require BPAN to be installed."
+    echo "See https://github.com/bpan-org/bpan"
+  ) >&2
+  exit 1
+}
 
 source "$BPAN_ROOT/lib/bpan.bash" --
-bpan:source bashplus
-bpan:source config
-bpan:source test-tap
 
-online() (
-  ping -q -c1 8.8.8.8 &>/dev/null
-)
+bpan:source bashplus --
+bpan:source test-tap
 
 test-errors() {
   while read -r cmd && read -r msg; do

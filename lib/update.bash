@@ -1,10 +1,11 @@
+# TODO
 : "
 bpan update --all
-- Update all files 
+- Update all files
 bpan update --file=Makefile
-
-
 "
+
+
 
 update:options() (
   echo "l,list    List files to update"
@@ -16,17 +17,36 @@ update:options() (
 )
 
 update:main() (
-  update:file
-  update:require
-  update:man
+  if $option_list; then
+    update:list
+
+  else
+    update:files
+    update:require
+    update:man
+  fi
 )
 
-update:file() (
-  while read -r file; do
-    :
+# >>file.bpan.modify=.bpan/config
+# >>file.bpan.update=.bpan/lib/bpan.bash
+# >>file.bpan.update=Changes
+
+update:files() (
+  source-once file
+  while read -r line; do
+    line=${line#file.bpan.}
+    action=${line%%=*}
+    file=${line#*=}
+    if [[ $file == *\ * ]]; then
+      IFS=' ' read -r to from <<<"$file"
+    else
+      from=$BPAN_ROOT/share/update/$file
+      to=$file
+    fi
+    file:copy "$from" "$to"
   done < <(
     config:list |
-      grep -E '^file.bpan.update'
+      grep -E '^file.bpan'
   )
 )
 
@@ -42,11 +62,17 @@ update:require() (
     if [[ -f .bpan/$file ]] &&
       ! [[ -h .bpan/$file ]]
     then
-      (
-        say-y "Updating '.bpan/$file'"
-        $option_verbose && set -x
-        cp -Lp "$root/$file" ".bpan/$file"
-      )
+      from=$root/$file
+      to=.bpan/$file
+      if diff -q "$to" "$from" &>/dev/null; then
+        say-y "CURRENT '$to'"
+      else
+        (
+          $option_verbose && set -x
+          cp -Lp "$from" "$to"
+        )
+        say-y "UPDATED '$to'"
+      fi
     fi
   )
 
@@ -55,8 +81,15 @@ update:require() (
     pkg=${pkg#require.test.}
     pkg=${pkg%%=*}
 
-    $option_local ||
+    pkg:parse-id+ "$pkg"
+
+    if ! $option_local &&
+       ! [[ -d $src ]]
+    then
+      say -y "INSTALL $owner/$name $ver"
       install:main "$pkg"
+    fi
+
     option_index=false
     pkg:parse-id "$pkg"
     if ! $option_local; then
@@ -66,14 +99,13 @@ update:require() (
     fi
 
     while read -r file; do
-      rm -f ".bpan/$file"
       mkdir -p "$(dirname ".bpan/$file")"
 
       if $option_local; then
         (
-          say-y "Updating '.bpan/$file' -> '$local_root/$name/$file' (local)"
           $option_verbose && set -x
           ln -s "$local_root/$name/$file" ".bpan/$file"
+          say-y "UPDATED '.bpan/$file' -> '$local_root/$name/$file' (local)"
         )
       else
         n=${file//[^\/]/}
@@ -81,11 +113,20 @@ update:require() (
         prefix=..
         for (( i = 1; i < n; i++ )); do prefix+=/..; done
 
-        (
-          say-y "Updating '.bpan/$file' from '$root/local/$file'"
-          $option_verbose && set -x
-          cp -Lp "$root/local/$file" ".bpan/$file"
-        )
+        from=$root/local/$file
+        to=.bpan/$file
+        if [[ -h $to ]] ||
+           ! diff -q "$to" "$from" &>/dev/null
+        then
+          (
+            $option_verbose && set -x
+            rm -f "$to"
+            cp -Lp "$from" "$to"
+          )
+          say-y "UPDATED '$to' from '$from'"
+        else
+          say-y "CURRENT '$to'"
+        fi
       fi
     done < <(
       cd "$src" || exit
@@ -123,7 +164,14 @@ update:man() (
     MD2MAN_PROG="md2man v0.1.0"
     export MD2MAN_NUM MD2MAN_NAME MD2MAN_DESC MD2MAN_PROG
 
-    say -y "Updating '$man' from '$md'"
-    "$root/local/bin/md2man" < "$md" > "$man"
+    temp=$(mktemp)
+    "$root/local/bin/md2man" < "$md" > "$temp"
+    if diff -q "$man" "$temp" &>/dev/null; then
+      rm -f "$temp"
+      say -y "CURRENT '$man'"
+    else
+      mv "$temp" "$man"
+      say -y "UPDATED '$man' from '$md'"
+    fi
   done
 )

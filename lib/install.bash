@@ -66,7 +66,7 @@ install:main() (
            [[ $(readlink "$link") != $prefix/$target ]]
         then
           (
-            say-y "Installing $file -> $target"
+            say-y "Install $file -> $target"
             $option_verbose && set -x
             mkdir -p "$(dirname "$link")"
             ln -s "$prefix/$target" "$link"
