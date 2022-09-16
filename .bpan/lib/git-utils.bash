@@ -5,18 +5,26 @@ git:assert-in-repo() {
     die "Not in a git repo"
 }
 
+git:branch-name() (
+  git:assert-in-repo .
+  name=$(git rev-parse --abbrev-ref HEAD)
+  [[ $name ]] || die
+  [[ $name == HEAD ]] && name=''
+  echo "$name"
+)
+
+git:commit-sha() (
+  git:assert-in-repo .
+  git rev-parse "${1:-HEAD}"
+)
+
+git:has-ref() (
+  git:assert-in-repo .
+  git rev-parse "$1" &>/dev/null
+)
+
 git:in-repo() (
   git:is-repo .
-)
-
-git:is-repo() (
-  cd "${1:-.}" || die
-  git rev-parse --is-inside-work-tree &>/dev/null
-)
-
-git:top-dir() (
-  git:assert-in-repo .
-  git rev-parse --show-toplevel
 )
 
 git:in-top-dir() {
@@ -32,17 +40,9 @@ git:is-dirty() (
   [[ $(git diff --stat) ]]
 )
 
-git:has-ref() (
-  git:assert-in-repo .
-  git rev-parse "$1" &>/dev/null
-)
-
-git:branch-name() (
-  git:assert-in-repo .
-  name=$(git rev-parse --abbrev-ref HEAD)
-  [[ $name ]] || die
-  [[ $name == HEAD ]] && name=''
-  echo "$name"
+git:is-repo() (
+  cd "${1:-.}" || die
+  git rev-parse --is-inside-work-tree &>/dev/null
 )
 
 git:subject-lines() (
@@ -50,7 +50,8 @@ git:subject-lines() (
   git log --pretty --format='%s' "${1?}"
 )
 
-git:commit-sha() (
+git:top-dir() (
   git:assert-in-repo .
-  git rev-parse "${1:-HEAD}"
+  git rev-parse --show-toplevel
 )
+
