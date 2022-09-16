@@ -15,7 +15,35 @@
 +is-bash50+() ( shopt -s compat44 2>/dev/null )
 +is-bash51+() ( t() ( local x; local -p ); [[ $(t) ]] )
 
++is-file-same() ( diff -q "$1" "$2" &>/dev/null )
++is-file-diff() ( ! +is-file-same "$@" )
+
 +is-online() ( ping -q -c1 8.8.8.8 &>/dev/null )
+
++sym() (
+  s=$(uuidgen "${1:-'--time'}")
+  echo "sym_${s//-/_}"
+)
+
++trap() {
+  code=$1
+  sig=${2:-exit}
+  var=$(+sym --time)
+  prev=$(trap -p "$sig" | cut -d"'" -f2)
+  eval "$var() {
+    $prev
+    $1
+  }"
+  # shellcheck disable=2064
+  trap "$var" "$sig"
+}
+
++mktemp() {
+  local temp
+  temp=$(mktemp "$@")
+  +trap "[[ -d '$temp' ]] && rm -fr '$temp' || rm -f '$temp'"
+  echo "$temp"
+}
 
 +can() {
   +is-func "${1:?+can requires a function name}" || +is-cmd "$1"

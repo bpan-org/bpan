@@ -69,6 +69,18 @@ $list"
 
   say -y "Updated 'Meta' file"
 
+  for bin in $(shopt -s nullglob; echo bin/*); do
+    temp=$(mktemp)
+    perl -pe "s/^VERSION=\d+\.\d+\.\d+(.*)/VERSION=$version2\$1/" \
+      < "$bin" > "$temp"
+    if +is-file-diff "$bin" "$temp"; then
+      mv "$temp" "$bin"
+      say -y "Updated VERSION=... in '$bin'"
+    else
+      rm 
+    fi
+  done
+
   git commit -q -a -m "Version $version2"
 
   commit=$(git:commit-sha)
