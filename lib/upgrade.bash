@@ -1,7 +1,7 @@
 upgrade:main() (
   cd "$BPAN_ROOT" || exit
 
-  if [[ $(git diff --stat) ]]; then
+  if git:is-dirty; then
     error "Can't upgrade, '$BPAN_ROOT' git repo has uncommitted changes"
   fi
 

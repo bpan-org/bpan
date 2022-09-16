@@ -67,7 +67,7 @@ update:require() (
     then
       from=$root/$file
       to=.bpan/$file
-      if diff -q "$to" "$from" &>/dev/null; then
+      if +is-file-same "$to" "$from"; then
         say-y "CURRENT '$to'"
       else
         (
@@ -119,7 +119,7 @@ update:require() (
         from=$root/local/$file
         to=.bpan/$file
         if [[ -h $to ]] ||
-           ! diff -q "$to" "$from" &>/dev/null
+           +is-file-diff "$to" "$from"
         then
           (
             $option_verbose && set -x
@@ -169,7 +169,7 @@ update:man() (
 
     temp=$(+mktemp)
     "$root/local/bin/md2man" < "$md" > "$temp"
-    if diff -q "$man" "$temp" &>/dev/null; then
+    if +is-file-same "$man" "$temp"; then
       say -y "CURRENT '$man'"
     else
       mv "$temp" "$man"

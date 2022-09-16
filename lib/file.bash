@@ -21,7 +21,7 @@ file:copy() (
   fi
 
   if [[ -e $to ]]; then
-    if diff -q "$to" "$temp" &>/dev/null; then
+    if +is-file-same "$to" "$temp"; then
       action=CURRENT
     else
       mv "$temp" "$to"
