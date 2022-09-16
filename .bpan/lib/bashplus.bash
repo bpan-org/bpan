@@ -66,9 +66,9 @@
   local temp
   temp=$(mktemp "$@")
   if [[ -d $temp ]]; then
-    chmod =rwx "$temp"
+    chmod '=rwx' "$temp"
   else
-    chmod =rw "$temp"
+    chmod '=rw' "$temp"
   fi
   +trap "[[ -d '$temp' ]] && rm -fr '$temp' || rm -f '$temp'"
   echo "$temp"
