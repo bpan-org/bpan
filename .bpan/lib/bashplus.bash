@@ -1,11 +1,14 @@
-+path() {
-  local i
-  for (( i = $#; i >=1; i-- )); do
-    PATH=${!i}:$PATH
-  done
-  export PATH
+# bashplus -- A collection of useful and portable functions:
+#
+# * All function names start with `+` so easy to recognize they are bashplus.
+# * Many are improved versions of existing builtins/commands.
+
+# Check if name is a callable function or command.
++can() {
+  +is-func "${1:?+can requires a function name}" || +is-cmd "$1"
 }
 
+# Check the current Bash is a minimal version.
 +is-bash32+() ( shopt -s compat31 2>/dev/null )
 +is-bash40+() ( shopt -s compat32 2>/dev/null )
 +is-bash41+() ( shopt -s compat40 2>/dev/null )
@@ -15,48 +18,12 @@
 +is-bash50+() ( shopt -s compat44 2>/dev/null )
 +is-bash51+() ( t() ( local x; local -p ); [[ $(t) ]] )
 
-+is-file-same() ( diff -q "$1" "$2" &>/dev/null )
-+is-file-diff() ( ! +is-file-same "$@" )
-
-+is-online() ( ping -q -c1 8.8.8.8 &>/dev/null )
-
-+sym() (
-  s=$(uuidgen "${1:-'--time'}")
-  echo "sym_${s//-/_}"
-)
-
-+trap() {
-  code=$1
-  sig=${2:-exit}
-  var=$(+sym --time)
-  prev=$(trap -p "$sig" | cut -d"'" -f2)
-  eval "$var() {
-    $prev
-    $1
-  }"
-  # shellcheck disable=2064
-  trap "$var" "$sig"
-}
-
-+mktemp() {
-  local temp
-  temp=$(mktemp "$@")
-  +trap "[[ -d '$temp' ]] && rm -fr '$temp' || rm -f '$temp'"
-  echo "$temp"
-}
-
-+can() {
-  +is-func "${1:?+can requires a function name}" || +is-cmd "$1"
-}
-
-+is-func() {
-  [[ $(type -t "${1:?+is-func requires a function name}") == function ]]
-}
-
+# Check if a name is a command.
 +is-cmd() {
   [[ $(command -v "${1:?+is-cmd requires a command name}") ]]
 }
 
+# Check if command exists and is at or above a version.
 +is-cmd-ver() (
   command=$1 version=$2
 
@@ -81,3 +48,59 @@
     ))
   ))
 )
+
+# Check if 2 files are the same or different.
++is-file-same() ( diff -q "$1" "$2" &>/dev/null )
++is-file-diff() ( ! +is-file-same "$@" )
+
+# Check if name is a function.
++is-func() {
+  [[ $(type -t "${1:?+is-func requires a function name}") == function ]]
+}
+
+# Check if internet is reachable.
++is-online() ( ping -q -c1 8.8.8.8 &>/dev/null )
+
+# mktemp files and dirs that automatically get deleted at end of scope.
++mktemp() {
+  local temp
+  temp=$(mktemp "$@")
+  if [[ -d $temp ]]; then
+    chmod =rwx "$temp"
+  else
+    chmod =rw "$temp"
+  fi
+  +trap "[[ -d '$temp' ]] && rm -fr '$temp' || rm -f '$temp'"
+  echo "$temp"
+}
+
+# Add one or more directories to PATH.
++path() {
+  local i
+  for (( i = $#; i >=1; i-- )); do
+    PATH=${!i}:$PATH
+  done
+  export PATH
+}
+
+# Generate a unique symbol.
+# Useful for unique variable and function names.
++sym() (
+  s=$(uuidgen "${1:-'--time'}")
+  echo "sym_${s//-/_}"
+)
+
+# Allow multiple traps to be performed.
++trap() {
+  code=$1
+  sig=${2:-exit}
+  var=$(+sym --time)
+  prev=$(trap -p "$sig" | cut -d"'" -f2)
+  eval "$var() {
+    $prev
+    $1
+  }"
+  # shellcheck disable=2064
+  trap "$var" "$sig"
+}
+
