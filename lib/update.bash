@@ -28,6 +28,10 @@ update:main() (
 )
 
 update:list() (
+  cd "$BPAN_ROOT/share/update" || exit
+  find . -type l |
+    +sort |
+    cut -c3-
 )
 
 # >>file.bpan.modify=.bpan/config

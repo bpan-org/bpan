@@ -83,6 +83,11 @@
   export PATH
 }
 
+# Sort in true ascii order.
++sort() (
+  LC_ALL=C sort
+)
+
 # Generate a unique symbol.
 # Useful for unique variable and function names.
 +sym() (
