@@ -12,7 +12,7 @@ file:copy() (
 
   [[ $dir == . ]] || mkdir -p "$dir"
 
-  temp=$(mktemp)
+  temp=$(+mktemp)
 
   if grep -q -E '\(\%.*\%\)' "$from"; then
     file:render "$from" > "$temp"
@@ -22,7 +22,6 @@ file:copy() (
 
   if [[ -e $to ]]; then
     if diff -q "$to" "$temp" &>/dev/null; then
-      rm -f "$temp"
       action=CURRENT
     else
       mv "$temp" "$to"

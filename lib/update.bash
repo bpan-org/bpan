@@ -27,6 +27,9 @@ update:main() (
   fi
 )
 
+update:list() (
+)
+
 # >>file.bpan.modify=.bpan/config
 # >>file.bpan.update=.bpan/lib/bpan.bash
 # >>file.bpan.update=Changes
@@ -164,10 +167,9 @@ update:man() (
     MD2MAN_PROG="md2man v0.1.0"
     export MD2MAN_NUM MD2MAN_NAME MD2MAN_DESC MD2MAN_PROG
 
-    temp=$(mktemp)
+    temp=$(+mktemp)
     "$root/local/bin/md2man" < "$md" > "$temp"
     if diff -q "$man" "$temp" &>/dev/null; then
-      rm -f "$temp"
       say -y "CURRENT '$man'"
     else
       mv "$temp" "$man"
