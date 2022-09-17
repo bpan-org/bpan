@@ -1,3 +1,7 @@
+[version "0.1.25"]
+date = Sat Sep 17 03:28:57 PM EDT 2022
+done = Fix `bpan setup --rc` for first time `. .rc`
+
 [version "0.1.24"]
 date = Sat Sep 17 11:55:57 AM EDT 2022
 done = Support `-bash` suffix in `bpan new ... foo-bar-bash`
