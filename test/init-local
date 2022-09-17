@@ -1,5 +1,7 @@
 #!/bash
 
+bpan:source git-utils --
+
 test-errors() {
   while read -r cmd && read -r msg; do
     cmd=${cmd#> }

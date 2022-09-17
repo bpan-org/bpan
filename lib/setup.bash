@@ -27,5 +27,12 @@ setup:rc() (
 
 setup:new-config-file() (
   cd "$BPAN_ROOT" || exit
-  bpan file --type=setup config
+
+  source-once file
+
+  touch "$BPAN_ROOT/config"
+
+  option_quiet=false # XXX set to true
+
+  file:copy "$BPAN_ROOT/share/setup/config" "$BPAN_ROOT/config"
 )
