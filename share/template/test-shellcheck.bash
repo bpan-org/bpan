@@ -22,7 +22,7 @@ done < <(
     grep -v '\.bpan/src/' |
     grep -v 'share/template/' |
     cut -c3- |
-    LC_ALL=C sort
+    LC_ALL=C +sort
 )
 
 done-testing

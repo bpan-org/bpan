@@ -11,7 +11,7 @@ init:main() (
     find . -type f -o -type l |
     grep -v '\.sw[po]$' |
     cut -c3- |
-      sort
+      +sort
   ))
 
   if [[ $* ]]; then

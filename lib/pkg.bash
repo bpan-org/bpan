@@ -96,7 +96,7 @@ pkg:installed() (
   shopt -s nullglob
   cd "$BPAN_INSTALL/src/" || exit 0
   printf '%s\n' */*/* |
-    sort |
+    +sort |
     while IFS=/ read -r owner name ver; do
       echo "github:$owner/$name=$ver"
     done

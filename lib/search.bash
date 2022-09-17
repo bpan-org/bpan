@@ -10,7 +10,7 @@ search:main() (
     git config -l -f "$index_file" |
       grep -i -E "$pattern" |
       cut -d. -f2 |
-      sort |
+      +sort |
       uniq || true
   ))
 
