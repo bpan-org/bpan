@@ -1,15 +1,6 @@
-# TODO
-: "
-bpan update --all
-- Update all files
-bpan update --file=Makefile
-"
-
-
-
 update:options() (
   echo "l,list    List files to update"
-  echo "f,file    File to update"
+  echo "f,file=   File to update"
   echo "t,type=   pkg | file | man | new | init | global"
   echo "a,all     All types"
   echo "I,index   Refresh index file"
@@ -34,12 +25,9 @@ update:list() (
     cut -c3-
 )
 
-# >>file.bpan.modify=.bpan/config
-# >>file.bpan.update=.bpan/lib/bpan.bash
-# >>file.bpan.update=Changes
-
 update:files() (
   source-once file
+  name=$(config:get bpan.name)
   while read -r line; do
     line=${line#file.bpan.}
     action=${line%%=*}

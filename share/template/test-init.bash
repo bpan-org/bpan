@@ -14,3 +14,7 @@ export PATH=$PWD/lib:$PATH
 
 bpan:source bashplus --
 bpan:source test-tap
+
+if [[ -f test/init-local ]]; then
+  source test/init-local
+fi

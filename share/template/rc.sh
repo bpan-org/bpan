@@ -9,48 +9,48 @@ test -n "$tcsh" && eval '\
 set s = ($_) \
 @ i = $#s - 1 \
 set d = `dirname $s[$i]` \
-setenv (% PKG %)_ROOT `cd $d && pwd -P` \
-setenv PATH "$(% PKG %)_ROOT/bin:$(% PKG %)_ROOT/local/bin:$PATH" \
-setenv MANPATH "$(% PKG %)_ROOT/man:$(% PKG %)_ROOT/local/man:`manpath -q`" \
+setenv (% NAME %)_ROOT `cd $d && pwd -P` \
+setenv PATH "$(% NAME %)_ROOT/bin:$(% NAME %)_ROOT/local/bin:$PATH" \
+setenv MANPATH "$(% NAME %)_ROOT/man:$(% NAME %)_ROOT/local/man:`manpath -q`" \
 exit 0 \
 '
 
 # bash
 test -n "$BASH_VERSION" && eval '
-(% PKG %)_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
-PATH=$(% PKG %)_ROOT/bin:$(% PKG %)_ROOT/local/bin:$PATH
-MANPATH=$(% PKG %)_ROOT/man:$(% PKG %)_ROOT/local/man:$(manpath -q)
-export (% PKG %)_ROOT PATH MANPATH
+(% NAME %)_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
+PATH=$(% NAME %)_ROOT/bin:$(% NAME %)_ROOT/local/bin:$PATH
+MANPATH=$(% NAME %)_ROOT/man:$(% NAME %)_ROOT/local/man:$(manpath -q)
+export (% NAME %)_ROOT PATH MANPATH
 return
 '
 
 # zsh
 test -n "$ZSH_VERSION" && eval '
-(% PKG %)_ROOT=$(cd "$(dirname "$0")" && pwd -P)
-PATH=$(% PKG %)_ROOT/bin:$(% PKG %)_ROOT/local/bin:$PATH
-MANPATH=$(% PKG %)_ROOT/man:$(% PKG %)_ROOT/local/man:$(manpath -q)
-export (% PKG %)_ROOT PATH MANPATH
+(% NAME %)_ROOT=$(cd "$(dirname "$0")" && pwd -P)
+PATH=$(% NAME %)_ROOT/bin:$(% NAME %)_ROOT/local/bin:$PATH
+MANPATH=$(% NAME %)_ROOT/man:$(% NAME %)_ROOT/local/man:$(manpath -q)
+export (% NAME %)_ROOT PATH MANPATH
 return
 '
 
 # fish
 test -n "$FISH_VERSION" && eval '
-set (% PKG %)_ROOT (cd (dirname (status filename)) && pwd -P)
-set PATH $(% PKG %)_ROOT/bin:$(% PKG %)_ROOT/local/bin:$PATH
-set MANPATH $(% PKG %)_ROOT/man:$(% PKG %)_ROOT/local/man:(manpath -q)
-export (% PKG %)_ROOT PATH MANPATH
+set (% NAME %)_ROOT (cd (dirname (status filename)) && pwd -P)
+set PATH $(% NAME %)_ROOT/bin:$(% NAME %)_ROOT/local/bin:$PATH
+set MANPATH $(% NAME %)_ROOT/man:$(% NAME %)_ROOT/local/man:(manpath -q)
+export (% NAME %)_ROOT PATH MANPATH
 exit
 '
 
 # Other shells including:
 # ash, dash, ksh, mksh, posh, sh
-test -d "$(% PKG %)_ROOT" && eval '
-PATH=$(% PKG %)_ROOT/bin:$(% PKG %)_ROOT/local/bin:$PATH
-MANPATH=$(% PKG %)_ROOT/man:$(% PKG %)_ROOT/local/man:$(manpath -q)
-export (% PKG %)_ROOT PATH MANPATH
+test -d "$(% NAME %)_ROOT" && eval '
+PATH=$(% NAME %)_ROOT/bin:$(% NAME %)_ROOT/local/bin:$PATH
+MANPATH=$(% NAME %)_ROOT/man:$(% NAME %)_ROOT/local/man:$(manpath -q)
+export (% NAME %)_ROOT PATH MANPATH
 return
 '
 
-echo "ERROR: for shell '$0', set (% PKG %)_ROOT=/path/to/(% pkg %) before sourcing .rc"
+echo "ERROR: for shell '$0', set (% NAME %)_ROOT=/path/to/(% name %) before sourcing .rc"
 
 # vim: ft=sh:

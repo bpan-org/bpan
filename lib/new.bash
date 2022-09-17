@@ -54,7 +54,7 @@ new:main() (
 
   for file in "${files[@]}"; do
     from=$base/$file
-    to=${file/NAME/$name}
+    to=${file/NAME/$(env:name)}
 
     if [[ $to == gitignore ]]; then
       to=.gitignore

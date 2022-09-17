@@ -2,23 +2,36 @@
 
 source test/init
 
-B=test/bin-pkg
+B=test/bin-pkg-bash
 L=test/lib-pkg
 
-trap 'rm -fr $B $L' exit
+rm -fr "$B"
+rm -fr "$L"
 
-bpan --quiet new --bin "$B"
+note "bpan --quiet new --bin --meta $B"
+bpan --quiet new --bin --meta "$B"
+
+note "bpan --quiet new --lib $L"
+bpan --quiet new --lib "$L"
 
 ok-f "$B/.rc"
 ok-f "$B/ReadMe.md"
 ok-f "$B/bin/bin-pkg"
 ok-f "$B/lib/bin-pkg.bash"
+ok-f "$B/.bpan/config"
+# TODO Implement 'ok-h'
+# ok-h "$B/.bpan/config"
+ok-f "$B/Meta"
 
-bpan --quiet new --lib "$L"
+has "$(head -20 "$B/.rc")" \
+  BIN_PKG_ROOT \
+  "'$B/.rc has 'BIN_PKG_ROOT'"
+
 
 ok-not-e "$L/.rc"
 ok-f "$L/ReadMe.md"
 ok-not-e "$L/bin/lib-pkg"
 ok-f "$L/lib/lib-pkg.bash"
+ok-not-e "$L/Meta"
 
 done-testing

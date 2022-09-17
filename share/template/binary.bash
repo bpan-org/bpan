@@ -21,13 +21,13 @@ source "$root/.bpan/lib/bpan.bash" --
 # x,debug       Print lots of debugging info
 # "
 
-source "$root/lib/(% pkg %).bash"
+source "$root/lib/(% name %).bash"
 
 main() (
   # getopt "$@"
   # set -- "${args[@]}"
 
-  (% pkg %):run "$@"
+  (% name %):run "$@"
 )
 
 main "$@"

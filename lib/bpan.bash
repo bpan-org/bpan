@@ -26,18 +26,19 @@ bpan:main() {
   local arg
   for arg; do
     case "$arg" in
-      # No arguments intended. Needed to ignore global '$@':
+      # No arguments intended.
+      # This is needed to ignore global '$@'.
       --) break;;
 
-      # Export the 'app', 'App', and 'APP' variables:
+      # Set the 'app', 'App', and 'APP' variables:
       --app)
         app=$(basename "$0")
         if ( shopt -s compat31 2>/dev/null ); then  # bash 4.0+
           App=${app^}
           APP=${app^^}
         else
-          App=$app
-          APP=$app
+          App=$(tr '[:lower:]' '[:upper:]' <<<"${app:0:1}")${app:1}
+          APP=$(tr '[:lower:]' '[:upper:]' <<<"$app")
         fi
         ;;
 
@@ -58,9 +59,7 @@ bpan:source() {
 # this file) so we declare them up front:
 
 die() {
-  local level=0
-  local args=()
-  local arg msg
+  local arg args=() level=0
 
   for arg; do
     if [[ $arg =~ ^--level=([0-9]+)$ ]]; then
@@ -74,22 +73,19 @@ die() {
   if [[ $# -eq 0 ]]; then
     set -- Died
   elif [[ $# -eq 1 ]]; then
-    msg=$1
-    set -- "${msg//\\n/$'\n'}"
+    set -- "${1//\\n/$'\n'}"
   fi
 
-  printf "%s\n" "$@" >&2
+  printf '%s\n' "$@" >&2
 
-  if [[ $# -eq 1 && $1 == *$'\n' ]]; then
-    exit 1
-  fi
-
-  local c
-  IFS=' ' read -r -a c <<< "$(caller "$level")"
-  if (( ${#c[@]} == 2 )); then
-    printf ' at line %d of %s\n' "${c[@]}" >&2
-  else
-    printf ' at line %d in %s of %s\n' "${c[@]}" >&2
+  if [[ $# -ne 1 || $1 != *$'\n' ]]; then
+    local c
+    IFS=' ' read -r -a c <<< "$(caller "$level")"
+    if (( ${#c[@]} == 2 )); then
+      printf ' at line %d of %s\n' "${c[@]}" >&2
+    else
+      printf ' at line %d in %s of %s\n' "${c[@]}" >&2
+    fi
   fi
 
   exit 1

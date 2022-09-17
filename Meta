@@ -33,6 +33,7 @@ perl = 5.10.1+
 update = License
 update = Makefile
 update = ReadMe.md doc/bpan.md
+update = test/init
 update = test/00-shellcheck.t
 
 # vim: ft=gitconfig:

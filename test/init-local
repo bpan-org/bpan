@@ -1,0 +1,23 @@
+#!/bash
+
+test-errors() {
+  while read -r cmd && read -r msg; do
+    cmd=${cmd#> }
+    is "$(BPAN_TESTING=1 $cmd 2>&1)" "$msg" \
+      "'$cmd' fails with: $msg"
+  done
+}
+
+test-install-setup() {
+  export BPAN_INSTALL=$PWD//test/local
+  rm -fr "$BPAN_INSTALL"
+  mkdir -p "$BPAN_INSTALL"
+
+  I=$BPAN_INSTALL
+
+  trap test-install-teardown exit
+}
+
+test-install-teardown() (
+  rm -fr ./test/local
+)

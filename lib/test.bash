@@ -51,19 +51,21 @@ test:renumber() (
 
   ii=0
   for file in "${tests[@]}"; do
-    if [[ $file == 00-* ]]; then
+    if [[ $file == 00-* ]] ||
+       [[ $file == 99-* ]]
+    then
       say -y "Leaving '$file'"
     else
       (( ++ii ))
       if [[ $file =~ ^[0-9]{2}-(.+) ]]; then
-        printf -v nfile '%02d-%s' "$ii" "${BASH_REMATCH[1]}"
-        if [[ $file == "$nfile" ]]; then
+        printf -v new_file '%02d-%s' "$ii" "${BASH_REMATCH[1]}"
+        if [[ $file == "$new_file" ]]; then
           say -y "Leaving '$file'"
         else
-          say -y "Moving  '$file' -> '$nfile'"
+          say -y "Moving  '$file' -> '$new_file'"
           (
             $option_verbose && set -x
-            git mv "$file" "$nfile"
+            git mv "$file" "$new_file"
           )
         fi
       fi

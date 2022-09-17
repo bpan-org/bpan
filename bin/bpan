@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+VERSION=0.1.23
+
 ( shopt -s compat31 2>/dev/null ) ||
   { echo "bpan requires bash version 3.2 or higher">&2; exit 1; }
 
@@ -61,11 +63,7 @@ main() (
   getopt "$@"
 
   if $option_version; then
-    BPAN_VERSION=$(
-      config_file=$BPAN_ROOT/.bpan/config \
-        config:get bpan.version
-    )
-    echo "$app $BPAN_VERSION"
+    echo "$app $VERSION"
 
   elif [[ $cmd ]]; then
     source-once "$cmd"
