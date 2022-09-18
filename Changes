@@ -1,3 +1,7 @@
+[version "0.1.28"]
+date = Sun Sep 18 05:37:47 PM EDT 2022
+done = Make bin/bpan executable again
+
 [version "0.1.27"]
 date = Sun Sep 18 04:53:19 PM EDT 2022
 done = Use command assertions from bashplus
