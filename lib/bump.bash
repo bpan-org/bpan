@@ -7,6 +7,8 @@ bump:options() (
 )
 
 bump:main() (
+  +assert-perl
+
   if ${option_release:-false}; then
     option_push=true
   fi

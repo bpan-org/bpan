@@ -16,6 +16,8 @@ $app uninstall github:bpan-org/getopt-bash=0.1.0
 )
 
 uninstall:main() (
+  +assert-sed
+
   [[ $# -gt 0 ]] ||
     error "'$app $cmd' requires one or more packages"
 

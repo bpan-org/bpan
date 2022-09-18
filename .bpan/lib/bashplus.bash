@@ -5,7 +5,7 @@
 
 
 bashplus:version() (
-  VERSION=0.1.3
+  VERSION=0.1.4
   echo "bashplus $VERSION"
 )
 
@@ -80,6 +80,16 @@ bashplus:version() (
 
 
 # NOTE: BashPlus functions defined in name order.
+
++assert-cmd() ( +is-cmd "$@" ||
+  +error "Command '$1' is required" )
++assert-cmd-ver() ( +is-cmd-ver "$@" ||
+  +error "Command '$1' version '$2' or higher is required" )
++assert-perl() ( +assert-cmd-ver perl ${1:-5.10.1} )
++assert-git()  ( +assert-cmd-ver git  ${1:-2.7}    )
++assert-sed()  ( +assert-cmd     sed               )
+
++error() { die --red "Error: $1"; }
 
 # Check the current Bash is a minimal version.
 +is-bash32+() ( shopt -s compat31 2>/dev/null )

@@ -149,13 +149,12 @@ $help
   fi
 }
 
-todo() (
+todo() {
   error "'$app $cmd' not yet implemented\n"
-)
+}
 
-error() (
-  say-r "[$app] Error: $1" >&2
-  exit 1
-)
+error() {
+  die --red --level=1 "[$app] Error: $1"
+}
 
 main "$@"
