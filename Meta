@@ -19,7 +19,7 @@ libera = ingy
 site = http://ingy.net
 
 [require "bpan"]
-; bashplus = 0.1.0+
+bashplus = 0.1.0+
 getopt-bash = 0.1.1+
 test-tap-bash = 0.1.0+
 

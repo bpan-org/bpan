@@ -4,6 +4,12 @@
 # * Many are improved versions of existing builtins/commands.
 
 
+bashplus:version() (
+  VERSION=0.1.1
+  echo "bashplus $VERSION"
+)
+
+
 # Define these first for use within:
 
   # 'die' is the most commonly used function that is missing from Bash.

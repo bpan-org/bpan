@@ -26,13 +26,22 @@ bump:main() (
     error "No 'bpan.version' found in '$config_file'"
   [[ $version1 =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] ||
     error "Unrecognized version '$version1'"
-  git:has-ref "$version1" ||
-    die "No git tag found for version '$version1'"
+  if [[ $version1 == 0.0.0 ]]; then
+    rev_list=$(git rev-list HEAD | tail -n 1)
+  else
+    rev_list=$version1..
+    git:has-ref "$version1" ||
+      die "No git tag found for version '$version1'"
+  fi
 
-  version2=${version1%.*}.$(( ${version1##*.} + 1))
+  if [[ $version1 == 0.0.0 ]]; then
+    version2=0.1.0
+  else
+    version2=${version1%.*}.$(( ${version1##*.} + 1))
+  fi
 
   list=$(
-    git:subject-lines "$version1.." |
+    git:subject-lines "$rev_list" |
       while read -r line; do
         echo "done = $line"
       done
@@ -71,12 +80,18 @@ bump:main() (
 date = $(date)
 $list"
 
-  changes=$(< Changes)
+  if [[ $version1 == 0.0.0 ]]; then
+    changes=''
+  else
+    changes=$(< Changes)
+  fi
 
   (
     echo "$entry"
-    echo
-    echo "$changes"
+    if [[ $changes ]]; then
+      echo
+      echo "$changes"
+    fi
   ) > Changes
 
   say -y "Updated 'Changes' file"
@@ -85,14 +100,14 @@ $list"
 
   say -y "Updated 'Meta' file"
 
-  for bin in $(shopt -s nullglob; echo bin/*); do
+  for file in $(shopt -s nullglob; echo bin/* lib/*); do
     temp=$(+mktemp)
-    perl -pe "s/^VERSION=\d+\.\d+\.\d+(.*)/VERSION=$version2\$1/" \
-      < "$bin" > "$temp"
+    perl -pe 's/^(\s*VERSION)=\d+\.\d+\.\d+(.*)/$1='"$version2"'$2/' \
+      < "$file" > "$temp"
     chmod '=rwx' "$temp"
-    if +is-file-diff "$bin" "$temp"; then
-      mv "$temp" "$bin"
-      say -y "Updated VERSION=... in '$bin'"
+    if +is-file-diff "$file" "$temp"; then
+      mv "$temp" "$file"
+      say -y "Updated VERSION=... in '$file'"
     fi
   done
 
@@ -112,8 +127,14 @@ $list"
 
   echo
 
+  if [[ $version1 == 0.0.0 ]]; then
+    revlist=''
+  else
+    rev_list="$version1^..$version2"
+  fi
+
   say -y Commits:
-  git log --pretty=oneline "$version1^..$version2"
+  git log --pretty=oneline "$rev_list"
 )
 
 bump:push() (
