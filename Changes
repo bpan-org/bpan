@@ -1,3 +1,10 @@
+[version "0.1.27"]
+date = Sun Sep 18 04:53:19 PM EDT 2022
+done = Use command assertions from bashplus
+done = Update bashplus
+done = Don't make version bump files executable
+done = Make git clone in test be quiet
+
 [version "0.1.26"]
 date = Sun Sep 18 03:12:23 PM EDT 2022
 done = Embed .bpan/lib/bashplus.bash from external package
