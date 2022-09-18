@@ -5,7 +5,7 @@
 
 
 bashplus:version() (
-  VERSION=0.1.1
+  VERSION=0.1.3
   echo "bashplus $VERSION"
 )
 
@@ -17,6 +17,8 @@ bashplus:version() (
   # It also supports:
   # * --level for stack trace level adjustment
   # * --red for error messages (to tty) in color red
+  # * TODO --line to show line numbers
+  # * TODO --plain to not show line numbers
   # * TODO --stack for full stack trace
   #
   # NOTE: 'die' and 'warn' are the only bashplus function not starting with '+'
@@ -39,9 +41,9 @@ bashplus:version() (
     set -- "${args[@]}"
     [[ $# -gt 0 ]] || set -- Died
 
-    echo -n "$R"
+    echo -en "$R"
     warn "$@"
-    echo -n "$Z"
+    echo -en "$Z"
 
     if [[ $# -ne 1 || $1 != *$'\n' ]]; then
       local caller
