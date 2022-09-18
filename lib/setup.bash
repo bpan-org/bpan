@@ -19,10 +19,11 @@ setup:main() (
 )
 
 setup:rc() (
+  # TODO Check for dependency commands and versions; Issue warnings but don't
+  # die.
+
   [[ -f $config_file ]] ||
     setup:new-config-file
-
-  true
 )
 
 setup:new-config-file() (

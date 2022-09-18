@@ -3,10 +3,75 @@
 # * All function names start with `+` so easy to recognize they are bashplus.
 # * Many are improved versions of existing builtins/commands.
 
-# Check if name is a callable function or command.
-+can() {
-  +is-func "${1:?+can requires a function name}" || +is-cmd "$1"
-}
+
+# Define these first for use within:
+
+  # 'die' is the most commonly used function that is missing from Bash.
+  # This one tries to emulate Perl's `die` as much as possible.
+  # It also supports:
+  # * --level for stack trace level adjustment
+  # * --red for error messages (to tty) in color red
+  # * TODO --stack for full stack trace
+  #
+  # NOTE: 'die' and 'warn' are the only bashplus function not starting with '+'
+  die() {
+    local arg args=() level=0 R='' Z=''
+
+    for arg; do
+      if [[ $arg =~ ^--level=([0-9]+)$ ]]; then
+        level=${BASH_REMATCH[1]}
+      elif [[ $arg == --red ]]; then
+        if [[ -t 2 ]]; then
+          R='\e[31m'
+          Z='\e[0m'
+        fi
+      else
+        args+=("${arg//\\n/$'\n'}")
+      fi
+    done
+
+    set -- "${args[@]}"
+    [[ $# -gt 0 ]] || set -- Died
+
+    echo -n "$R"
+    warn "$@"
+    echo -n "$Z"
+
+    if [[ $# -ne 1 || $1 != *$'\n' ]]; then
+      local caller
+      IFS=' ' read -r -a caller <<< "$(caller "$level")"
+      if (( ${#caller[@]} == 2 )); then
+        printf ' at line %d of %s\n' "${caller[@]}" >&2
+      else
+        printf ' at line %d in %s of %s\n' "${caller[@]}" >&2
+      fi
+    fi
+
+    exit 1
+  }
+
+  warn() {
+    printf '%s\n' "$@" >&2
+  }
+
+  # Check if name is a callable function or command.
+  +can() {
+    +is-func "${1:?+can requires a function name}" || +is-cmd "$1"
+  }
+
+  # Check if a name is a command.
+  +is-cmd() [[ $(command -v "${1:?+is-cmd requires a command name}") ]]
+
+  # Check if name is a function.
+  +is-func() [[
+    $(type -t "${1:?+is-func requires a function name}") == function ]]
+
+  # OS type checks:
+  +os-linux() [[ $OSTYPE == linux* ]]
+  +os-macos() [[ $OSTYPE == darwin* ]]
+
+
+# NOTE: BashPlus functions defined in name order.
 
 # Check the current Bash is a minimal version.
 +is-bash32+() ( shopt -s compat31 2>/dev/null )
@@ -17,11 +82,6 @@
 +is-bash44+() ( shopt -s compat43 2>/dev/null )
 +is-bash50+() ( shopt -s compat44 2>/dev/null )
 +is-bash51+() ( t() ( local x; local -p ); [[ $(t) ]] )
-
-# Check if a name is a command.
-+is-cmd() {
-  [[ $(command -v "${1:?+is-cmd requires a command name}") ]]
-}
 
 # Check if command exists and is at or above a version.
 +is-cmd-ver() (
@@ -53,11 +113,6 @@
 +is-file-same() ( diff -q "$1" "$2" &>/dev/null )
 +is-file-diff() ( ! +is-file-same "$@" )
 
-# Check if name is a function.
-+is-func() {
-  [[ $(type -t "${1:?+is-func requires a function name}") == function ]]
-}
-
 # Check if internet is reachable.
 +is-online() ( ping -q -c1 8.8.8.8 &>/dev/null )
 
@@ -84,21 +139,18 @@
 }
 
 # Sort in true ascii order.
-+sort() (
-  LC_ALL=C sort
-)
++sort() ( LC_ALL=C sort )
 
 # Generate a unique symbol.
 # Useful for unique variable and function names.
 if +can uuidgen; then
   +sym() (
-    s=$(uuidgen "${1:-'--random'}")
+    s=$(uuidgen --random)
     echo "${1:-sym}_${s//-/_}"
   )
 else
   +sym() (
-    s=$(date '+%s_%N')
-    echo "${1:-sym}_${s//-/_}"
+    echo "${1:-sym}_$(date '+%s_%N')"
   )
 fi
 
@@ -115,4 +167,3 @@ fi
   # shellcheck disable=2064
   trap "$var" "$sig"
 }
-
