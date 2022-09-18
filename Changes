@@ -1,3 +1,11 @@
+[version "0.1.26"]
+date = Sun Sep 18 03:12:23 PM EDT 2022
+done = Embed .bpan/lib/bashplus.bash from external package
+done = Refactor bashplus
+done = Remove hard dependency on uuidgen
+done = Fix bug in 'bpan new'
+done = Initial code for `bpan release`
+
 [version "0.1.25"]
 date = Sat Sep 17 03:28:57 PM EDT 2022
 done = Fix `bpan setup --rc` for first time `. .rc`
