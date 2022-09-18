@@ -10,9 +10,6 @@ new:options() (
 )
 
 new:main() (
-  [[ $# -eq 1 ]] ||
-    error "'$app new' requires a directory name argument"
-
   if $option_bin; then
     type=bin
   elif $option_lib; then
@@ -24,8 +21,10 @@ new:main() (
   source-once file
   source-once env
 
-  dir=$1
-  [[ $dir == . ]] && name=$(pwd -P)
+  dir=${1:-.}
+  if [[ $dir == . ]]; then
+    dir=$(pwd -P)
+  fi
 
   name=${option_name:-$(basename "$dir")}
 
