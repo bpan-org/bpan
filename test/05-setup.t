@@ -6,7 +6,7 @@ root=$(pwd -P)/test/bpan
 
 rm -fr "$root"
 
-git clone .git "$root"
+git clone -q .git "$root"
 cp lib/setup.bash "$root/lib/setup.bash"
 cp lib/file.bash "$root/lib/file.bash"
 
