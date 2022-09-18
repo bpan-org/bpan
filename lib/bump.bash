@@ -106,7 +106,11 @@ $list"
     temp=$(+mktemp)
     perl -pe 's/^(\s*VERSION)=\d+\.\d+\.\d+(.*)/$1='"$version2"'$2/' \
       < "$file" > "$temp"
-    chmod '=rw' "$temp"
+    if [[ -x $file ]]; then
+      chmod '=rwx' "$temp"
+    else
+      chmod '=rw' "$temp"
+    fi
     if +is-file-diff "$file" "$temp"; then
       mv "$temp" "$file"
       say -y "Updated VERSION=... in '$file'"
