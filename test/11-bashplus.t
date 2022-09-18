@@ -4,8 +4,13 @@ source test/init
 
 bpan:source bashplus
 
-is "$(+sym | wc -c)" 41 \
-  "Generated symbol is 41 chars long"
+if +can uuidgen; then
+  is "$(+sym | wc -c)" 41 \
+    "Generated symbol is 41 chars long"
+else
+  is "$(+sym | wc -c)" 25 \
+    "Generated symbol is 41 chars long"
+fi
 
 like "$(+sym)" ^sym_ \
   "Generated symbol starts with 'sym_'"

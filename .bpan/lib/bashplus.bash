@@ -90,16 +90,23 @@
 
 # Generate a unique symbol.
 # Useful for unique variable and function names.
-+sym() (
-  s=$(uuidgen "${1:-'--time'}")
-  echo "sym_${s//-/_}"
-)
+if +can uuidgen; then
+  +sym() (
+    s=$(uuidgen "${1:-'--random'}")
+    echo "${1:-sym}_${s//-/_}"
+  )
+else
+  +sym() (
+    s=$(date '+%s_%N')
+    echo "${1:-sym}_${s//-/_}"
+  )
+fi
 
 # Allow multiple traps to be performed.
 +trap() {
   code=$1
   sig=${2:-exit}
-  var=$(+sym --time)
+  var=$(+sym trap)
   prev=$(trap -p "$sig" | cut -d"'" -f2)
   eval "$var() {
     $prev
