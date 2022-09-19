@@ -20,8 +20,9 @@ setup:main() (
 )
 
 setup:rc() (
-  +is-cmd-ver perl 5.10 ||
-    warn "warning: BPAN requires perl 5.10+ for some operations"
+  config_file=$BPAN_ROOT/.bpan/config \
+    bpan:require-commands ||
+      warn "Please install missing BPAN requirements above"
 
   if ! [[ -d $local_dir ]]; then
     mkdir "$local_dir"

@@ -28,6 +28,9 @@ bash = 3.2
 git = 2.7+
 make = 3.81+
 perl = 5.10.1+
+cut = 0
+ping = 0
+sed = 0
 
 [file "bpan"]
 update = License

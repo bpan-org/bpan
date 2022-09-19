@@ -105,11 +105,14 @@ bashplus:version() (
 +is-cmd-ver() (
   command=$1 version=$2
 
-  out=$("$command" --version) ||
-    { echo "Failed to run '$command --version'" >&2; exit 1; }
+  out=$("$command" --version 2>/dev/null) ||
+    return
 
-  [[ $out =~ ([0-9]+\.[0-9]+(\.[0-9]+)?) ]] ||
-    die "Can't determine version number from '$command'"
+  [[ $out =~ ([0-9]+\.[0-9]+(\.[0-9]+)?) ]] || {
+    warn "Can't determine version number from '$command'"
+    return 1
+  }
+
   IFS=. read -r -a got <<< "${BASH_REMATCH[1]}"
   : "${got[2]:=0}"
 
