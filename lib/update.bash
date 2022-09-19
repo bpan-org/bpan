@@ -12,6 +12,12 @@ update:main() (
     update:list
 
   else
+    source-once install
+    source-once pkg
+
+    index_file=$BPAN_INSTALL/index.ini
+    pkg:get-index
+
     update:files
     update:require
     update:man
@@ -48,9 +54,6 @@ update:files() (
 update:require() (
   [[ -d .bpan ]] ||
     error "Can't 'bpan update'. No '.bpan/' directory"
-
-  source-once pkg
-  source-once install
 
   (
     file=lib/bpan.bash
@@ -138,8 +141,7 @@ update:man() (
   [[ -d doc ]] || return 0
 
   if ! +is-cmd md2man; then
-    say -r "Run 'bpan install md2man' to update man pages"
-    return
+    install:main md2man
   fi
 
   # shellcheck disable=2044
