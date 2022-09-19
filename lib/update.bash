@@ -140,6 +140,11 @@ update:require() (
 update:man() (
   [[ -d doc ]] || return 0
 
+  if ! +is-cmd pandoc; then
+    say -r "Can't update man pages. Need 'pandoc'." >&2
+    return
+  fi
+
   if ! +is-cmd md2man; then
     install:main md2man
   fi
