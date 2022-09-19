@@ -1,3 +1,10 @@
+[version "0.1.29"]
+date = Mon Sep 19 10:42:09 AM EDT 2022
+done = Auto install md2man for 'bpan update'
+done = Check for required external commands
+done = Support local Makefile rules in .bpan/local.mk
+done = Fix bugs in '. .rc' and test/05-setup.t - @perlpunk++
+
 [version "0.1.28"]
 date = Sun Sep 18 05:37:47 PM EDT 2022
 done = Make bin/bpan executable again
