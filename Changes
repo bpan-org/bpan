@@ -1,3 +1,8 @@
+[version "0.1.30"]
+date = Mon Sep 19 11:31:07 AM EDT 2022
+done = Warn can't update man pages unless pandoc installed
+done = Add a fake 'pandoc' to PATH if pandoc not installed for tests
+
 [version "0.1.29"]
 date = Mon Sep 19 10:42:09 AM EDT 2022
 done = Auto install md2man for 'bpan update'
