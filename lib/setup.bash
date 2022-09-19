@@ -6,6 +6,7 @@ setup:options() (
 
 setup:main() (
   config_file=$BPAN_ROOT/config
+  local_dir=$BPAN_ROOT/local
 
   if $option_rc; then
     setup:rc "$@"
@@ -19,8 +20,15 @@ setup:main() (
 )
 
 setup:rc() (
-  # TODO Check for dependency commands and versions; Issue warnings but don't
-  # die.
+  +is-cmd-ver perl 5.10 ||
+    warn "warning: BPAN requires perl 5.10+ for some operations"
+
+  if ! [[ -d $local_dir ]]; then
+    mkdir "$local_dir"
+    source-once pkg
+    option_quiet=true
+    pkg:get-index
+  fi
 
   [[ -f $config_file ]] ||
     setup:new-config-file
@@ -33,7 +41,7 @@ setup:new-config-file() (
 
   touch "$BPAN_ROOT/config"
 
-  option_quiet=false # XXX set to true
+  option_quiet=true
 
   file:copy "$BPAN_ROOT/share/setup/config" "$BPAN_ROOT/config"
 )

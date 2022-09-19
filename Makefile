@@ -1,9 +1,10 @@
 SHELL := bash
 
 ifndef BPAN_ROOT
-$(info BPAN_ROOT variable not set)
-$(info Makefile requires BPAN to be installed)
-$(info See: https://github.com/bpan-org/bpan)
+$(info ERROR: 'BPAN_ROOT' variable not set.)
+$(info Makefile requires BPAN to be installed.)
+$(info Try running '. .rc' first.)
+$(info See: https://github.com/bpan-org/bpan#installation)
 $(error ERROR)
 endif
 

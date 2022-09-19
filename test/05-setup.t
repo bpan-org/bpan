@@ -10,6 +10,10 @@ git clone -q .git "$root"
 cp lib/setup.bash "$root/lib/setup.bash"
 cp lib/file.bash "$root/lib/file.bash"
 
+try "set +eu; source '$root/.rc'"
+is "$got" "" \
+  "'source .rc' is quiet"
+
 set +eu
 source "$root/.rc" || die
 set -eu
