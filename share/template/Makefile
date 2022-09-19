@@ -7,17 +7,21 @@ $(info See: https://github.com/bpan-org/bpan)
 $(error ERROR)
 endif
 
+BPAN_CMDS := $(shell bpan -q cmds | grep -v test)
+
 o ?=
 test ?= test/
 
 
-default:
-
-BPAN_CMDS := $(shell bpan -q cmds | grep -v test)
+default::
 
 $(BPAN_CMDS)::
 	bpan $@ $o
 
 .PHONY: test
-test:
+test::
 	prove -v $(test)
+
+ifneq (,$(wildcard .bpan/local.mk))
+include .bpan/local.mk
+endif
