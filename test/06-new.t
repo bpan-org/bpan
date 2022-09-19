@@ -8,6 +8,10 @@ L=test/lib-pkg
 rm -fr "$B"
 rm -fr "$L"
 
+if ! +is-cmd pandocx; then
+  export PATH=$PWD/test/fake-bin:$PATH
+fi
+
 note "bpan --quiet new --bin --meta $B"
 bpan --quiet new --bin --meta "$B"
 

@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+cat >/dev/null
+
+cat <<'...'
+{
+  "blocks": [
+    {
+      "t": "Para",
+      "c": [
+        {
+          "t": "Str",
+          "c": "foo"
+        }
+      ]
+    }
+  ],
+  "pandoc-api-version": [
+    1,
+    20
+  ],
+  "meta": {}
+}
+...
