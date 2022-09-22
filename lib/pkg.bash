@@ -106,6 +106,6 @@ pkg:is-primary() (
   id=$1
   pkg:parse-id "$id"
   find "$BPAN_INSTALL"/{lib,bin,share} -type l -print0 2>/dev/null |
-    xargs -r --null ls -l |
+    xargs -r -0 ls -l |
     grep -q "$owner/$name/$ver"
 )

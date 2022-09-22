@@ -48,7 +48,7 @@ uninstall:package() (
     unlink "$link"
   done <<< "$(
     find bin lib man share -type l -print0 2>/dev/null |
-      xargs -r --null ls -l |
+      xargs -r -0 ls -l |
       grep -F "$path" |
       sed 's/.*[0-9] \+\([a-z].*\) \+-> \+\(.*\)/\1\t\2/'
   )"
