@@ -206,7 +206,7 @@ getopt:parse-spec() {
       declare -a "$var"
     elif [[ $kind == '?'* ]]; then
       kind=dual
-      printf -v "$var" false
+      printf -v "$var" ''
     else
       kind=bool
       if [[ ${!var-} != true ]]; then
@@ -303,7 +303,7 @@ getopt:set-opts() {
     elif [[ $kind == dual ]]; then
       if [[ ${value-} ]]; then
         [[ $type ]] && getopt:validate
-        if [[ ${!var} == false ]]; then
+        if ! [[ ${!var} ]]; then
           printf -v "$var" '%s' "$value"
         fi
       else

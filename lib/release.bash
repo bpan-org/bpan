@@ -1,4 +1,36 @@
+# TODO redirect from https://bpan.org/release-requests
+release_index_repo_url=https://api.github.com/repos/bpan-org/bpan-index
+release_request_url=$release_index_repo_url/issues/1/comments
+
+release:options() (
+  echo "c,check     Just run preflight checks. Don't release"
+  echo "b,bump      Run 'bpan bump' before release"
+)
+
 release:main() (
+  if +in-gha; then
+    release:gha-main "$@"
+    return
+  fi
+
+  if $option_bump; then
+    bpan bump
+  fi
+
+  release:get-env
+
+  release:check-release
+
+  $option_check && return
+
+  release:trigger-release
+
+  say -g "Release for '$package' version '$version' requested"
+  echo
+  say -y "  $url"
+)
+
+release:get-env() {
   git:in-repo ||
     error "Not in a git repo"
   [[ -f .bpan/config ]] ||
@@ -18,6 +50,7 @@ release:main() (
 
   user=${BASH_REMATCH[1]}
   repo=${BASH_REMATCH[2]}
+  repo=${repo%.git}
 
   package=github:$user/$repo
 
@@ -28,19 +61,57 @@ release:main() (
   version=$(config:get bpan.version) ||
     error "Can't find 'bpan.version' in .bpan/config"
 
-  body="\
-Please update the BPAN Index for:
+  [[ $(git tag --list "$version") == "$version" ]] ||
+    error "Version '$version' is not a git tag"
 
-'''
-package: $package
-version: $version
-'''
+  commit=$(git rev-parse "$version")
+  [[ ${#commit} -eq 40 ]] ||
+    error "Can't get git commit for tag '$version'"
+
+  release_url=https://github.com/$user/$repo/tree/$version
+}
+
+release:check-release() (
+  echo CHECK-RELEASE
+  true
+)
+
+release:trigger-release() (
+  json="{\
+\"package\":\"$package\",\
+\"version\":\"$version\",\
+\"commit\":\"$commit\"\
+}"
+
+  release:post-request "\
+<!-- $json -->
+
+##### Requesting BPAN Package Release for [$package $version]($release_url)
+<details><summary>Details</summary>
+
+* **Package**: $package
+* **Version**: $version
+* **Commit**:  $commit
+* **Changes**:
+$(
+  read -r b a <<<"$(
+    git config -f Changes --get-regexp '^version.*date' |
+      head -n2 |
+      cut -d. -f2-4 |
+      xargs
+  )"
+  git log --pretty --format='%s' "$a".."$b"^ |
+    xargs -I{} echo '  * {}'
+)
+
+</details>
 "
+)
 
-  body=${body//\'/\`}
+release:post-request() {
+  body=$1
+  body=${body//$'"'/\\'"'}
   body=${body//$'\n'/\\n}
-
-  github_url=https://api.github.com/repos/bpan-org/bpan-index-testing/issues/1/comments
 
   url=$(
     $option_verbose && set -x
@@ -49,8 +120,11 @@ version: $version
       --request POST \
       --header "Accept: application/vnd.github+json" \
       --header "Authorization: Bearer $token" \
-      $github_url \
-      --data "{\"body\":\"$body\"}" |
+      $release_request_url \
+      --data "{\"body\":\"$body\",
+               \"package\": \"$package\",
+               \"version\": \"$version\",
+               \"commit\":  \"$commit\"}" |
     grep '"html_url"' |
     head -n1 |
     cut -d'"' -f4
@@ -58,8 +132,182 @@ version: $version
 
   [[ $url ]] ||
     error "Release request failed"
+}
 
-  say -g "Release for '$package' version '$version' requested"
-  echo
-  say -y "  $url"
+
+
+#------------------------------------------------------------------------------
+# Support functions
+# TODO Move to bashplus
+#------------------------------------------------------------------------------
+
++in-gha() { [[ ${GITHUB_ACTIONS-} == true ]]; }
+
++version-gt() (
+  IFS=. read -r -a v1 <<<"$1"
+  IFS=. read -r -a v2 <<<"$2"
+
+  (( v1[0] > v2[0] )) ||
+  (( v1[1] > v2[1] )) ||
+  (( v1[2] > v2[2] ))
+)
+
+
+#------------------------------------------------------------------------------
+# GHA support
+#------------------------------------------------------------------------------
+
+release:gha-main() (
+  ok=false
+
+  +trap release:gha-post-status
+
+  release:gha-get-env
+
+  release:gha-check-release
+
+  release:gha-update-index
+
+  ok=true
+)
+
+release:gha-get-env() {
+  index_file=index.ini
+
+  package=$gha_request_package
+  version=$gha_request_version
+  commit=$gha_request_commit
+  comment_body=$gha_event_comment_body
+
+  set +x
+  comment_body+="\
+
+* [Review Release and Update Index]($gha_job_html_url)
+"
+  release:gha-update-comment-body "$comment_body"
+  $option_debug && set -x
+
+  if [[ ${BPAN_INDEX_UPDATE_TESTING-} ]]; then
+    v=$(git config -f "$index_file" "pkg.$package.version")
+    test_version=${v%.*}.$(( ${v##*.} + 1 ))
+  fi
+}
+
+release:gha-check-release() {
+  config=package/.bpan/config
+  [[ -f $config ]] ||
+    die "Package '$package' has no '.bpan/config' file"
+
+  : "Check new version is greater than indexed one"
+  indexed_version=$(git config -f "$index_file" "pkg.$package.version")
+  if [[ ${BPAN_INDEX_UPDATE_TESTING-} ]]; then
+    +version-gt "$test_version" "$indexed_version" ||
+      die "'$package' version '$version' not greater than '$indexed_version'"
+  else
+    +version-gt "$version" "$indexed_version" ||
+      die "'$package' version '$version' not greater than '$indexed_version'"
+  fi
+
+  : "Check that requesting user is package author"
+  author_github=$(config_file=$config config:get author.github) ||
+    die "No author.github entry in '$package' config"
+  [[ $author_github == "$gha_triggering_actor" ]] ||
+    die "Request from '$triggering_actor' should be from '$author_github'"
+
+  : "Check that request commit matches actual version commit"
+  actual_commit=$(git -C package rev-parse "$version") || true
+  [[ $actual_commit == "$commit" ]] ||
+    die "'$commit' is not the actual commit for '$package' tag '$version'"
+
+  : "Run the package's test suite"
+  make -C package test ||
+    die "$package v$version failed tests"
+}
+
+release:gha-update-index() (
+  [[ ${#commit} -eq 40 ]] ||
+    die "Can't get commit for '$package' v$version"
+
+  if [[ ${BPAN_INDEX_UPDATE_TESTING-} ]]; then
+    git config -f "$index_file" "pkg.$package.version" "$test_version"
+    git config -f "$index_file" "pkg.$package.v${test_version//./-}" "$commit"
+  else
+    git config -f "$index_file" "pkg.$package.version" "$version"
+    git config -f "$index_file" "pkg.$package.v${version//./-}" "$commit"
+  fi
+
+  perl -pi -e 's/\t//' "$index_file"
+
+  git config user.email "update-index@bpan.org"
+  git config user.name "BPAN Update Index"
+
+  git commit -a -m "Update $package=$version"
+
+  git log -1
+
+  git push
+)
+
+# Add the GHA job url to the request comment:
+release:gha-update-comment-body() (
+  echo "+ release:gha-update-comment-body ..."
+
+  content=$1
+  content=${content//\"/\\\"}
+  content=${content//$'\n'/\\n}
+
+  curl \
+    --silent \
+    --request PATCH \
+    --header "Accept: application/vnd.github+json" \
+    --header "$(git config http.https://github.com/.extraheader)" \
+    "$gha_event_comment_url" \
+    --data "{\"body\":\"$content\"}" \
+  >/dev/null
+)
+
+
+# React thumbs-up or thumbs-down on request comment:
+release:gha-post-status() (
+  [[ ${gha_event_comment_reactions_url} ]] || return
+
+  set +x
+  if $ok; then
+    thumb='+1'
+
+    line_num=$(
+      git diff HEAD^ |
+        grep '@' |
+        head -n1 |
+        cut -d+ -f2 |
+        cut -d, -f1
+    )
+    line_num=$(( ${line_num:-0} + 1 ))
+
+    comment_body+="\
+* [Release Successful - \
+Index Updated]($release_index_repo_url/blob/main/index.ini#L$line_num)
+"
+  else
+    thumb='-1'
+    comment_body+="\
+* [Release Failed - See Logs]($gha_job_html_url)
+"
+  fi
+
+  release:gha-update-comment-body "$comment_body"
+  $option_debug && set -x
+
+  auth_header=$(
+    git config http.https://github.com/.extraheader
+  )
+
+  curl \
+    --silent \
+    --request POST \
+    --header "Accept: application/vnd.github+json" \
+    --header "$(git config http.https://github.com/.extraheader)" \
+    "$gha_event_comment_reactions_url" \
+    --data "{\"content\":\"$thumb\"}" \
+  >/dev/null
 )

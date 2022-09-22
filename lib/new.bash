@@ -4,13 +4,13 @@ new:usage() (
 
 new:options() (
   echo "n,name=   Name to use for the package"
-  echo "b,bin     Create a new bin (binary) package"
+  echo "b,bin?    Create a new bin (binary) package"
   echo "l,lib     Create a new lib (library) package"
   echo "M,meta    Use 'Meta' as config file"
 )
 
 new:main() (
-  if $option_bin; then
+  if [[ $option_bin ]]; then
     type=bin
   elif $option_lib; then
     type=lib
@@ -30,6 +30,16 @@ new:main() (
 
   [[ $name =~ ^[a-z][-a-z0-9]*$ ]] ||
     error "Illegal package name '$name'"
+
+  if [[ $type == bin ]]; then
+    if [[ $option_bin == true ]]; then
+      bin_name=$name
+    else
+      bin_name=$option_bin
+    fi
+    [[ $bin_name =~ ^[a-z][-a-z0-9]*$ ]] ||
+      error "Illegal bin app name '$bin_name'"
+  fi
 
   mkdir -p "$dir"
 
@@ -53,7 +63,11 @@ new:main() (
 
   for file in "${files[@]}"; do
     from=$base/$file
-    to=${file/NAME/$(env:name)}
+    if [[ $type == bin ]]; then
+      to=${file/NAME/$(name=$bin_name env:name)}
+    else
+      to=${file/NAME/$(env:name)}
+    fi
 
     if [[ $to == gitignore ]]; then
       to=.gitignore
