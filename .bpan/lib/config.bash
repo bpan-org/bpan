@@ -29,7 +29,8 @@ config:set() (
     config:die "config:set requires 2 arguments: key/value"
   file=${config_files[-1]?}
   git config --file "$file" "$@"
-  sed -i 's/^\t//' "$file"
+  # TODO replace perl here with pure bash.
+  perl -pi -e 's/^\t//' "$file"
 )
 
 config:all() (

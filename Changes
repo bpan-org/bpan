@@ -1,3 +1,11 @@
+[version "0.1.33"]
+date = Thu Sep 22 13:24:31 EDT 2022
+done = Apply 'bpan update'
+done = Use perl instead of sed for uninstall; broken on Mac
+done = Mac xargs doesn't support `--null`
+done = Fix for testing on Mac
+done = Fix +sym on mac
+
 [version "0.1.32"]
 date = Thu Sep 22 11:13:23 AM EDT 2022
 done = Move +in-gha and +version-ge to bashplus
