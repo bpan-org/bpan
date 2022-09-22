@@ -4,17 +4,12 @@ release_request_url=$release_index_repo_url/issues/1/comments
 
 release:options() (
   echo "c,check     Just run preflight checks. Don't release"
-  echo "b,bump      Run 'bpan bump' before release"
 )
 
 release:main() (
   if +in-gha; then
     release:gha-main "$@"
     return
-  fi
-
-  if $option_bump; then
-    bpan bump
   fi
 
   release:get-env
@@ -24,10 +19,6 @@ release:main() (
   $option_check && return
 
   release:trigger-release
-
-  say -g "Release for '$package' version '$version' requested"
-  echo
-  say -y "  $url"
 )
 
 release:get-env() {
@@ -72,8 +63,12 @@ release:get-env() {
 }
 
 release:check-release() (
-  echo CHECK-RELEASE
-  true
+  # XXX make various assertions
+  # assert config has token
+
+  say -y "Running tests"
+  bpan test
+  echo
 )
 
 release:trigger-release() (
@@ -106,6 +101,10 @@ $(
 
 </details>
 "
+
+  say -g "Release for '$package' version '$version' requested"
+  echo
+  say -y "  $url"
 )
 
 release:post-request() {
@@ -174,6 +173,7 @@ release:gha-main() (
 release:gha-get-env() {
   index_file=index.ini
 
+  set -x
   package=$gha_request_package
   version=$gha_request_version
   commit=$gha_request_commit
@@ -243,6 +243,8 @@ release:gha-update-index() (
 
   git commit -a -m "Update $package=$version"
 
+  git diff HEAD^
+
   git log -1
 
   git push
@@ -250,7 +252,8 @@ release:gha-update-index() (
 
 # Add the GHA job url to the request comment:
 release:gha-update-comment-body() (
-  echo "+ release:gha-update-comment-body ..."
+  $option_debug &&
+    echo "+ release:gha-update-comment-body ..."
 
   content=$1
   content=${content//\"/\\\"}
