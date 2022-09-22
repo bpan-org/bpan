@@ -1,7 +1,7 @@
 # TODO redirect from https://bpan.org/release-requests
-release_index_repo_url=https://github.com/repos/bpan-org/bpan-index
-release_api_repo_url=${release_index_repo_url/github/api.github}
-release_request_url=$release_api_repo_url/issues/1/comments
+release_html_index_url=https://github.com/bpan-org/bpan-index
+release_api_repo_url=https://api.github.com/repos/bpan-org/bpan-index
+release_api_request_url=$release_api_repo_url/issues/1/comments
 
 release:options() (
   echo "c,check     Just run preflight checks. Don't release"
@@ -60,7 +60,7 @@ release:get-env() {
   [[ ${#commit} -eq 40 ]] ||
     error "Can't get git commit for tag '$version'"
 
-  release_url=https://github.com/$user/$repo/tree/$version
+  release_html_package_url=https://github.com/$user/$repo/tree/$version
 }
 
 release:check-release() (
@@ -82,7 +82,8 @@ release:trigger-release() (
   release:post-request "\
 <!-- $json -->
 
-##### Requesting BPAN Package Release for [$package $version]($release_url)
+##### Requesting BPAN Package Release for [$package $version]\
+($release_html_package_url)
 <details><summary>Details</summary>
 
 * **Package**: $package
@@ -120,7 +121,7 @@ release:post-request() {
       --request POST \
       --header "Accept: application/vnd.github+json" \
       --header "Authorization: Bearer $token" \
-      $release_request_url \
+      $release_api_request_url \
       --data "{\"body\":\"$body\",
                \"package\": \"$package\",
                \"version\": \"$version\",
@@ -290,7 +291,7 @@ release:gha-post-status() (
 
     comment_body+="\
 * [Release Successful - \
-Index Updated]($release_index_repo_url/blob/main/index.ini#L$line_num)
+Index Updated]($release_html_index_url/blob/main/index.ini#L$line_num)
 "
   else
     thumb='-1'
