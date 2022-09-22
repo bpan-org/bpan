@@ -1,3 +1,8 @@
+[version "0.1.34"]
+date = Thu Sep 22 13:34:02 EDT 2022
+done = Fix version number after a botched `bpan bump -p` on mac
+done = Fix bug with sed on Mac
+
 [version "0.1.33"]
 date = Thu Sep 22 13:24:31 EDT 2022
 done = Apply 'bpan update'
