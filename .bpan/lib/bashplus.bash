@@ -5,7 +5,7 @@
 
 
 bashplus:version() (
-  VERSION=0.1.5
+  VERSION=0.1.6
   echo "bashplus $VERSION"
 )
 
@@ -137,6 +137,9 @@ bashplus:version() (
 # Check if internet is reachable.
 +is-online() ( ping -q -c1 8.8.8.8 &>/dev/null )
 
+# Check if running in a GHA workflow environment.
++in-gha() { [[ ${GITHUB_ACTIONS-} == true ]]; }
+
 # mktemp files and dirs that automatically get deleted at end of scope.
 +mktemp() {
   local temp
@@ -150,7 +153,7 @@ bashplus:version() (
   echo "$temp"
 }
 
-# Add one or more directories to PATH.
+# Add one or more directories to the front of PATH.
 +path() {
   local i
   for (( i = $#; i >=1; i-- )); do
@@ -188,3 +191,27 @@ fi
   # shellcheck disable=2064
   trap "$var" "$sig"
 }
+
+# Check if first x.x.x version is greater than the second.
++version-ge() (
+  IFS=. read -r -a v1 <<<"$1"
+  IFS=. read -r -a v2 <<<"$2"
+
+  (( v1[0] > v2[0] ||
+    (( v1[0] == v2[0] &&
+      (( v1[1] > v2[1] ||
+        (( v1[1] == v2[1] && v1[2] >= v2[2] ))
+      ))
+    ))
+  ))
+)
+
+# Check if first x.x.x version is greater than the second.
++version-gt() (
+  IFS=. read -r -a v1 <<<"$1"
+  IFS=. read -r -a v2 <<<"$2"
+
+  (( v1[0] > v2[0] )) ||
+  (( v1[1] > v2[1] )) ||
+  (( v1[2] > v2[2] ))
+)
