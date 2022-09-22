@@ -1,6 +1,7 @@
 # TODO redirect from https://bpan.org/release-requests
-release_index_repo_url=https://api.github.com/repos/bpan-org/bpan-index
-release_request_url=$release_index_repo_url/issues/1/comments
+release_index_repo_url=https://github.com/repos/bpan-org/bpan-index
+release_api_repo_url=${release_index_repo_url/github/api.github}
+release_request_url=$release_api_repo_url/issues/1/comments
 
 release:options() (
   echo "c,check     Just run preflight checks. Don't release"
