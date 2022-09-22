@@ -23,3 +23,17 @@ test-install-setup() {
 test-install-teardown() (
   rm -fr ./test/local
 )
+
+# XXX move this mac fix to bashplus
+if +os-macos; then
+  if +can uuidgen; then
+    +sym() (
+      s=$(uuidgen)
+      echo "${1:-sym}_${s//-/_}"
+    )
+  else
+    +sym() (
+      echo "${1:-sym}_$(gdate '+%s_%N')"
+    )
+  fi
+fi

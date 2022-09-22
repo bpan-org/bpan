@@ -2,13 +2,11 @@
 
 source test/init
 
-bpan:source bashplus
-
 if +can uuidgen; then
-  is "$(+sym | wc -c)" 41 \
+  is "$(+sym | wc -c | tr -d ' ')" 41 \
     "Generated symbol is 41 chars long"
 else
-  is "$(+sym | wc -c)" 25 \
+  is "$(+sym | wc -c | tr -d ' ')" 25 \
     "Generated symbol is 41 chars long"
 fi
 
