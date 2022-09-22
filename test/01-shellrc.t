@@ -4,10 +4,11 @@ source test/init
 
 test() {
   shell=$1; shift
+  bash_bin=$(dirname "$BASH")
   if +can "$shell"; then
     # shellcheck disable=2086
     is "$(
-      env -i PATH=/bin:/usr/bin $shell \
+      env -i PATH="$bash_bin":/bin:/usr/bin:/sbin $shell \
         "$@" \
         -c "$source ./.rc && bpan | head -n1" \
         2>/dev/null

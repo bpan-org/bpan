@@ -10,6 +10,21 @@ VERSION=0.1.32
 
 source "$BPAN_ROOT/lib/bpan.bash" --app
 bpan:source bashplus
+
+# XXX move this mac fix to bashplus
+if +os-macos; then
+  if +can uuidgen; then
+    +sym() (
+      s=$(uuidgen)
+      echo "${1:-sym}_${s//-/_}"
+    )
+  else
+    +sym() (
+      echo "${1:-sym}_$(gdate '+%s_%N')"
+    )
+  fi
+fi
+
 bpan:source config
 bpan:source say
 bpan:source bpan-util
