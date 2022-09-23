@@ -17,12 +17,12 @@ add:main() (
   for pkg; do
     pkg:parse-id+ "$pkg"
     ver=$ver+
-    previous=$(config:get "require.bpan.$pkg")
+    previous=$(config:get "require.package.$pkg")
     if [[ $previous == "$ver" ]]; then
       say-y "'require.bpan.$pkg=$ver' is already in '$config_file'"
       continue
     fi
-    config:set "require.bpan.$pkg" "$ver"
+    config:set "require.package.$pkg" "$ver"
     update=true
     if [[ $previous ]]; then
       say-y "Updated 'require.bpan.$pkg=$ver' in '$config_file'"

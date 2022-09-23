@@ -46,7 +46,7 @@ env:author-email() (
 )
 
 env:copyright-year() (
-  year=$(config:get bpan.copyright) || true
+  year=$(config:get package.copyright) || true
   year=${year:-$(date '+%Y')}
   echo "$year"
 )
@@ -56,7 +56,7 @@ env:date-time() (
 )
 
 env:github-user-id() (
-  id=$(config:get bpan.user.github) || {
+  id=$(config:get user.github) || {
     rc=0
     out=$(ssh git@github.com 2>&1) || rc=$?
     if [[ $rc -eq 1 ]]; then

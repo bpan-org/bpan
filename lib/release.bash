@@ -28,9 +28,9 @@ release:get-env() {
   [[ -f .bpan/config ]] ||
     error "Not in a BPAN package repo"
 
-  token=$(config:get bpan.user.token) || true
+  token=$(config:get github.token) || true
   if [[ -z $token || $token == ___ ]]; then
-    error "Missing or invalid bpan.user.token in $BPAN_ROOT/config"
+    error "Missing or invalid github.token in $BPAN_ROOT/config"
   fi
 
   url=$(git config remote.origin.url) ||
@@ -50,8 +50,8 @@ release:get-env() {
     error "Can't release '$package'. Not a package."
   fi
 
-  version=$(config:get bpan.version) ||
-    error "Can't find 'bpan.version' in .bpan/config"
+  version=$(config:get package.version) ||
+    error "Can't find 'package.version' in .bpan/config"
 
   [[ $(git tag --list "$version") == "$version" ]] ||
     error "Version '$version' is not a git tag"
@@ -194,10 +194,10 @@ release:gha-check-release() {
   fi
 
   : "Check that requesting user is package author"
-  author_github=$(config_file=$config config:get author.github) ||
+  owner_github=$(config_file=$config config:get owner.github) ||
     die "No author.github entry in '$package' config"
-  [[ $author_github == "$gha_triggering_actor" ]] ||
-    die "Request from '$triggering_actor' should be from '$author_github'"
+  [[ $owner_github == "$gha_triggering_actor" ]] ||
+    die "Request from '$triggering_actor' should be from '$owner_github'"
 
   : "Check that request commit matches actual version commit"
   actual_commit=$(git -C package rev-parse "$version") || true
@@ -244,11 +244,15 @@ release:gha-update-comment-body() (
   content=${content//\"/\\\"}
   content=${content//$'\n'/\\n}
 
+  auth_header=$(
+    git config http.https://github.com/.extraheader
+  )
+
   curl \
     --silent \
     --request PATCH \
     --header "Accept: application/vnd.github+json" \
-    --header "$(git config http.https://github.com/.extraheader)" \
+    --header "$auth_header" \
     "$gha_event_comment_url" \
     --data "{\"body\":\"$content\"}" \
   >/dev/null
@@ -294,7 +298,7 @@ Index Updated]($release_html_index_url/blob/main/index.ini#L$line_num)
     --silent \
     --request POST \
     --header "Accept: application/vnd.github+json" \
-    --header "$(git config http.https://github.com/.extraheader)" \
+    --header "$auth_header" \
     "$gha_event_comment_reactions_url" \
     --data "{\"content\":\"$thumb\"}" \
   >/dev/null

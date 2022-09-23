@@ -10,6 +10,23 @@ new:options() (
 )
 
 new:main() (
+  new:set-env "$@"
+
+  say -g "Creating new BPAN project '$name'"
+
+  new:files
+
+  git init -q
+  say -y "Initialized git repo"
+
+  new:update
+
+  new:git
+
+  say -g "Created new BPAN project '$name'"
+)
+
+new:set-env() {
   if [[ $option_bin ]]; then
     type=bin
   elif $option_lib; then
@@ -58,8 +75,11 @@ new:main() (
       cut -c3- |
       +sort
   ))
+}
 
-  say -g "Creating new BPAN project '$name'"
+new:files() {
+  # Touch now so update will work later:
+  touch ReadMe.md
 
   for file in "${files[@]}"; do
     from=$base/$file
@@ -105,17 +125,18 @@ new:main() (
       chmod +x "$to"
     fi
   done
+}
 
-  git init -q
-  say -y "Initialized git repo"
-
+new:update() (
   say -y "Running 'bpan update'"
   if $option_quiet; then
     bpan --quiet update
   else
     bpan update
   fi
+)
 
+new:git() (
   git add .
   git commit -q -m 'Initial commit'
   say -y "Committed all files to a git 'Initial commit'"
@@ -127,6 +148,4 @@ new:main() (
   remote=git@github:$github_id/$name
   git remote add origin "$remote"
   say -y "Set git repo remote to '$remote'"
-
-  say -g "Created new BPAN project '$name'"
 )

@@ -1,9 +1,5 @@
 bump:options() (
   echo "p,push      Push changes upstream"
-  user=$(bpan config bpan.user.github || true)
-  if [[ $user == ingydotnet ]]; then
-    echo "r,release   Push and update bpan-index"
-  fi
 )
 
 bump:main() (
@@ -23,9 +19,9 @@ bump:main() (
   [[ -f Meta ]] ||
     error "'$app $cmd' require './Meta' file"
 
-  version1=$(bpan config -f Meta bpan.version)
+  version1=$(bpan config -f Meta package.version)
   [[ $version1 ]] ||
-    error "No 'bpan.version' found in '$config_file'"
+    error "No 'package.version' found in '$config_file'"
   [[ $version1 =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] ||
     error "Unrecognized version '$version1'"
   if [[ $version1 == 0.0.0 ]]; then
@@ -56,9 +52,9 @@ bump:main() (
     branch=$(git:branch-name)
     [[ $branch ]] ||
       error "Can't push. Not checked out to a branch."
-    # TODO make 'main' be a config setting
-    [[ $branch == main ]] ||
-      error "Can't push. Current branch is not 'main'"
+    release_branch=$(config:get package.branch || echo main)
+    [[ $branch == "$release_branch" ]] ||
+      error "Can't push. Current branch is not '$release_branch'"
   fi
 
   if ! [[ $list ]]; then
@@ -98,7 +94,7 @@ $list"
 
   say -y "Updated 'Changes' file"
 
-  bpan config -f Meta bpan.version "$version2"
+  bpan config -f Meta package.version "$version2"
 
   say -y "Updated 'Meta' file"
 
@@ -150,8 +146,8 @@ bump:push() (
   # A temporary hack for ingydotnet only to update bpan-index after a
   # 'bpan bump -p'
   if ${option_release:-false}; then
-    name=$(bpan config bpan.name) ||
-      die "Can't get config value 'bpan.name'"
+    name=$(bpan config package.name) ||
+      die "Can't get config value 'package.name'"
     [[ $name != bpan ]] ||
       error "Can't update index for 'bpan' itself"
 

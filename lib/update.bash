@@ -1,6 +1,6 @@
 update:options() (
-  echo "l,list    List files to update"
-  echo "f,file=   File to update"
+  echo "l,list    List possible template files"
+  echo "f,file=   Template file to update"
   echo "t,type=   pkg | file | man | new | init | global"
   echo "a,all     All types"
   echo "I,index   Refresh index file"
@@ -14,6 +14,9 @@ update:main() (
   else
     source-once install
     source-once pkg
+
+    [[ -d .bpan ]] ||
+      error "Can't 'bpan update'. No '.bpan/' directory"
 
     index_file=$BPAN_INSTALL/index.ini
     pkg:get-index
@@ -33,28 +36,29 @@ update:list() (
 
 update:files() (
   source-once file
-  name=$(config:get bpan.name)
+  name=$(config:get package.name)
   while read -r line; do
     line=${line#file.bpan.}
     action=${line%%=*}
     file=${line#*=}
+
     if [[ $file == *\ * ]]; then
       IFS=' ' read -r to from <<<"$file"
     else
       from=$BPAN_ROOT/share/update/$file
       to=$file
     fi
-    file:copy "$from" "$to"
+
+    if [[ -e $to ]]; then
+      file:copy "$from" "$to"
+    fi
   done < <(
     config:list |
-      grep -E '^file.bpan'
+      grep '^update\.template'
   )
 )
 
 update:require() (
-  [[ -d .bpan ]] ||
-    error "Can't 'bpan update'. No '.bpan/' directory"
-
   (
     file=lib/bpan.bash
     if [[ -f .bpan/$file ]] &&
@@ -75,9 +79,7 @@ update:require() (
   )
 
   while read -r pkg; do
-    pkg=${pkg#require.bpan.}
-    pkg=${pkg#require.test.}
-    pkg=${pkg%%=*}
+    pkg=${pkg#*=}
 
     pkg:parse-id+ "$pkg"
 
@@ -133,7 +135,7 @@ update:require() (
 
   done < <(
     config:list |
-      grep -E '^require\.(bpan|test)\.'
+      grep '^update\.package'
   )
 )
 
@@ -150,7 +152,8 @@ update:man() (
   fi
 
   # shellcheck disable=2044
-  for md in $(find doc -type f -name '*.md'); do
+  while read -r md; do
+    md=${md#*=}
     name=${md#doc/}
     name=${name%.md}
     num=3
@@ -162,7 +165,7 @@ update:man() (
 
     MD2MAN_NUM=$num
     MD2MAN_NAME=$name
-    MD2MAN_DESC=$(bpan config bpan.abstract)
+    MD2MAN_DESC=$(bpan config package.title)
     MD2MAN_PROG="md2man v0.1.0"
     export MD2MAN_NUM MD2MAN_NAME MD2MAN_DESC MD2MAN_PROG
 
@@ -174,5 +177,8 @@ update:man() (
       mv "$temp" "$man"
       say -y "UPDATED '$man' from '$md'"
     fi
-  done
+  done < <(
+    config:list |
+      grep '^update\.manpage'
+  )
 )

@@ -53,7 +53,7 @@ pkg:get-index() (
      [[ ! -f $index_file ]] ||
      [[ $(find "$index_file" -mmin +60) ]] ||
      [[ $BPAN_INDEX_API_VERSION -gt \
-        "$(git config -f "$index_file" bpan.index.api-version || echo 0)" \
+        "$(git config -f "$index_file" bpan.api-version || echo 0)" \
      ]]
   then
     [[ ${BPAN_TESTING-} ]] ||
@@ -66,7 +66,7 @@ pkg:get-index() (
   [[ -f $index_file ]] ||
     die "BPAN package index file not available"
 
-  index_api_version=$(git config -f "$index_file" bpan.index.api-version || echo 0)
+  index_api_version=$(git config -f "$index_file" bpan.api-version || echo 0)
 
   if [[ $index_api_version -lt $BPAN_INDEX_API_VERSION ]]; then
     error "BPAN Index API Version mismatch. Try again later."
