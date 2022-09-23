@@ -1,3 +1,10 @@
+[version "0.1.35"]
+date = Fri Sep 23 03:16:26 PM EDT 2022
+done = Modify .gitignore
+done = Small config template changes
+done = Set the UTC date of release in index
+done = Revise the ini config files' schemas
+
 [version "0.1.34"]
 date = Thu Sep 22 13:34:02 EDT 2022
 done = Fix version number after a botched `bpan bump -p` on mac
