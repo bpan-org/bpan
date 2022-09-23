@@ -1,3 +1,7 @@
+[version "0.1.36"]
+date = Fri Sep 23 03:39:50 PM EDT 2022
+done = Fix a grep warning
+
 [version "0.1.35"]
 date = Fri Sep 23 03:16:26 PM EDT 2022
 done = Modify .gitignore
