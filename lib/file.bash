@@ -14,7 +14,7 @@ file:copy() (
 
   temp=$(+mktemp)
 
-  if grep -q -E '\(\%.*\%\)' "$from"; then
+  if grep -q -E '\(%.*%\)' "$from"; then
     file:render "$from" > "$temp"
   else
     cp -pL "$from" "$temp"
