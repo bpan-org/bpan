@@ -213,6 +213,8 @@ release:gha-update-index() (
   [[ ${#commit} -eq 40 ]] ||
     die "Can't get commit for '$package' v$version"
 
+  # TODO Update all relevant fields
+
   if [[ ${BPAN_INDEX_UPDATE_TESTING-} ]]; then
     git config -f "$index_file" "pkg.$package.version" "$test_version"
     git config -f "$index_file" "pkg.$package.v${test_version//./-}" "$commit"
@@ -220,6 +222,8 @@ release:gha-update-index() (
     git config -f "$index_file" "pkg.$package.version" "$version"
     git config -f "$index_file" "pkg.$package.v${version//./-}" "$commit"
   fi
+
+  git config -f "$index_file" "pkg.$package.date" "$(date -u)"
 
   perl -pi -e 's/\t//' "$index_file"
 
