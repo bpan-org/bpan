@@ -38,6 +38,9 @@ bump:main() (
     version2=${version1%.*}.$(( ${version1##*.} + 1))
   fi
 
+  git:tag-exists "$version2" &&
+    error "Can't bump. Tag '$version2' already exists."
+
   list=$(
     git:subject-lines "$rev_list" |
       while read -r line; do
