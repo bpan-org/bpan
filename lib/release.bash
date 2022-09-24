@@ -25,6 +25,7 @@ release:main() (
 release:get-env() {
   git:in-repo ||
     error "Not in a git repo"
+
   [[ -f .bpan/config ]] ||
     error "Not in a BPAN package repo"
 
@@ -33,10 +34,11 @@ release:get-env() {
     error "Missing or invalid github.token in $BPAN_ROOT/config"
   fi
 
+  local url
   url=$(git config remote.origin.url) ||
     error "Can't find 'remote.origin.url' in .git/config"
 
-  regex='^git@github.com:(.+)/(.+)$'
+  local regex='^git@github.com:(.+)/(.+)$'
   [[ $url =~ $regex ]] ||
     error "'$url' does not match '$regex'"
 
@@ -46,26 +48,34 @@ release:get-env() {
 
   package=github:$user/$repo
 
-  if [[ $package == github:bpan-org/bpan ]]; then
-    error "Can't release '$package'. Not a package."
-  fi
-
   version=$(config:get package.version) ||
     error "Can't find 'package.version' in .bpan/config"
 
-  [[ $(git tag --list "$version") == "$version" ]] ||
-    error "Version '$version' is not a git tag"
-
-  commit=$(git rev-parse "$version")
-  [[ ${#commit} -eq 40 ]] ||
-    error "Can't get git commit for tag '$version'"
+  commit=$(git:sha1 "$version")
 
   release_html_package_url=https://github.com/$user/$repo/tree/$version
 }
 
 release:check-release() (
-  # XXX make various assertions
-  # assert config has token
+  release_branch=$(config:get package.branch) || true
+  release_branch=${release_branch:-main}
+
+  [[ $(git:branch-name) == "$release_branch" ]] ||
+    error "Not on release branch '$release_branch'"
+
+  tag=$version
+  git:tag-exists "$tag" ||
+    error "Version '$version' is not a git tag"
+
+  git:tag-pushed "$tag" ||
+    error "Tag '$tag' is not pushed to origin"
+
+  [[ $(git:sha1 "$tag") == $(git:sha1 HEAD) ]] ||
+    error "Tag '$tag' is not HEAD commit"
+
+  if [[ $package == github:bpan-org/bpan ]]; then
+    error "Can't release '$package'. Not a package."
+  fi
 
   say -y "Running tests"
   bpan test
@@ -298,6 +308,7 @@ Index Updated]($release_html_index_url/blob/main/index.ini#L$line_num)
     git config http.https://github.com/.extraheader
   )
 
+  rc=0
   curl \
     --silent \
     --request POST \
@@ -305,5 +316,12 @@ Index Updated]($release_html_index_url/blob/main/index.ini#L$line_num)
     --header "$auth_header" \
     "$gha_event_comment_reactions_url" \
     --data "{\"content\":\"$thumb\"}" \
-  >/dev/null
+  >/dev/null ||
+    rc=$?
+
+  if [[ $rc -eq 0 ]]; then
+    say -g 'Release Successful'
+  else
+    say -r 'Release Failed'
+  fi
 )

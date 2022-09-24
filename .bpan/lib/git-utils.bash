@@ -27,9 +27,9 @@ git:in-repo() (
   git:is-repo .
 )
 
-git:in-top-dir() {
-  [[ $(pwd -P) == $(git:top-dir .) ]]
-}
+git:in-top-dir() [[
+  $(pwd -P) == $(git:top-dir .)
+]]
 
 git:is-clean() (
   ! git:is-dirty
@@ -45,15 +45,22 @@ git:is-repo() (
   git rev-parse --is-inside-work-tree &>/dev/null
 )
 
+git:sha1() (
+  git rev-parse "${1?}" 2>/dev/null || die
+)
+
 git:subject-lines() (
   git:assert-in-repo .
   git log --pretty --format='%s' "${1?}"
 )
 
-git:tag-exists() (
-  git tag |
-    grep -q "^${1//./\\.}$"
-)
+git:tag-exists() [[
+  $(git tag --list "${1?}") == "$1"
+]]
+
+git:tag-pushed() [[
+  -n $(git ls-remote --tags origin "${1?}")
+]]
 
 git:top-dir() (
   git:assert-in-repo .
