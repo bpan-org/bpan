@@ -1,3 +1,12 @@
+[version "0.1.37"]
+date = Sat Sep 24 12:31:54 PM EDT 2022
+done = Changes to release flow comments
+done = More checks before pulling the release trigger
+done = Update BPAN files
+done = Don't start bump process if new tag already exists
+done = Do not overwrite exisitng global config
+done = Add GENERATED msg to some share/template/ files
+
 [version "0.1.36"]
 date = Fri Sep 23 03:39:50 PM EDT 2022
 done = Fix a grep warning

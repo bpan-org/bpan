@@ -198,6 +198,8 @@ getopt:parse-spec() {
 
     var=$getopt_prefix${long:-$short}
     count=${getopt_prefix}count_${long:-$short}
+    var=${var//-/_}
+    count=${count//-/_}
 
     printf -v "$count" 0
 
@@ -290,6 +292,8 @@ getopt:set-opts() {
 
     var=$getopt_prefix${long:-$short}
     count=${getopt_prefix}count_${long:-$short}
+    var=${var//-/_}
+    count=${count//-/_}
 
     # Set bool option variable to 'true':
     if [[ $kind == bool ]]; then
