@@ -180,7 +180,8 @@ release:gha-get-env() {
   )
 
   set +x
-  comment_body+="\
+  comment_body+="
+
 1. [Review Release and Update Index]($gha_job_html_url)
 "
   release:gha-update-comment-body "$comment_body"
