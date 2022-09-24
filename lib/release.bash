@@ -92,7 +92,7 @@ release:trigger-release() (
   release:post-request "\
 <!-- $json -->
 
-##### Requesting BPAN Package Release for [$package $version]\
+#### Requesting BPAN Package Release for [$package $version]\
 ($release_html_package_url)
 <details><summary>Details</summary>
 
@@ -112,6 +112,8 @@ $(
 )
 
 </details>
+
+**BPAN Index Updater triggered and will begin processing this request soon…**
 "
 
   say -g "Release for '$package' version '$version' requested"
@@ -172,12 +174,14 @@ release:gha-get-env() {
   package=$gha_request_package
   version=$gha_request_version
   commit=$gha_request_commit
-  comment_body=$gha_event_comment_body
+  comment_body=$(
+    grep -v '^\*\*BPAN Index Updater.*\*\*' \
+      <<<"$gha_event_comment_body"
+  )
 
   set +x
   comment_body+="\
-
-* [Review Release and Update Index]($gha_job_html_url)
+1. [Review Release and Update Index]($gha_job_html_url)
 "
   release:gha-update-comment-body "$comment_body"
   $option_debug && set -x
@@ -291,13 +295,13 @@ release:gha-post-status() (
     line_num=$(( ${line_num:-0} + 1 ))
 
     comment_body+="\
-* [Release Successful - \
+1. [Release Successful - \
 Index Updated]($release_html_index_url/blob/main/index.ini#L$line_num)
 "
   else
     thumb='-1'
     comment_body+="\
-* [Release Failed - See Logs]($gha_job_html_url)
+1. [Release Failed - See Logs]($gha_job_html_url)
 "
   fi
 
