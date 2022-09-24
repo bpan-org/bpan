@@ -131,8 +131,8 @@ fail() {
 }
 
 is() {
-  local got=$1 want=$2 label
-  label=$(test-tap:label "$3")
+  local got=$1 want=$2 label=${3-}
+  label=$(test-tap:label "$label")
   if [[ $got == "$want" ]]; then
     pass "$label"
   else
@@ -160,6 +160,7 @@ isnt() {
   local _test_tap__CALL_STACK_LEVEL=
   _test_tap__CALL_STACK_LEVEL=$(( _test_tap__CALL_STACK_LEVEL + 1 ))
   local got=$1 dontwant=$2 label=${3-}
+  label=$(test-tap:label "$label")
   if [[ $got != "$dontwant" ]]; then
     pass "$label"
   else
@@ -187,22 +188,48 @@ ok-d() {
   ok "$([[ -d $dir ]])" "$msg"
 }
 
-ok-f() {
-  local file=${1:?}
-  local msg=${2:-"'${file#*//}' is a file"}
-  ok "$([[ -f $file ]])" "$msg"
+ok-e() {
+  local path=${1:?}
+  local msg=${2:-"'${path#*//}' exists"}
+  ok "$([[ -e $path ]])" "$msg"
 }
 
-ok-l() {
-  local link=${1:?}
-  local msg=${2:-"'${link#*//}' is a symlink"}
-  ok "$([[ -h $link ]])" "$msg"
+ok-empty() {
+  local path=${1:?}
+  local msg
+  if [[ -f $path ]]; then
+    msg=${2:-"'${path#*//}' is an empty file"}
+    ok "$([[ ! -s $path ]])" "$msg"
+  elif [[ -d $path ]]; then
+    msg=${2:-"'${path#*//}' is an empty directory"}
+    ok "$(shopt -s nullglob; ! [[ $(echo "$path"/*) ]])" "$msg"
+  else
+    fail "'${path#*//}' does not exist"
+  fi
 }
 
 ok-not-e() {
   local path=${1:?}
   local msg=${2:-"'${path#*//}' does not exist"}
   ok "$([[ ! -e $path ]])" "$msg"
+}
+
+ok-f() {
+  local file=${1:?}
+  local msg=${2:-"'${file#*//}' is a file"}
+  ok "$([[ -f $file ]])" "$msg"
+}
+
+ok-h() {
+  local link=${1:?}
+  local msg=${2:-"'${link#*//}' is a symlink"}
+  ok "$([[ -h $link ]])" "$msg"
+}
+
+ok-s() {
+  local file=${1:?}
+  local msg=${2:-"'${file#*//}' is a non-empty file"}
+  ok "$([[ -s $file ]])" "$msg"
 }
 
 like() {

@@ -24,10 +24,18 @@ is "$BPAN_ROOT" \
    "$root" \
    "BPAN_ROOT == '$root'"
 
-ok-f "$root/config"
+ok-s "$root/config"
 
 is "$(bpan config github.token)" \
    '___' \
    "BPAN global config has 'github.token = ___'"
+
+try bpan setup --config
+has "$got" \
+  "Won't overwrite existing BPAN config file" \
+  "'source .rc' is quiet"
+
+try bpan setup --config --force
+ok-s "$root/config"
 
 done-testing

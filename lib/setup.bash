@@ -1,7 +1,7 @@
 setup:options() (
   echo "rc              Used by BPAN's .rc file"
   echo "config          Generate a new '\$BPAN_ROOT/config' file"
-  echo "i,interactive   Generate a config interactively"
+  echo "f,force         Overwrite existing files"
 )
 
 setup:main() (
@@ -10,8 +10,6 @@ setup:main() (
 
   if $option_rc; then
     setup:rc "$@"
-  elif $option_interactive; then
-    error "--interactive not yet implemented"
   elif $option_config; then
     setup:new-config-file
   else
@@ -36,7 +34,13 @@ setup:rc() (
 )
 
 setup:new-config-file() (
-  cd "$BPAN_ROOT" || exit
+  conf_file=$BPAN_ROOT/config
+
+  if [[ -f $conf_file ]] &&
+     ! $option_force
+  then
+    error "Won't overwrite existing BPAN config file '$conf_file'."
+  fi
 
   source-once file
 

@@ -11,9 +11,9 @@ source test/init
   ok "$($command)" \
     "'$command' works"
   ok-d "$I/src/bpan-org/getopt-bash/"
-  ok-l "$I/lib/getopt.bash"
+  ok-h "$I/lib/getopt.bash"
   ok-f "$I/lib/getopt.bash"
-  ok-l "$I/man/man3/getopt.3"
+  ok-h "$I/man/man3/getopt.3"
   ok-f "$I/man/man3/getopt.3"
 }
 
@@ -23,9 +23,9 @@ source test/init
   ok "$($command)" \
     "'$command' works"
   ok-d "$I/src/bpan-org/getopt-bash/0.1.0/"
-  ok-l "$I/lib/getopt.bash"
+  ok-h "$I/lib/getopt.bash"
   ok-f "$I/lib/getopt.bash"
-  ok-l "$I/man/man3/getopt.3"
+  ok-h "$I/man/man3/getopt.3"
   ok-f "$I/man/man3/getopt.3"
 
   note "Testing 'bpan uninstall' here since we have something to uninstall"
