@@ -50,6 +50,11 @@ git:subject-lines() (
   git log --pretty --format='%s' "${1?}"
 )
 
+git:tag-exists() (
+  git tag |
+    grep -q "^${1//./\\.}$"
+)
+
 git:top-dir() (
   git:assert-in-repo .
   git rev-parse --show-toplevel
