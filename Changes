@@ -1,3 +1,7 @@
+[version "0.1.38"]
+date = Sat Sep 24 01:48:08 PM EDT 2022
+done = Fix release comment formatting
+
 [version "0.1.37"]
 date = Sat Sep 24 12:31:54 PM EDT 2022
 done = Changes to release flow comments
