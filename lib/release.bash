@@ -220,7 +220,7 @@ release:gha-check-release() {
     die "'$commit' is not the actual commit for '$package' tag '$version'"
 
   : "Run the package's test suite"
-  make -C package test ||
+  (cd package && bpan test -v) ||
     die "$package v$version failed tests"
 }
 
