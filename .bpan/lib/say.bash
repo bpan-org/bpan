@@ -27,6 +27,7 @@ say-color() (
 )
 
 say() (
+  set +x
   if [[ ${1-} == [-+]? ]]; then
     color=$1; shift
     "say$color" "$@"
