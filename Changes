@@ -1,3 +1,8 @@
+[version "0.1.40"]
+date = Sun Sep 25 01:29:55 PM EDT 2022
+done = Using `make test` for release won't always work
+done = Make `say` not print debug info
+
 [version "0.1.39"]
 date = Sun Sep 25 12:52:50 PM EDT 2022
 done = Update bashplus and test-tap-bash and change warn to +warn
