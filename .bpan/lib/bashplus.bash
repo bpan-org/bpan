@@ -5,7 +5,7 @@
 
 
 bashplus:version() (
-  VERSION=0.1.8
+  VERSION=0.1.18
   echo "bashplus $VERSION"
 )
 
@@ -21,7 +21,8 @@ bashplus:version() (
   # * TODO --plain to not show line numbers
   # * TODO --stack for full stack trace
   #
-  # NOTE: 'die' and 'warn' are the only bashplus function not starting with '+'
+  # NOTE: 'die' id the only bashplus function not starting with '+'.
+
   die() {
     set +x
     local arg args=() level=0 R='' Z=''
@@ -43,7 +44,7 @@ bashplus:version() (
     [[ $# -gt 0 ]] || set -- Died
 
     echo -en "$R"
-    warn "$@"
+    +warn "$@"
     echo -en "$Z"
 
     if [[ $# -ne 1 || $1 != *$'\n' ]]; then
@@ -59,7 +60,7 @@ bashplus:version() (
     exit 1
   }
 
-  warn() {
+  +warn() {
     printf '%s\n' "$@" >&2
   }
 
@@ -82,6 +83,13 @@ bashplus:version() (
 
 # NOTE: BashPlus functions defined in name order.
 
+# Functions to redirect stdout and stderr.
+function +1:x { "$@" 1>/dev/null; }
+function +2:1 { "$@" 2>&1; }
+function +2:x { "$@" 2>/dev/null; }
+function +o:x { "$@" &>/dev/null; }
+
+# Functions to assert that commands are available.
 +assert-cmd() ( +is-cmd "$@" ||
   +error "Command '$1' is required" )
 +assert-cmd-ver() ( +is-cmd-ver "$@" ||
@@ -110,7 +118,7 @@ bashplus:version() (
     return
 
   [[ $out =~ ([0-9]+\.[0-9]+(\.[0-9]+)?) ]] || {
-    warn "Can't determine version number from '$command'"
+    +warn "Can't determine version number from '$command'"
     return 1
   }
 
@@ -156,15 +164,31 @@ bashplus:version() (
 
 # Add one or more directories to the front of PATH.
 +path() {
-  local i
-  for (( i = $#; i >=1; i-- )); do
-    PATH=${!i}:$PATH
-  done
-  export PATH
+  _PATH_=${_PATH_:-PATH}
+  if [[ $# -eq 0 ]]; then
+    (IFS=:; printf '%s\n' ${!_PATH_})
+  else
+    local dir dirs
+    for dir in $(+reverse "$@"); do
+      dirs=($(+path | grep -v "$dir"))
+      set -- "$dir" "${dirs[@]}"
+      printf -v "$_PATH_" '%s' "$(IFS=:; echo "$*")"
+      export "$_PATH_"
+    done
+  fi
 }
 
+# Reverse inputs
++reverse() (
+  i=$(( $# ))
+  while (( i > 0 )); do
+    echo "${!i}"
+    i=$((i - 1))
+  done
+)
+
 # Sort in true ascii order.
-+sort() ( LC_ALL=C sort )
++sort() ( LC_ALL=C sort "$@" )
 
 # Generate a unique symbol.
 # Useful for unique variable and function names.

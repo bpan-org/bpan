@@ -24,7 +24,7 @@ help:main() (
       (
         help:get-markdown "$cmd"
         echo
-        warn "Run: 'bpan install md2man' to see 'bpan help' as manpages"
+        +warn "Run: 'bpan install md2man' to see 'bpan help' as manpages"
       ) | less -FRX
     fi
   else

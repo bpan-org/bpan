@@ -19,7 +19,7 @@ init:main() (
       if [[ ${files[*]} == *$file* ]]; then
         init:copy "$file"
       else
-        warn "Ignoring '$file'. Not a BPAN provided file."
+        +warn "Ignoring '$file'. Not a BPAN provided file."
       fi
     done
   else
@@ -27,7 +27,7 @@ init:main() (
       if $option_force || [[ ! -e $file ]]; then
         init:copy "$file"
       else
-        warn "Skipping existing file '$file'. Use --force to override."
+        +warn "Skipping existing file '$file'. Use --force to override."
       fi
     done
   fi
