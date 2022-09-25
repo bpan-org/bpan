@@ -2,6 +2,7 @@ config_file=''
 config_files=()
 
 config:get() (
+  set +x
   [[ $# -gt 0 ]] ||
     config:die "config:get requires 1 or more keys"
   [[ $config_file ]] && config_files=( "$config_file" )
@@ -24,6 +25,7 @@ config:get() (
 )
 
 config:set() (
+  set +x
   [[ $config_file ]] && config_files=( "$config_file" )
   [[ $# -eq 2 ]] ||
     config:die "config:set requires 2 arguments: key/value"
@@ -34,6 +36,7 @@ config:set() (
 )
 
 config:all() (
+  set +x
   [[ $config_file ]] && config_files=( "$config_file" )
   [[ $# -eq 1 ]] ||
     config:die "config:all requires 1 key"
@@ -41,12 +44,14 @@ config:all() (
 )
 
 config:list() (
+  set +x
   [[ $config_file ]] && config_files=( "$config_file" )
   git config --file <(cat "${config_files[@]?}") --list |
     sort
 )
 
 config:die() (
+  set +x
   echo "$*" >&2
   exit 1
 )
