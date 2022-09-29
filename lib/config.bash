@@ -24,6 +24,8 @@ config:main() (
   elif $option_global; then
     git:assert-in-repo
     config_file=$BPAN_ROOT/config
+  else
+    config_file=.bpan/config
   fi
 
   if $option_list; then

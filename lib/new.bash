@@ -1,5 +1,9 @@
+die "${BASH_SOURCE[0]} is DEAD"
+
+new:default() (echo --help)
+
 new:usage() (
-  echo "$app [<opts>] $cmd <$cmd-opts> [<path>]"
+  echo "$app [<opts>] $cmd <$cmd-opts> <path>"
 )
 
 new:options() (

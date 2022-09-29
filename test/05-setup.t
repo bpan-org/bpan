@@ -7,8 +7,11 @@ root=$(pwd -P)/test/bpan
 rm -fr "$root"
 
 git clone -q .git "$root"
-cp lib/setup.bash "$root/lib/setup.bash"
-cp lib/file.bash "$root/lib/file.bash"
+cp \
+  lib/add.bash \
+  lib/env.bash \
+  lib/setup.bash \
+  "$root"/lib/
 
 try "set +eu; source '$root/.rc'"
 is "$got" "" \
@@ -26,7 +29,7 @@ is "$BPAN_ROOT" \
 
 ok-s "$root/config"
 
-is "$(bpan config github.token)" \
+is "$(bpan config --global github.token)" \
    '___' \
    "BPAN global config has 'github.token = ___'"
 

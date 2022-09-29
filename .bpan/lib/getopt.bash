@@ -205,7 +205,14 @@ getopt:parse-spec() {
 
     if [[ $kind == '='* ]]; then
       kind=value
-      declare -a "$var"
+      if ! [[ ${!var-} ]]; then
+        # XXX Is there a better way to indirectly assign array variable =('')?
+        if shopt -s compat41 2>/dev/null; then
+          declare -g -a "$var"=''
+        else
+          eval "$var=('')"
+        fi
+      fi
     elif [[ $kind == '?'* ]]; then
       kind=dual
       printf -v "$var" ''
@@ -313,6 +320,8 @@ getopt:set-opts() {
       else
         printf -v "$var" true
       fi
+    else
+      die
     fi
 
     # Increment option_count_<name>

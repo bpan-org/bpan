@@ -12,7 +12,7 @@ env:NAME() (
   [[ $name =~ ^[a-z][-a-z0-9]*$ ]] ||
     die "Bad pkg name '$name'"
   NAME=${name%-bash}
-  NAME=${name^^}
+  NAME=${NAME^^}
   NAME=${NAME//-/_}
   echo "$NAME"
 )
@@ -46,7 +46,9 @@ env:author-email() (
 )
 
 env:copyright-year() (
-  year=$(config:get package.copyright) || true
+  if [[ -f .bpan/config ]]; then
+    year=$(config:get package.copyright) || true
+  fi
   year=${year:-$(date '+%Y')}
   echo "$year"
 )
@@ -56,7 +58,12 @@ env:date-time() (
 )
 
 env:github-user-id() (
-  id=$(config:get user.github) || {
+  if [[ -f $BPAN_ROOT/config ]]; then
+    config_file=$BPAN_ROOT/config
+    id=$(config:get github.user) || true
+  fi
+
+  if ! [[ $id ]]; then
     rc=0
     out=$(ssh git@github.com 2>&1) || rc=$?
     if [[ $rc -eq 1 ]]; then
@@ -64,7 +71,7 @@ env:github-user-id() (
         id=${BASH_REMATCH[1]}
       fi
     fi
-  }
+  fi
 
   echo "${id:-github-user-id}"
 )

@@ -15,8 +15,9 @@ update:main() (
     source-once install
     source-once pkg
 
-    [[ -d .bpan ]] ||
-      error "Can't 'bpan update'. No '.bpan/' directory"
+    config_file=.bpan/config
+    [[ -f $config_file ]] ||
+      error "Can't 'bpan update'. No '$config_file' file."
 
     index_file=$BPAN_INSTALL/index.ini
     pkg:get-index
@@ -28,14 +29,14 @@ update:main() (
 )
 
 update:list() (
-  cd "$BPAN_ROOT/share/update" || exit
+  cd "$BPAN_ROOT/share/file" || exit
   find . -type l |
     +sort |
     cut -c3-
 )
 
 update:files() (
-  source-once file
+  source-once add
   name=$(config:get package.name)
   while read -r line; do
     line=${line#file.bpan.}
@@ -45,14 +46,15 @@ update:files() (
     if [[ $file == *\ * ]]; then
       IFS=' ' read -r to from <<<"$file"
     else
-      from=$BPAN_ROOT/share/update/$file
+      from=$BPAN_ROOT/share/file/$file
       to=$file
     fi
 
     if [[ -e $to ]]; then
-      file:copy "$from" "$to"
+      add:file-copy "$from" "$to"
     fi
   done < <(
+    config_file=.bpan/config
     config:list |
       grep '^update\.template'
   )
@@ -178,6 +180,7 @@ update:man() (
       say -y "UPDATED '$man' from '$md'"
     fi
   done < <(
+    config_file=.bpan/config
     config:list |
       grep '^update\.manpage'
   )

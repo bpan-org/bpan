@@ -25,6 +25,17 @@ if +os-macos; then
   fi
 fi
 
++is-empty() (
+  path=${1?}
+  if [[ -f $path ]]; then
+    ! [[ -s $path ]]
+  elif [[ -d $path ]]; then
+    ! [[ $(shopt -s nullglob; printf '%s' *) ]]
+  else
+    die "'$path' is not a file or directory"
+  fi
+)
+
 bpan:source config
 bpan:source say
 bpan:source bpan-util
@@ -43,13 +54,12 @@ System Commands:
   uninstall     Uninstall a $APP package
   list          List all installed $APP packages
   config        Manage $APP config settings
-  setup         Setup / configure 'bpan' itself
+  setup         Setup / configure '$app' itself
   complete      Shell tab completion for $app
 
 Project Commands:
-  new           Create a new Bash project
-  init          Create a '.$app/' project dir
-  add           Add a package to a Bash project
+  init          Add BPAN components to a project
+  add           Add $APP elements to a project
   update        Update project $APP assets
   test          Run the project tests
   bump          Prepare next version
@@ -135,7 +145,7 @@ source-once() {
 
 getopt-cmds-spec() {
   source-once "$cmd"
-  local help="h,help  Get help for $cmd command"
+  local help="h,help  Get help for '$app $cmd'"
 
   if +is-func "$cmd:getopt"; then
     "$cmd:getopt"
@@ -149,6 +159,10 @@ getopt-cmds-spec() {
       usage+=$("$cmd:usage")
     else
       usage+="$app [<$app-opts>] $cmd [<$cmd-opts>]"
+      if +is-func "$cmd:help"; then
+        usage+=$'\n\n'
+        usage+="Use '$app help $cmd' for detailed help."
+      fi
     fi
     if +is-func "$cmd:options"; then
       options=$("$cmd:options")

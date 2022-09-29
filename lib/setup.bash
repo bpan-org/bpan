@@ -42,11 +42,11 @@ setup:new-config-file() (
     error "Won't overwrite existing BPAN config file '$conf_file'."
   fi
 
-  source-once file
+  source-once add
 
   touch "$BPAN_ROOT/config"
 
   option_quiet=true
 
-  file:copy "$BPAN_ROOT/share/setup/config" "$BPAN_ROOT/config"
+  add:file-copy "$BPAN_ROOT/share/setup/config" "$BPAN_ROOT/config"
 )

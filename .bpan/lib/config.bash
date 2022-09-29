@@ -35,6 +35,17 @@ config:set() (
   perl -pi -e 's/^\t//' "$file"
 )
 
+config:add() (
+  set +x
+  [[ $config_file ]] && config_files=( "$config_file" )
+  [[ $# -eq 2 ]] ||
+    config:die "config:add requires 2 arguments: key/value"
+  file=${config_files[-1]?}
+  git config --file "$file" --add "$@"
+  # TODO replace perl here with pure bash.
+  perl -pi -e 's/^\t//' "$file"
+)
+
 config:all() (
   set +x
   [[ $config_file ]] && config_files=( "$config_file" )

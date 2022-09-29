@@ -1,1 +1,0 @@
-../../template/test-shellcheck.bash
