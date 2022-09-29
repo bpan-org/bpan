@@ -1,3 +1,7 @@
+[version "0.1.42"]
+date = Thu Sep 29 04:08:59 PM PDT 2022
+done = Implement most of 'init' and 'add' commands
+
 [version "0.1.41"]
 date = Sun Sep 25 01:36:00 PM EDT 2022
 done = Make config:* functions disable debugging
