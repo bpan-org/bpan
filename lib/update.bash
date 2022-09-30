@@ -56,7 +56,7 @@ update:files() (
   done < <(
     config_file=.bpan/config
     config:list |
-      grep '^update\.template'
+      grep '^update\.file'
   )
 )
 
@@ -182,6 +182,6 @@ update:man() (
   done < <(
     config_file=.bpan/config
     config:list |
-      grep '^update\.manpage'
+      grep '^update\.man'
   )
 )

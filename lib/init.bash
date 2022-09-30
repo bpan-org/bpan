@@ -137,9 +137,13 @@ init:main() (
 
     if [[ $file == doc/* ]]; then
       touch ReadMe.md
-      config:all update.template | grep -q '^ReadMe\.md' || {
-        config:add update.template "ReadMe.md $to"
-        config:add update.manpage "$to"
+      config:all update.file | grep -q '^ReadMe\.md' || {
+        config:add update.file "ReadMe.md $to"
+        if [[ -d bin ]]; then
+          config:add update.man1 "$to"
+        else
+          config:add update.man3 "$to"
+        fi
       }
     elif [[ $file == bin/* ]] ||
          [[ $file == .bpan/lib/* ]]

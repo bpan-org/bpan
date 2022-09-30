@@ -229,12 +229,12 @@ git = 2.25+
 perl = 5.28.3+
 
 [update]
-template = License
-template = Makefile
-template = ReadMe.md doc/thinger.md
-template = test/init
-template = test/00-shellcheck.t
-manpage = doc/thinger.md
+file = License
+file = Makefile
+file = ReadMe.md doc/thinger.md
+file = test/init
+file = test/00-shellcheck.t
+man3 = doc/thinger.md
 ```
 
 

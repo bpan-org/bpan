@@ -161,7 +161,7 @@ add:set-env() {
   base=${option_from:-$BPAN_ROOT/share/file}
   [[ -d $base ]] || die "'$base' does not exist"
   [[ -f $base/bpan-file.ini ]] ||
-    error "'$base' is an invalid template directory"
+    error "'$base' is an invalid BPAN template file directory"
 
   update_files=$(
     git config -f "$base/bpan-file.ini" --list |
@@ -234,7 +234,7 @@ add:file() (
   )
 
   if grep -q "^$to$" <<<"$update_files"; then
-    config:add update.template "$file"
+    config:add update.file "$file"
   fi
 
   say -y "${msg:-"ADDED FILE '$to'"}"

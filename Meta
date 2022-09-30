@@ -43,11 +43,11 @@ ping = 0
 package = bashplus
 package = getopt-bash
 package = test-tap-bash
-template = License
-template = Makefile
-template = ReadMe.md doc/bpan.md
-template = test/init
-template = test/00-shellcheck.t
-manpage = doc/bpan.md
+file = License
+file = Makefile
+file = ReadMe.md doc/bpan.md
+file = test/init
+file = test/00-shellcheck.t
+man1 = doc/bpan.md
 
 # vim: ft=gitconfig:
