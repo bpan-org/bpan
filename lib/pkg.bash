@@ -77,19 +77,19 @@ pkg:get-index() (
 
 pkg:get-version() (
   full=$1
-  git config -f "$index_file" "pkg.$full.version" ||
+  git config -f "$index_file" "package.$full.version" ||
     error "No package '$full' found"
 )
 
 pkg:get-commit() (
   full=$1 version=$2
-  git config -f "$index_file" "pkg.$full.v${version//./-}" ||
-    error "Can't find commit for pkg '$full' version '$version'"
+  git config -f "$index_file" "package.$full.v${version//./-}" ||
+    error "Can't find commit for package '$full' version '$version'"
 )
 
 pkg:check-commit() (
-  git config -f "$index_file" "pkg.$full.v${version//./-}" ||
-    error "Can't find commit for pkg '$full' version '$version'"
+  git config -f "$index_file" "package.$full.v${version//./-}" ||
+    error "Can't find commit for package '$full' version '$version'"
 )
 
 pkg:installed() (

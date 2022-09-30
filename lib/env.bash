@@ -2,7 +2,7 @@ env:name() (
   [[ ${name-} ]] ||
     die "'\$name' not defined"
   [[ $name =~ ^[a-z][-a-z0-9]*$ ]] ||
-    die "Bad pkg name '$name'"
+    die "Bad package name '$name'"
   echo "${name%-bash}"
 )
 
@@ -10,7 +10,7 @@ env:NAME() (
   [[ ${name-} ]] ||
     die "'\$name' not defined"
   [[ $name =~ ^[a-z][-a-z0-9]*$ ]] ||
-    die "Bad pkg name '$name'"
+    die "Bad package name '$name'"
   NAME=${name%-bash}
   NAME=${NAME^^}
   NAME=${NAME//-/_}
@@ -21,7 +21,7 @@ env:pkg() (
   [[ ${name-} ]] ||
     die "'\$name' not defined"
   [[ $name =~ ^[a-z][-a-z0-9]*$ ]] ||
-    die "Bad pkg name '$name'"
+    die "Bad package name '$name'"
   echo "$name"
 )
 
@@ -29,7 +29,7 @@ env:PKG() (
   [[ ${name-} ]] ||
     die "'\$name' not defined"
   [[ $name =~ ^[a-z][-a-z0-9]*$ ]] ||
-    die "Bad pkg name '$name'"
+    die "Bad package name '$name'"
   PKG=${name^^}
   PKG=${PKG//-/_}
   echo "$PKG"

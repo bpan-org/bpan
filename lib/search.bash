@@ -25,7 +25,7 @@ search:main() (
   fi
   echo
 
-  for pkg in "${found[@]}"; do
-    say-y "* $pkg"
+  for package in "${found[@]}"; do
+    say-y "* $package"
   done
 )

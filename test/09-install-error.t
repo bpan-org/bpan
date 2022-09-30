@@ -15,7 +15,7 @@ test-errors <<'...'
 > bpan install
 [bpan] Error: 'bpan install' requires one or more packages
 > bpan install getopt-bash=9.9.9
-[bpan] Error: Can't find commit for pkg 'github:bpan-org/getopt-bash' version '9.9.9'
+[bpan] Error: Can't find commit for package 'github:bpan-org/getopt-bash' version '9.9.9'
 ...
 
 done-testing

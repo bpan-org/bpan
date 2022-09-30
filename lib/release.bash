@@ -188,7 +188,7 @@ release:gha-get-env() {
   $option_debug && set -x
 
   if [[ ${BPAN_INDEX_UPDATE_TESTING-} ]]; then
-    v=$(git config -f "$index_file" "pkg.$package.version")
+    v=$(git config -f "$index_file" "package.$package.version")
     test_version=${v%.*}.$(( ${v##*.} + 1 ))
   fi
 }
@@ -199,7 +199,7 @@ release:gha-check-release() {
     die "Package '$package' has no '.bpan/config' file"
 
   : "Check new version is greater than indexed one"
-  indexed_version=$(git config -f "$index_file" "pkg.$package.version")
+  indexed_version=$(git config -f "$index_file" "package.$package.version")
   if [[ ${BPAN_INDEX_UPDATE_TESTING-} ]]; then
     +version-gt "$test_version" "$indexed_version" ||
       die "'$package' version '$version' not greater than '$indexed_version'"
@@ -231,14 +231,14 @@ release:gha-update-index() (
   # TODO Update all relevant fields
 
   if [[ ${BPAN_INDEX_UPDATE_TESTING-} ]]; then
-    git config -f "$index_file" "pkg.$package.version" "$test_version"
-    git config -f "$index_file" "pkg.$package.v${test_version//./-}" "$commit"
+    git config -f "$index_file" "package.$package.version" "$test_version"
+    git config -f "$index_file" "package.$package.v${test_version//./-}" "$commit"
   else
-    git config -f "$index_file" "pkg.$package.version" "$version"
-    git config -f "$index_file" "pkg.$package.v${version//./-}" "$commit"
+    git config -f "$index_file" "package.$package.version" "$version"
+    git config -f "$index_file" "package.$package.v${version//./-}" "$commit"
   fi
 
-  git config -f "$index_file" "pkg.$package.date" "$(date -u)"
+  git config -f "$index_file" "package.$package.date" "$(date -u)"
 
   perl -pi -e 's/\t//' "$index_file"
 
