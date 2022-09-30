@@ -1,23 +1,7 @@
-setup:options() (
-  echo "rc              Used by BPAN's .rc file"
-  echo "config          Generate a new '\$BPAN_ROOT/config' file"
-  echo "f,force         Overwrite existing files"
-)
-
 setup:main() (
   config_file=$BPAN_ROOT/config
   local_dir=$BPAN_ROOT/local
 
-  if $option_rc; then
-    setup:rc "$@"
-  elif $option_config; then
-    setup:new-config-file
-  else
-    error "--config or --interactive is required"
-  fi
-)
-
-setup:rc() (
   config_file=$BPAN_ROOT/.bpan/config \
     bpan:require-commands ||
       warn "Please install missing BPAN requirements above"

@@ -29,8 +29,6 @@ System Commands:
   uninstall     Uninstall a $APP package
   list          List all installed $APP packages
   config        Manage $APP config settings
-  setup         Setup / configure '$app' itself
-  complete      Shell tab completion for $app
 
 Project Commands:
   init          Add BPAN components to a project
@@ -38,8 +36,8 @@ Project Commands:
   update        Update project $APP assets
   test          Run the project tests
   bump          Prepare next version
-  register      Register a project with $APP
   release       Publish the package to $APP index
+  register      Register a new $APP author/package
   clean         Remove the build files and dirs
 
 Information Commands:
@@ -55,6 +53,11 @@ q,quiet       Print less output
 h,help        Show the command summary
 V,version     Display $app version
 x,debug       Print lots of debugging info
+#
+# Hidden options for internal use:
+#
+setup*        Do .rc system setup
+complete*     Shell tab completion for $app
 "
 
 main() (
@@ -64,6 +67,14 @@ main() (
 
   if $option_version; then
     echo "$app $VERSION"
+
+  elif $option_setup; then
+    source-once setup
+    setup:main "${args[@]}"
+
+  elif $option_complete; then
+    source-once complete
+    complete:main "${args[@]}"
 
   elif [[ $cmd ]]; then
     source-once "$cmd"

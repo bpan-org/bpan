@@ -3,6 +3,7 @@ BPAN
 
 Bash Packages Are Nifty
 
+
 ## Synopsis
 
 Using the `bpan` CLI tool:
@@ -30,6 +31,7 @@ $ bpan register .
 $ bpan publish .
 ```
 
+
 ## Description
 
 BPAN is the "Missing Bash Package Manager".
@@ -39,6 +41,7 @@ It does 3 big things for you and your Bash code:
 * Find/install CLI programs/libaries written in Bash
 * Install, manage, bundle Bash deps for a project
 * Register and publish Bash packages that you make
+
 
 ## Installation
 
@@ -66,6 +69,7 @@ BPAN, works and is tested under the following shells: `bash`, `zsh`, `fish`,
 NOTE: `$HOME/.bpan/` can be changed above to any other location that you wish to
 install BPAN.
 
+
 ### Prerequisites
 
 BPAN needs just a few very common things to work:
@@ -78,6 +82,7 @@ BPAN needs just a few very common things to work:
 * GitHub account
   * Only needed to register and publish packages
   * BPAN publishing only works on GitHub at the current time
+
 
 ## Using the `bpan` CLI
 
@@ -101,6 +106,7 @@ Commands are grouped into 3 categories:
 Start with `bpan --help` to get the basic usage info.
 
 Documentation can be read with `man bpan`.
+
 
 ## Using BPAN in a Project
 
@@ -127,6 +133,7 @@ To update the BPAN dependency files and generate man pages:
 bpan update
 ```
 
+
 ### System-wide BPAN Directory and File Layout
 
 When you install packages system-wide with BPAN, things are stored under the
@@ -141,6 +148,7 @@ installed into:
 * `man/man1/` - Program docs
 * `man/man3/` - Library docs
 * `src/` - Source code repository clones/downloads
+
 
 ### Per-project BPAN Directory and File Layout
 
@@ -184,14 +192,18 @@ Additionally there are 3 possible `.bpan/` sub-directories:
 
 This is where your per-project dependency package assets are installed to.
 
+
 ### Project `.bpan/config` Configuration
 
 A typical BPAN `config` file looks like:
 ```
 [bpan]
+api-version = 1
+
+[package]
 name = thinger-bash
 version = 0.1.0
-abstract = Do the thing
+title = Do the thing
 license = MIT
 copyright = 2022
 
@@ -199,9 +211,13 @@ copyright = 2022
 name = Ingy döt Net
 email = ingy@ingy.net
 github = ingydotnet
-libera = ingy
 twitter = ingydotnet
+irc = ingy@irc.libera.chat
+matrix = @ingy:yaml.io
 site = https://github.com/${author.github}
+
+[owner]
+github = ingydotnet
 
 [require "bpan"]
 bashplus = 0.1.0+
@@ -211,7 +227,16 @@ getopt-bash = 0.1.0+
 bash = 4.4+
 git = 2.25+
 perl = 5.28.3+
+
+[update]
+template = License
+template = Makefile
+template = ReadMe.md doc/thinger.md
+template = test/init
+template = test/00-shellcheck.t
+manpage = doc/thinger.md
 ```
+
 
 ## BPAN Sources
 
@@ -219,6 +244,7 @@ Currently, all BPAN installable packages are specific commits in public Git
 repositories.
 
 The BPAN index lives here: https://github.com/bpan-org/bpan-index
+
 
 ## Copyright and License
 

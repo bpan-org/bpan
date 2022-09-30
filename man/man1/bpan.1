@@ -369,11 +369,14 @@ This is where your per-project dependency package assets are installed to.
 .PP
 A typical \s-1BPAN\s0 \f(CW\*(C`config\*(C'\fR file looks like:
 .PP
-.Vb 6
+.Vb 2
 \&    [bpan]
+\&    api\-version = 1
+\&
+\&    [package]
 \&    name = thinger\-bash
 \&    version = 0.1.0
-\&    abstract = Do the thing
+\&    title = Do the thing
 \&    license = MIT
 \&    copyright = 2022
 \&
@@ -381,9 +384,13 @@ A typical \s-1BPAN\s0 \f(CW\*(C`config\*(C'\fR file looks like:
 \&    name = Ingy do\*:t Net
 \&    email = ingy@ingy.net
 \&    github = ingydotnet
-\&    libera = ingy
 \&    twitter = ingydotnet
+\&    irc = ingy@irc.libera.chat
+\&    matrix = @ingy:yaml.io
 \&    site = https://github.com/${author.github}
+\&
+\&    [owner]
+\&    github = ingydotnet
 \&
 \&    [require "bpan"]
 \&    bashplus = 0.1.0+
@@ -393,6 +400,14 @@ A typical \s-1BPAN\s0 \f(CW\*(C`config\*(C'\fR file looks like:
 \&    bash = 4.4+
 \&    git = 2.25+
 \&    perl = 5.28.3+
+\&
+\&    [update]
+\&    template = License
+\&    template = Makefile
+\&    template = ReadMe.md doc/thinger.md
+\&    template = test/init
+\&    template = test/00\-shellcheck.t
+\&    manpage = doc/thinger.md
 .Ve
 .SS "\s-1BPAN SOURCES\s0"
 .IX Subsection "BPAN SOURCES"

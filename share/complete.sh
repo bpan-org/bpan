@@ -1,6 +1,6 @@
 #FISH
 test -n "$FISH_VERSION" && eval '
-set -l cmds (bpan complete)
+set -l cmds (bpan --complete)
 complete -f \
   -c bpan \
   -n "not __fish_seen_subcommand_from $cmds" \
@@ -24,7 +24,7 @@ if type complete &>/dev/null; then
       COMP_CWORD=$cword \
       COMP_LINE=$COMP_LINE \
       COMP_POINT=$COMP_POINT \
-      bpan complete -- "${words[@]}" \
+      bpan --complete -- "${words[@]}" \
         2>/dev/null
     )) || return
 
@@ -41,7 +41,7 @@ elif type compdef &>/dev/null; then
       COMP_CWORD=$((CURRENT-1)) \
       COMP_LINE=$BUFFER \
       COMP_POINT=0 \
-      bpan complete -- "${words[@]}" \
+      bpan --complete -- "${words[@]}" \
         2>/dev/null
     )
   }
@@ -60,7 +60,7 @@ elif type compctl &>/dev/null; then
       COMP_CWORD="$cword" \
       COMP_LINE="$line" \
       COMP_POINT="$point" \
-      bpan complete -- "${words[@]}" \
+      bpan --complete -- "${words[@]}" \
         2>/dev/null
     )) || return
   }
