@@ -1,3 +1,7 @@
+[version "0.1.44"]
+date = Fri Sep 30 01:16:53 PM PDT 2022
+done = Fix 'bpan bump' protection against WIP commits
+
 [version "0.1.43"]
 date = Fri Sep 30 01:08:11 PM PDT 2022
 done = Update BPAN assets
