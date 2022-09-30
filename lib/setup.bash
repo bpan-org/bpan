@@ -20,7 +20,7 @@ setup:main() (
 setup:rc() (
   config_file=$BPAN_ROOT/.bpan/config \
     bpan:require-commands ||
-      +warn "Please install missing BPAN requirements above"
+      warn "Please install missing BPAN requirements above"
 
   if ! [[ -d $local_dir ]]; then
     mkdir "$local_dir"

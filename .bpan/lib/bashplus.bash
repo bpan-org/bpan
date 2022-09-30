@@ -5,7 +5,7 @@
 
 
 bashplus:version() (
-  VERSION=0.1.20
+  VERSION=0.1.21
   echo "bashplus $VERSION"
 )
 
@@ -21,7 +21,8 @@ bashplus:version() (
   # * TODO --plain to not show line numbers
   # * TODO --stack for full stack trace
   #
-  # NOTE: 'die' id the only bashplus function not starting with '+'.
+  # NOTE: 'die' and 'warn' are the only bashplus functions not starting with
+  # a '+' character.
 
   die() {
     set +x
@@ -60,7 +61,7 @@ bashplus:version() (
     exit 1
   }
 
-  +warn() {
+  warn() {
     printf '%s\n' "$@" >&2
   }
 
@@ -84,10 +85,10 @@ bashplus:version() (
 # NOTE: BashPlus functions defined in name order.
 
 # Functions to redirect stdout and stderr.
-function +1:x { "$@" 1>/dev/null; }
-function +2:1 { "$@" 2>&1; }
-function +2:x { "$@" 2>/dev/null; }
-function +o:x { "$@" &>/dev/null; }
++1:x() { "$@" 1>/dev/null; }
++2:1() { "$@" 2>&1;        }
++2:x() { "$@" 2>/dev/null; }
++o:x() { "$@" &>/dev/null; }
 
 # Functions to assert that commands are available.
 +assert-cmd() ( +is-cmd "$@" ||
@@ -137,6 +138,18 @@ function +o:x { "$@" &>/dev/null; }
       ))
     ))
   ))
+)
+
+# Check if a file or directory is empty
++is-empty() (
+  path=${1?}
+  if [[ -f $path ]]; then
+    ! [[ -s $path ]]
+  elif [[ -d $path ]]; then
+    ! [[ $(shopt -s nullglob; printf '%s' *) ]]
+  else
+    die "'$path' is not a file or directory"
+  fi
 )
 
 # Check if 2 files are the same or different.
