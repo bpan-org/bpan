@@ -1,3 +1,11 @@
+[version "0.1.43"]
+date = Fri Sep 30 01:08:11 PM PDT 2022
+done = Update BPAN assets
+done = Change 'pkg' to 'package' for index stuff
+done = wip
+done = Remove 'setup' and 'complete' as API commands
+done = Move +is-empty to bashplus
+
 [version "0.1.42"]
 date = Thu Sep 29 04:08:59 PM PDT 2022
 done = Implement most of 'init' and 'add' commands
