@@ -48,7 +48,7 @@ bump:main() (
       done
   )
 
-  grep -q -i '^wip\>' <<<"$list" &&
+  grep -q -i '^done = wip\>' <<<"$list" &&
     error "Can't '$app $cmd' with WIP commits"
 
   if $option_push; then
