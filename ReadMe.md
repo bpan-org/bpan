@@ -207,6 +207,12 @@ title = Do the thing
 license = MIT
 copyright = 2022
 
+repo = https://github.com/$author.github/$package.name
+branch = main
+site = $package.repo
+bug = $package.repo/issues/
+irc = irc.libera.chat/bpan
+
 [author]
 name = Ingy döt Net
 email = ingy@ingy.net
@@ -214,12 +220,12 @@ github = ingydotnet
 twitter = ingydotnet
 irc = ingy@irc.libera.chat
 matrix = @ingy:yaml.io
-site = https://github.com/${author.github}
+site = https://github.com/$author.github
 
 [owner]
 github = ingydotnet
 
-[require "bpan"]
+[require "package"]
 bashplus = 0.1.0+
 getopt-bash = 0.1.0+
 
@@ -229,12 +235,14 @@ git = 2.25+
 perl = 5.28.3+
 
 [update]
+package = bashplus
+package = getopt-bash
 file = License
 file = Makefile
 file = ReadMe.md doc/thinger.md
 file = test/init
 file = test/00-shellcheck.t
-man3 = doc/thinger.md
+man1 = doc/thinger.md
 ```
 
 

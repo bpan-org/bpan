@@ -380,6 +380,12 @@ A typical \s-1BPAN\s0 \f(CW\*(C`config\*(C'\fR file looks like:
 \&    license = MIT
 \&    copyright = 2022
 \&
+\&    repo = https://github.com/$author.github/$package.name
+\&    branch = main
+\&    site = $package.repo
+\&    bug = $package.repo/issues/
+\&    irc = irc.libera.chat/bpan
+\&
 \&    [author]
 \&    name = Ingy do\*:t Net
 \&    email = ingy@ingy.net
@@ -387,12 +393,12 @@ A typical \s-1BPAN\s0 \f(CW\*(C`config\*(C'\fR file looks like:
 \&    twitter = ingydotnet
 \&    irc = ingy@irc.libera.chat
 \&    matrix = @ingy:yaml.io
-\&    site = https://github.com/${author.github}
+\&    site = https://github.com/$author.github
 \&
 \&    [owner]
 \&    github = ingydotnet
 \&
-\&    [require "bpan"]
+\&    [require "package"]
 \&    bashplus = 0.1.0+
 \&    getopt\-bash = 0.1.0+
 \&
@@ -402,12 +408,14 @@ A typical \s-1BPAN\s0 \f(CW\*(C`config\*(C'\fR file looks like:
 \&    perl = 5.28.3+
 \&
 \&    [update]
-\&    template = License
-\&    template = Makefile
-\&    template = ReadMe.md doc/thinger.md
-\&    template = test/init
-\&    template = test/00\-shellcheck.t
-\&    manpage = doc/thinger.md
+\&    package = bashplus
+\&    package = getopt\-bash
+\&    file = License
+\&    file = Makefile
+\&    file = ReadMe.md doc/thinger.md
+\&    file = test/init
+\&    file = test/00\-shellcheck.t
+\&    man1 = doc/thinger.md
 .Ve
 .SS "\s-1BPAN SOURCES\s0"
 .IX Subsection "BPAN SOURCES"
