@@ -50,7 +50,7 @@ bump:main() (
   say -y Commits:
   git log --pretty=oneline "$rev_list"
 
-  name=$(config:get --local package.name)
+  name=$(config_file=.bpan/config config:get package.name)
   if $option_release && [[ $name != bpan ]]; then
     say -y "Running 'bpan release'"
     bpan release
@@ -70,14 +70,8 @@ bump:check-sanity() (
   [[ -f Meta ]] ||
     error "'$app $cmd' require './Meta' file"
 
-  if [[ $old_version == 0.0.0 ]]; then
-    version2=0.1.0
-  else
-    version2=${old_version%.*}.$(( ${old_version##*.} + 1))
-  fi
-
-  git:tag-exists "$version2" &&
-    error "Can't bump. Tag '$version2' already exists."
+  git:tag-exists "$new_version" &&
+    error "Can't bump. Tag '$new_version' already exists."
 
   list=$(bump:change-list)
 
@@ -88,7 +82,7 @@ bump:check-sanity() (
     branch=$(git:branch-name)
     [[ $branch ]] ||
       error "Can't push. Not checked out to a branch."
-    release_branch=$(config:get package.branch || echo main)
+    release_branch=$(config_file=.bpan/config config:get package.branch || echo main)
     [[ $branch == "$release_branch" ]] ||
       error "Can't push. Current branch is not '$release_branch'"
   fi
@@ -105,7 +99,7 @@ bump:check-sanity() (
 bump:change-list() (
   [[ $old_version == 0.0.0 ]] \
     && rev_list='' \
-    || rev_list="$old_version^.."
+    || rev_list="$old_version.."
 
   git:subject-lines "$rev_list" |
     while read -r line; do
