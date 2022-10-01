@@ -1,3 +1,8 @@
+[version "0.1.45"]
+date = Sat Oct  1 02:11:38 PM PDT 2022
+done = Refactor lib/bump.bash
+done = Version 0.1.44
+
 [version "0.1.44"]
 date = Fri Sep 30 01:16:53 PM PDT 2022
 done = Fix 'bpan bump' protection against WIP commits
