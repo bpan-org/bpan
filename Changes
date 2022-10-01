@@ -1,3 +1,7 @@
+[version "0.1.46"]
+date = Sat Oct  1 02:36:23 PM PDT 2022
+done = Fixes for bump
+
 [version "0.1.45"]
 date = Sat Oct  1 02:11:38 PM PDT 2022
 done = Refactor lib/bump.bash
