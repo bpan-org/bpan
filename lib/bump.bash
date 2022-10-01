@@ -1,13 +1,64 @@
-bump:options() (
-  echo "p,push      Push changes upstream"
+bump:options() (cat <<...
+push      Push changes upstream
+release   Release to BPAN index after bump
+version=  New version string
+...
 )
 
 bump:main() (
-  +assert-perl
-
-  if ${option_release:-false}; then
+  if $option_release; then
     option_push=true
   fi
+
+  old_version=$(bump:old-version)
+  new_version=$(bump:new-version)
+
+  bump:check-sanity
+
+  say -y "Running 'bpan update'"
+  bpan update
+
+  say -y "Running 'bpan test'"
+  bpan test
+
+  say -y "Bumping to version '$new_version'"
+
+  bump:update-changes-file
+  bump:update-config-file
+  bump:update-version-vars
+
+  git commit -q -a -m "Version $new_version"
+
+  commit=$(git:commit-sha)
+  say -y "Changes committed '${commit:0:8}'"
+
+  git tag "$new_version"
+  say -y "Commit tagged as '$new_version'"
+
+  if $option_push; then
+    bump:push
+  fi
+
+  say -g "Version bump complete"
+
+  echo
+
+  [[ $old_version == 0.0.0 ]] \
+    && rev_list="..$new_version" \
+    || rev_list="$old_version^..$new_version"
+
+  say -y Commits:
+  git log --pretty=oneline "$rev_list"
+
+  name=$(config:get --local package.name)
+  if $option_release && [[ $name != bpan ]]; then
+    say -y "Running 'bpan release'"
+    bpan release
+  fi
+)
+
+bump:check-sanity() (
+  +assert-perl
 
   git:in-top-dir ||
     error "'$app $cmd' must be at repo toplevel"
@@ -19,34 +70,16 @@ bump:main() (
   [[ -f Meta ]] ||
     error "'$app $cmd' require './Meta' file"
 
-  version1=$(bpan config -f Meta package.version)
-  [[ $version1 ]] ||
-    error "No 'package.version' found in '$config_file'"
-  [[ $version1 =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] ||
-    error "Unrecognized version '$version1'"
-  if [[ $version1 == 0.0.0 ]]; then
-    rev_list=$(git rev-list HEAD | tail -n 1)
-  else
-    rev_list=$version1..
-    git:has-ref "$version1" ||
-      die "No git tag found for version '$version1'"
-  fi
-
-  if [[ $version1 == 0.0.0 ]]; then
+  if [[ $old_version == 0.0.0 ]]; then
     version2=0.1.0
   else
-    version2=${version1%.*}.$(( ${version1##*.} + 1))
+    version2=${old_version%.*}.$(( ${old_version##*.} + 1))
   fi
 
   git:tag-exists "$version2" &&
     error "Can't bump. Tag '$version2' already exists."
 
-  list=$(
-    git:subject-lines "$rev_list" |
-      while read -r line; do
-        echo "done = $line"
-      done
-  )
+  list=$(bump:change-list)
 
   grep -q -i '^done = wip\>' <<<"$list" &&
     error "Can't '$app $cmd' with WIP commits"
@@ -65,23 +98,28 @@ bump:main() (
       bump:push
       return
     fi
-    error "No changes commited since version '$version1'"
+    error "No changes commited since version '$old_version'"
   fi
+)
 
-  say -y "Running 'bpan update'"
-  bpan update
+bump:change-list() (
+  [[ $old_version == 0.0.0 ]] \
+    && rev_list='' \
+    || rev_list="$old_version^.."
 
-  say -y "Make sure 'bpan test' passes"
-  bpan test
+  git:subject-lines "$rev_list" |
+    while read -r line; do
+      echo "done = $line"
+    done
+)
 
-  say -y "Bumping to version '$version2'"
-
+bump:update-changes-file() (
   entry="\
-[version \"$version2\"]
+[version \"$new_version\"]
 date = $(date)
-$list"
+$(bump:change-list)"
 
-  if [[ $version1 == 0.0.0 ]]; then
+  if [[ $old_version == 0.0.0 ]]; then
     changes=''
   else
     changes=$(< Changes)
@@ -96,14 +134,18 @@ $list"
   ) > Changes
 
   say -y "Updated 'Changes' file"
+)
 
-  bpan config -f Meta package.version "$version2"
+bump:update-config-file() (
+  bpan config --local package.version "$new_version"
 
-  say -y "Updated 'Meta' file"
+  say -y "Updated '.bpan/config' file to '$new_version'"
+)
 
+bump:update-version-vars() (
   for file in $(shopt -s nullglob; echo bin/* lib/*); do
     temp=$(+mktemp)
-    perl -pe 's/^(\s*VERSION)=\d+\.\d+\.\d+(.*)/$1='"$version2"'$2/' \
+    perl -pe 's/^(\s*VERSION)=\d+\.\d+\.\d+(.*)/$1='"$new_version"'$2/' \
       < "$file" > "$temp"
     if [[ -x $file ]]; then
       chmod '=rwx' "$temp"
@@ -115,52 +157,39 @@ $list"
       say -y "Updated VERSION=... in '$file'"
     fi
   done
+)
 
-  git commit -q -a -m "Version $version2"
+bump:old-version() (
+  version=$(bpan config --local package.version)
 
-  commit=$(git:commit-sha)
-  say -y "Changes committed '${commit:0:8}'"
+  [[ $version ]] ||
+    error "No 'package.version' found in '$config_file'"
 
-  git tag "$version2"
-  say -y "Commit tagged as '$version2'"
+  [[ $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] ||
+    error "Unrecognized version '$version'"
 
-  if $option_push; then
-    bump:push
-  fi
+  echo "$version"
+)
 
-  say -g "Version bump complete"
+bump:new-version() (
+  if [[ $option_version && $option_version != false ]]; then
+    echo "$option_version"
 
-  echo
-
-  if [[ $version1 == 0.0.0 ]]; then
-    revlist=''
   else
-    rev_list="$version1^..$version2"
-  fi
+    version=$(bpan config --local package.version) ||
+      error "Can't get 'package.version' from '.bpan/confg'"
 
-  say -y Commits:
-  git log --pretty=oneline "$rev_list"
+    if [[ $version == 0.0.0 ]]; then
+      echo "0.1.0"
+
+    else
+      echo "${version%.*}.$(( ${version##*.} + 1))"
+    fi
+  fi
 )
 
 bump:push() (
+  branch=$(git:branch-name)
   git push -q --tag origin "$branch"
   say -y "Pushed to origin '$branch'"
-
-  # A temporary hack for ingydotnet only to update bpan-index after a
-  # 'bpan bump -p'
-  if ${option_release:-false}; then
-    name=$(bpan config package.name) ||
-      die "Can't get config value 'package.name'"
-    [[ $name != bpan ]] ||
-      error "Can't update index for 'bpan' itself"
-
-    index_repo=~/src/+bpan/bpan-index
-
-    echo
-    say -y "Updating $name=$version2 in bpan-org/bpan-index index.ini"
-
-    make -C "$index_repo" update NAME="$name"
-
-    say -g "BPAN index updated"
-  fi
 )

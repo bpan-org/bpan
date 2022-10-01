@@ -1,7 +1,4 @@
 # TODO redirect from https://bpan.org/release-requests
-release_html_index_url=https://github.com/bpan-org/bpan-index
-release_api_repo_url=https://api.github.com/repos/bpan-org/bpan-index
-release_api_request_url=$release_api_repo_url/issues/1/comments
 
 release:options() (
   echo "c,check     Just run preflight checks. Don't release"
@@ -89,7 +86,7 @@ release:trigger-release() (
 \"commit\":\"$commit\"\
 }"
 
-  release:post-request "\
+  body="\
 <!-- $json -->
 
 #### Requesting BPAN Package Release for [$package $version]\
@@ -116,15 +113,39 @@ $(
 **BPAN Index Updater triggered and will begin processing this request soon…**
 "
 
+  url=$(release:post-request "$body")
+
   say -g "Release for '$package' version '$version' requested"
   echo
   say -y "  $url"
 )
 
-release:post-request() {
+release:post-request() (
+  bpan_release_url=https://api.github.com/repos/bpan-org/bpan-index/issues/1/comments
+
+  if [[ ${BPAN_INDEX_REPO_URL-} ]]; then
+    [[ $BPAN_INDEX_REPO_URL == */github.com/* ]] ||
+      error "'BPAN_INDEX_REPO_URL' must be a github repo url"
+    url=${BPAN_INDEX_REPO_URL%/}
+    url=${url/\/github.com\//\/api.github.com\/repos\/}
+    url=$url/issues/1/comments
+    bpan_release_url=$url
+  fi
+
   body=$1
   body=${body//$'"'/\\'"'}
   body=${body//$'\n'/\\n}
+
+  data=$(
+    cat <<...
+{
+  "body":    "$body",
+  "package": "$package",
+  "version": "$version",
+  "commit":  "$commit"
+}
+...
+  )
 
   url=$(
     $option_verbose && set -x
@@ -133,11 +154,8 @@ release:post-request() {
       --request POST \
       --header "Accept: application/vnd.github+json" \
       --header "Authorization: Bearer $token" \
-      $release_api_request_url \
-      --data "{\"body\":\"$body\",
-               \"package\": \"$package\",
-               \"version\": \"$version\",
-               \"commit\":  \"$commit\"}" |
+      --data "$data" \
+      "$bpan_release_url" |
     grep '"html_url"' |
     head -n1 |
     cut -d'"' -f4
@@ -145,7 +163,9 @@ release:post-request() {
 
   [[ $url ]] ||
     error "Release request failed"
-}
+
+  echo "$url"
+)
 
 
 
@@ -294,6 +314,8 @@ release:gha-post-status() (
         cut -d, -f1
     )
     line_num=$(( ${line_num:-0} + 1 ))
+
+    release_html_index_url=$(git config remote.origin.url)
 
     comment_body+="\
 1. [Release Successful - \

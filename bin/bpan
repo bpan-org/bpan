@@ -65,7 +65,7 @@ main() (
 
   getopt "$@"
 
-  if $option_version; then
+  if [[ $option_version == true ]]; then
     echo "$app $VERSION"
 
   elif $option_setup; then
@@ -121,14 +121,6 @@ set-env() {
   index_url=https://raw.githubusercontent.com/bpan-org/bpan-index/main/index.ini
 }
 
-source-once() {
-  local var=_sourced_$1
-  if [[ -z ${!var-} ]]; then
-    source "$root/lib/$1.bash"
-    printf -v "$var" 1
-  fi
-}
-
 getopt-cmds-spec() {
   source-once "$cmd"
   local help="h,help  Get help for '$app $cmd'"
@@ -161,6 +153,14 @@ $usage
 ${options+$options$'\n'}
 $help
 "
+  fi
+}
+
+source-once() {
+  local var=_sourced_$1
+  if [[ -z ${!var-} ]]; then
+    source "$root/lib/$1.bash"
+    printf -v "$var" 1
   fi
 }
 
