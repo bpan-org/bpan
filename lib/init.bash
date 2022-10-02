@@ -175,6 +175,11 @@ init:main() (
   pkg=$(config:get package.name)
   name=${pkg%-bash}
 
+  if [[ ! -d .git ]]; then
+    git init --quiet
+    say -y "RUNNING 'git init'"
+  fi
+
   say -y "RUNNING 'bpan update'"
   if $option_quiet; then
     bpan --quiet update

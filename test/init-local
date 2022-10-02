@@ -24,16 +24,14 @@ test-install-teardown() (
   rm -fr ./test/local
 )
 
-# XXX move this mac fix to bashplus
-if +os-macos; then
-  if +can uuidgen; then
-    +sym() (
-      s=$(uuidgen)
-      echo "${1:-sym}_${s//-/_}"
-    )
-  else
-    +sym() (
-      echo "${1:-sym}_$(gdate '+%s_%N')"
-    )
-  fi
-fi
+test-create-package() {
+  local dir=$1
+
+  note "mkdir '$dir'"
+  note "cd '$dir' && bpan --quiet init --bin --config=Meta"
+  (
+    mkdir -p "$dir"
+    cd "$dir" || exit
+    bpan "${quiet[@]}" init --bin --config=Meta
+  )
+}

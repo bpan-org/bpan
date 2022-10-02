@@ -51,7 +51,7 @@ git:sha1() (
 
 git:subject-lines() (
   git:assert-in-repo .
-  git log --pretty --format='%s' "${1?}"
+  git log --pretty --format='%s' "$@"
 )
 
 git:tag-exists() [[

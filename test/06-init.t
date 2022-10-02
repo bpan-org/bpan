@@ -24,7 +24,7 @@ note "cd '$B' && bpan --quiet init --bin --config=Meta"
   bpan "${quiet[@]}" init --bin --config=Meta
 )
 
-
+ok-d "$B/.git"
 ok-f "$B/Meta"
 ok-f "$B/.bpan/config"
 ok-h "$B/.bpan/config"

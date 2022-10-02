@@ -24,7 +24,11 @@ test:main() (
     set -- -v "$@"
   fi
 
-  prove "$@"
+  if $option_quiet; then
+    prove "$@" &>/dev/null
+  else
+    prove "$@"
+  fi
 )
 
 test:renumber() (

@@ -257,7 +257,7 @@ add:package() (
   config:add update.package "$package"
   config:set require.package."$package" '0.0.0+'
 
-  say -y "${msg:-"ADDED package '$package'"}"
+  say -y "${msg:-"ADDED PACKAGE '$package'"}"
 )
 
 add:command() (

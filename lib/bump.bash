@@ -10,16 +10,22 @@ bump:main() (
     option_push=true
   fi
 
+  if $option_quiet; then
+    bpan='bpan --quiet'
+  else
+    bpan=bpan
+  fi
+
   old_version=$(bump:old-version)
   new_version=$(bump:new-version)
 
   bump:check-sanity
 
   say -y "Running 'bpan update'"
-  bpan update
+  $bpan update
 
   say -y "Running 'bpan test'"
-  bpan test
+  $bpan test
 
   say -y "Bumping to version '$new_version'"
 
@@ -53,7 +59,7 @@ bump:main() (
   name=$(config_file=.bpan/config config:get package.name)
   if $option_release && [[ $name != bpan ]]; then
     say -y "Running 'bpan release'"
-    bpan release
+    $bpan release
   fi
 )
 
@@ -101,7 +107,13 @@ bump:change-list() (
     && rev_list='' \
     || rev_list="$old_version.."
 
-  git:subject-lines "$rev_list" |
+  (
+    if [[ $old_version == 0.0.0 ]]; then
+      git:subject-lines
+    else
+      git:subject-lines "$old_version.."
+    fi
+  ) |
     while read -r line; do
       echo "done = $line"
     done
@@ -131,7 +143,7 @@ $(bump:change-list)"
 )
 
 bump:update-config-file() (
-  bpan config --local package.version "$new_version"
+  $bpan config --local package.version "$new_version"
 
   say -y "Updated '.bpan/config' file to '$new_version'"
 )
@@ -154,7 +166,7 @@ bump:update-version-vars() (
 )
 
 bump:old-version() (
-  version=$(bpan config --local package.version)
+  version=$($bpan config --local package.version)
 
   [[ $version ]] ||
     error "No 'package.version' found in '$config_file'"
@@ -170,7 +182,7 @@ bump:new-version() (
     echo "$option_version"
 
   else
-    version=$(bpan config --local package.version) ||
+    version=$($bpan config --local package.version) ||
       error "Can't get 'package.version' from '.bpan/confg'"
 
     if [[ $version == 0.0.0 ]]; then

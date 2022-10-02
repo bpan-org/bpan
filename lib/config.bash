@@ -25,6 +25,7 @@ config:main() (
     git:assert-in-repo
     config_file=$BPAN_ROOT/config
   else
+    # XXX should we assign this by default?
     config_file=.bpan/config
   fi
 
