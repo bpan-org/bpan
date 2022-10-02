@@ -5,8 +5,8 @@
 
 
 bashplus:version() (
-  VERSION=0.1.23
-  echo "bashplus $VERSION"
+  VERSION=0.1.24
+  echo "$VERSION"
 )
 
 
@@ -99,6 +99,19 @@ bashplus:version() (
 +assert-git()  ( +assert-cmd-ver git  ${1:-2.7}    )
 +assert-sed()  ( +assert-cmd     sed               )
 
+# Get the absolute path of a dirname
++dirname() (
+  cd "$(dirname "$1")" || exit
+  pwd -P
+)
+
+# Get the absolute path of a directory
++dirpath() (
+  cd "$1" || exit
+  pwd -P
+)
+
+# Red die with 'Error: ' prefix
 +error() { die --red "Error: $1"; }
 
 # Check the current Bash is a minimal version.

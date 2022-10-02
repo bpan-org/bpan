@@ -30,7 +30,7 @@ install:main() (
 
   source-once pkg
 
-  pkg:get-index
+  pkg:index-update
 
   for id; do
     pkg:parse-id+ "$id"

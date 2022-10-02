@@ -20,7 +20,7 @@ update:main() (
       error "Can't 'bpan update'. No '$config_file' file."
 
     index_file=$BPAN_INSTALL/index.ini
-    pkg:get-index
+    pkg:index-update
 
     update:files
     update:require

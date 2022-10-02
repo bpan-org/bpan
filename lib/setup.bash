@@ -10,7 +10,7 @@ setup:main() (
     mkdir "$local_dir"
     source-once pkg
     option_quiet=true
-    pkg:get-index
+    pkg:index-update
   fi
 
   [[ -f $config_file ]] ||

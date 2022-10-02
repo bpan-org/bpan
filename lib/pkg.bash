@@ -48,19 +48,28 @@ pkg:parse-id() {
   fi
 }
 
-pkg:get-index() (
+pkg:index-update() (
+  if [[ ! -h $index_file ]]; then
+    rm -f "$index_file"
+    mkdir -p "$(dirname "$index_file")"
+    ln -s \
+      "$index_repo_dir/index.ini" \
+      "$index_file"
+  fi
+
+  if [[ ! -f $index_file ]]; then
+    git clone --quiet "$index_repo_url" "$BPAN_INSTALL/$index_repo_dir"
+  fi
+
   if ${option_index:-false} ||
      [[ ! -f $index_file ]] ||
-     [[ $(find "$index_file" -mmin +60) ]] ||
-     [[ $BPAN_INDEX_API_VERSION -gt \
-        "$(git config -f "$index_file" bpan.api-version || echo 0)" \
-     ]]
+     [[ ! -h $index_file ]] ||
+     pkg:index-too-old ||
+     pkg:api-mismatch
   then
     [[ ${BPAN_TESTING-} ]] ||
       say+y "Updating BPAN package index..."
-    mkdir -p "$root/local"
-    curl --fail -s "$index_url" > "$index_file" ||
-      rm -f "$index_file"
+    git -C "$BPAN_INSTALL/$index_repo_dir" pull --quiet --ff-only origin main
   fi
 
   [[ -f $index_file ]] ||
@@ -74,6 +83,20 @@ pkg:get-index() (
     error "BPAN version is too old for the index. Run: 'bpan upgrade'"
   fi
 )
+
+pkg:index-too-old() (
+  head=$BPAN_INSTALL/$index_repo_dir/.git/FETCH_HEAD
+  [[ -f $head ]] || return 0
+  curr_time=$(+time)
+  pull_time=$(+mtime "$head")
+  (( curr_time - (index_life * 60) > pull_time ))
+)
+
+pkg:api-mismatch() {
+  [[ $BPAN_INDEX_API_VERSION -gt \
+    "$(git config -f "$index_file" bpan.api-version || echo 0)" \
+  ]]
+}
 
 pkg:get-version() (
   full=$1

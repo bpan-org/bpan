@@ -37,8 +37,14 @@ source test/init
   ok-not-e "$I/lib/getopt.bash"
   ok-not-e "$I/man/man3/getopt.3"
 
-  is "$(cd "$BPAN_INSTALL" && find . -mindepth 1)" \
-    "./index.ini" \
+  is "$(
+        cd "$BPAN_INSTALL" &&
+          find . \
+            -mindepth 1 \
+            -type f \
+            -not -path './src/github/bpan-org/bpan-index/*'
+      )" \
+    "" \
     "Install directory is empty"
 }
 

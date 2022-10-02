@@ -11,6 +11,21 @@ VERSION=0.1.46
 source "$BPAN_ROOT/lib/bpan.bash" --app
 bpan:source bashplus
 
+
+
+# XXX Move to bashplus
+# Get file modification time in epoch seconds
+if +os-macos; then
+  +mtime() ( stat --printf %m "$1" )
+else
+  +mtime() ( stat -c %Y "$1" )
+fi
+
+# Get current time in epoch seconds
++time() ( date +%s )
+
+
+
 bpan:source config
 bpan:source say
 bpan:source bpan-util
@@ -117,8 +132,11 @@ set-env() {
 
   BPAN_INDEX_API_VERSION=1
 
+  # TODO add to global config
+  index_repo_url=https://github.com/bpan-org/bpan-index
+  index_repo_dir=src/github/bpan-org/bpan-index
   index_file=$BPAN_INSTALL/index.ini
-  index_url=https://raw.githubusercontent.com/bpan-org/bpan-index/main/index.ini
+  index_life=5
 }
 
 getopt-cmds-spec() {
