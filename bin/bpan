@@ -53,7 +53,6 @@ Project Commands:
   bump          Prepare next version
   release       Publish the package to $APP index
   register      Register a new $APP package
-  clean         Remove the build files and dirs
 
 Information Commands:
   help          Get help for a '$app' command
@@ -73,6 +72,11 @@ x,debug       Print lots of debugging info
 #
 setup*        Do .rc system setup
 complete*     Shell tab completion for $app
+#
+# Commands for later:
+#
+#   info          Get info about a $APP package
+#   clean         Remove the build files and dirs
 "
 
 main() (
