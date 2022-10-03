@@ -5,7 +5,7 @@
 
 
 bashplus:version() (
-  VERSION=0.1.24
+  VERSION=0.1.26
   echo "$VERSION"
 )
 
@@ -188,6 +188,14 @@ bashplus:version() (
   echo "$temp"
 }
 
+# XXX Move to bashplus
+# Get file modification time in epoch seconds
+if +os-macos; then
+  +mtime() ( stat --printf %m "$1" )
+else
+  +mtime() ( stat -c %Y "$1" )
+fi
+
 # Add one or more directories to the front of PATH.
 +path() {
   _PATH_=${_PATH_:-PATH}
@@ -262,6 +270,9 @@ elif +is-cmd perl; then
 else
   die "bashplus can't define '+sym'"
 fi
+
+# Get current time in epoch seconds
++time() ( date +%s )
 
 # Allow multiple traps to be performed.
 +trap() {

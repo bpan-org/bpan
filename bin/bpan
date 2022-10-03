@@ -10,22 +10,6 @@ VERSION=0.1.46
 
 source "$BPAN_ROOT/lib/bpan.bash" --app
 bpan:source bashplus
-
-
-
-# XXX Move to bashplus
-# Get file modification time in epoch seconds
-if +os-macos; then
-  +mtime() ( stat --printf %m "$1" )
-else
-  +mtime() ( stat -c %Y "$1" )
-fi
-
-# Get current time in epoch seconds
-+time() ( date +%s )
-
-
-
 bpan:source config
 bpan:source say
 bpan:source bpan-util
