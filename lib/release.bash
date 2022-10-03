@@ -188,7 +188,7 @@ release:gha-main() (
 )
 
 release:gha-get-env() {
-  index_file=index.ini
+  bpan_index_file=index.ini
 
   set -x
   package=$gha_request_package
@@ -208,7 +208,7 @@ release:gha-get-env() {
   $option_debug && set -x
 
   if [[ ${BPAN_INDEX_UPDATE_TESTING-} ]]; then
-    v=$(git config -f "$index_file" "package.$package.version")
+    v=$(git config -f "$bpan_index_file" "package.$package.version")
     test_version=${v%.*}.$(( ${v##*.} + 1 ))
   fi
 }
@@ -219,7 +219,7 @@ release:gha-check-release() {
     die "Package '$package' has no '.bpan/config' file"
 
   : "Check new version is greater than indexed one"
-  indexed_version=$(git config -f "$index_file" "package.$package.version")
+  indexed_version=$(git config -f "$bpan_index_file" "package.$package.version")
   if [[ ${BPAN_INDEX_UPDATE_TESTING-} ]]; then
     +version-gt "$test_version" "$indexed_version" ||
       die "'$package' version '$version' not greater than '$indexed_version'"
@@ -251,16 +251,21 @@ release:gha-update-index() (
   # TODO Update all relevant fields
 
   if [[ ${BPAN_INDEX_UPDATE_TESTING-} ]]; then
-    git config -f "$index_file" "package.$package.version" "$test_version"
-    git config -f "$index_file" "package.$package.v${test_version//./-}" "$commit"
+    git config -f "$bpan_index_file" \
+      "package.$package.version" "$test_version"
+    git config -f "$bpan_index_file" \
+      "package.$package.v${test_version//./-}" "$commit"
+
   else
-    git config -f "$index_file" "package.$package.version" "$version"
-    git config -f "$index_file" "package.$package.v${version//./-}" "$commit"
+    git config -f "$bpan_index_file" \
+      "package.$package.version" "$version"
+    git config -f "$bpan_index_file" \
+      "package.$package.v${version//./-}" "$commit"
   fi
 
-  git config -f "$index_file" "package.$package.date" "$(date -u)"
+  git config -f "$bpan_index_file" "package.$package.date" "$(date -u)"
 
-  perl -pi -e 's/\t//' "$index_file"
+  perl -pi -e 's/\t//' "$bpan_index_file"
 
   git config user.email "update-index@bpan.org"
   git config user.name "BPAN Update Index"

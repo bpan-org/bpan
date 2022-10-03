@@ -1,5 +1,18 @@
 register:main() (
-  # check inside a git repo
+  source-once pkg
+  pkg:index-update --force
+
+
+  data=$(cat <<...
+{
+  "title": "$title",
+  "body":  "$body",
+  "head":  "$user:repo",
+  "base":  "$branch",
+  "maintainer_can_modify": true
+}
+...
+)
 
   : curl \
     -X POST \

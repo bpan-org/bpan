@@ -49,33 +49,33 @@ pkg:parse-id() {
 }
 
 pkg:index-update() (
-  if [[ ! -h $index_file ]]; then
-    rm -f "$index_file"
-    mkdir -p "$(dirname "$index_file")"
+  if [[ ! -h $bpan_index_file ]]; then
+    rm -f "$bpan_index_file"
+    mkdir -p "$(dirname "$bpan_index_file")"
     ln -s \
-      "$index_repo_dir/index.ini" \
-      "$index_file"
+      "$bpan_index_repo_dir/index.ini" \
+      "$bpan_index_file"
   fi
 
-  if [[ ! -f $index_file ]]; then
-    git clone --quiet "$index_repo_url" "$BPAN_INSTALL/$index_repo_dir"
+  if [[ ! -f $bpan_index_file ]]; then
+    git clone --quiet "$bpan_index_repo_url" "$BPAN_INSTALL/$bpan_index_repo_dir"
   fi
 
   if ${option_index:-false} ||
-     [[ ! -f $index_file ]] ||
-     [[ ! -h $index_file ]] ||
+     [[ ! -f $bpan_index_file ]] ||
+     [[ ! -h $bpan_index_file ]] ||
      pkg:index-too-old ||
      pkg:api-mismatch
   then
     [[ ${BPAN_TESTING-} ]] ||
       say+y "Updating BPAN package index..."
-    git -C "$BPAN_INSTALL/$index_repo_dir" pull --quiet --ff-only origin main
+    git -C "$BPAN_INSTALL/$bpan_index_repo_dir" pull --quiet --ff-only origin main
   fi
 
-  [[ -f $index_file ]] ||
+  [[ -f $bpan_index_file ]] ||
     die "BPAN package index file not available"
 
-  index_api_version=$(git config -f "$index_file" bpan.api-version || echo 0)
+  index_api_version=$(git config -f "$bpan_index_file" bpan.api-version || echo 0)
 
   if [[ $index_api_version -lt $BPAN_INDEX_API_VERSION ]]; then
     error "BPAN Index API Version mismatch. Try again later."
@@ -85,33 +85,33 @@ pkg:index-update() (
 )
 
 pkg:index-too-old() (
-  head=$BPAN_INSTALL/$index_repo_dir/.git/FETCH_HEAD
+  head=$BPAN_INSTALL/$bpan_index_repo_dir/.git/FETCH_HEAD
   [[ -f $head ]] || return 0
   curr_time=$(+time)
   pull_time=$(+mtime "$head")
-  (( curr_time - (index_life * 60) > pull_time ))
+  (( curr_time - (bpan_index_life * 60) > pull_time ))
 )
 
 pkg:api-mismatch() {
   [[ $BPAN_INDEX_API_VERSION -gt \
-    "$(git config -f "$index_file" bpan.api-version || echo 0)" \
+    "$(git config -f "$bpan_index_file" bpan.api-version || echo 0)" \
   ]]
 }
 
 pkg:get-version() (
   full=$1
-  git config -f "$index_file" "package.$full.version" ||
+  git config -f "$bpan_index_file" "package.$full.version" ||
     error "No package '$full' found"
 )
 
 pkg:get-commit() (
   full=$1 version=$2
-  git config -f "$index_file" "package.$full.v${version//./-}" ||
+  git config -f "$bpan_index_file" "package.$full.v${version//./-}" ||
     error "Can't find commit for package '$full' version '$version'"
 )
 
 pkg:check-commit() (
-  git config -f "$index_file" "package.$full.v${version//./-}" ||
+  git config -f "$bpan_index_file" "package.$full.v${version//./-}" ||
     error "Can't find commit for package '$full' version '$version'"
 )
 

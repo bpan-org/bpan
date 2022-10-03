@@ -7,7 +7,7 @@ search:main() (
 
   # shellcheck disable=2207
   found=($(
-    git config -l -f "$index_file" |
+    git config -l -f "$bpan_index_file" |
       grep -i -E "$pattern" |
       cut -d. -f2 |
       +sort |

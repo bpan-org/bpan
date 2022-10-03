@@ -137,10 +137,10 @@ set-env() {
   BPAN_INDEX_API_VERSION=1
 
   # TODO add to global config
-  index_repo_url=https://github.com/bpan-org/bpan-index
-  index_repo_dir=src/github/bpan-org/bpan-index
-  index_file=$BPAN_INSTALL/index.ini
-  index_life=5
+  bpan_index_repo_url=https://github.com/bpan-org/bpan-index
+  bpan_index_repo_dir=src/github/bpan-org/bpan-index
+  bpan_index_file=$BPAN_INSTALL/index.ini
+  bpan_index_life=5
 }
 
 getopt-cmds-spec() {
