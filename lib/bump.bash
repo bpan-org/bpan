@@ -70,11 +70,15 @@ bump:check-sanity() (
     error "'$app $cmd' must be at repo toplevel"
   git:is-clean ||
     error "Can't '$app $cmd' with uncommited changes"
+  if [[ $old_version != 0.0.0 ]]; then
+    git:tag-exists "$old_version" ||
+      error "No tag for current version '$old_version'"
+  fi
 
   [[ -f Changes ]] ||
     error "'$app $cmd' require './Changes' file"
-  [[ -f Meta ]] ||
-    error "'$app $cmd' require './Meta' file"
+  [[ -f .bpan/config ]] ||
+    error "'$app $cmd' require '.bpan/config' file"
 
   git:tag-exists "$new_version" &&
     error "Can't bump. Tag '$new_version' already exists."
@@ -103,10 +107,6 @@ bump:check-sanity() (
 )
 
 bump:change-list() (
-  [[ $old_version == 0.0.0 ]] \
-    && rev_list='' \
-    || rev_list="$old_version.."
-
   (
     if [[ $old_version == 0.0.0 ]]; then
       git:subject-lines

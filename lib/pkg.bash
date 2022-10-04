@@ -62,6 +62,7 @@ pkg:index-update() (
   fi
 
   if ${option_index:-false} ||
+     [[ ${1-} == --force ]] ||
      [[ ! -f $bpan_index_file ]] ||
      [[ ! -h $bpan_index_file ]] ||
      pkg:index-too-old ||
