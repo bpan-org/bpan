@@ -32,6 +32,7 @@ ok-f "$B/.bpan/lib/bpan.bash"
 ok-f "$B/.bpan/lib/bashplus.bash"
 ok-f "$B/.bpan/lib/getopt.bash"
 ok-f "$B/bin/bin-pkg"
+ok-x "$B/bin/bin-pkg"
 ok-f "$B/.rc"
 has "$(< "$B/.rc")" BIN_PKG_ROOT \
   "'$B/.rc' contains string 'BIN_PKG_ROOT'"

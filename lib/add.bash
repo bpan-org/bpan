@@ -143,6 +143,7 @@ add:main() (
       fi
 
       add:file "$from" "$to"
+
       additions=true
     done
   fi
@@ -231,6 +232,10 @@ add:file() (
 
   if grep -q "^$to$" <<<"$update_files"; then
     config:add update.file "$file"
+  fi
+
+  if [[ $to == bin/* ]]; then
+    chmod +x "$to"
   fi
 
   say -y "${msg:-"ADDED FILE '$to'"}"
