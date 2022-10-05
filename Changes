@@ -1,3 +1,13 @@
+[version "0.1.47"]
+date = Tue Oct  4 05:17:38 PM PDT 2022
+done = Implement the 'bpan new' command
+done = Implemented 'bpan register'
+done = Update bashplus
+done = Prefix some globals with bpan_
+done = Hide the 'clean' and 'info' commands for now
+done = Fix a couple problems with bump
+done = Clone bpan-index instead of curl-ing it
+
 [version "0.1.46"]
 date = Sat Oct  1 02:36:23 PM PDT 2022
 done = Fixes for bump
