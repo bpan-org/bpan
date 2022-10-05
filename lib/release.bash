@@ -5,6 +5,8 @@ release:options() (
 )
 
 release:main() (
+  # XXX asssert jq available
+
   if +in-gha; then
     release:gha-main "$@"
     return
@@ -121,6 +123,18 @@ $(
 )
 
 release:post-request() (
+  api_status=$(
+    curl -s https://www.githubstatus.com/api/v2/summary.json |
+      jq -r '.components | .[] | select(.name == "Actions") | .status'
+  )
+
+  if [[ $api_status != operational ]]; then
+    error "\
+Can't release. GitHub Actions is not operational.
+status='$api_status'.
+See: https://www.githubstatus.com/"
+  fi
+
   bpan_release_url=https://api.github.com/repos/bpan-org/bpan-index/issues/1/comments
 
   if [[ ${BPAN_INDEX_REPO_URL-} ]]; then
