@@ -30,7 +30,8 @@ System Commands:
   config        Manage $APP config settings
 
 Project Commands:
-  init          Add BPAN components to a project
+  new           Create a new $APP project
+  init          Add $APP components to a project
   add           Add $APP elements to a project
   update        Update project $APP assets
   test          Run the project tests
