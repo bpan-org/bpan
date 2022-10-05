@@ -194,19 +194,15 @@ add:list-files() (
 add:config() (
   default=.bpan/config
   conf_file=$option_config
+  [[ $conf_file == true ]] && conf_file=$default
+  conf_file=${conf_file:-$default}
 
-  if [[ $conf_file == true ]]; then
-    if [[ -e Meta ]]; then
-      conf_file=Meta
-    else
-      conf_file=$default
+  if ! $option_force; then
+    if [[ -e $conf_file ]]; then
+      error "'$conf_file' already exists"
+    elif [[ -e $default ]]; then
+      error "'$default' already exists"
     fi
-  fi
-  [[ $conf_file ]] || conf_file=$default
-
-  if ! $option_force && [[ -e $conf_file || -e $default ]]; then
-    $option_all && return
-    error "'$conf_file' already exists"
   fi
 
   msg="ADDED FILE '$conf_file'" \
