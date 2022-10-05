@@ -4,7 +4,7 @@ update:options() (
   echo "t,type=   pkg | file | man | new | init | global"
   echo "a,all     All types"
   echo "I,index   Refresh index file"
-  echo "L,local   Symlink install to local repos"
+  # echo "L,local   Symlink install to local repos"
 )
 
 update:main() (
@@ -84,50 +84,40 @@ update:require() (
 
     pkg:parse-id+ "$pkg"
 
-    if ! $option_local &&
-       ! [[ -d $src ]]
-    then
+    if ! [[ -d $src ]]; then
       say -y "INSTALL $owner/$name $ver"
       install:main "$pkg"
     fi
 
     option_index=false
     pkg:parse-id "$pkg"
-    if ! $option_local; then
-      if [[ ! $ver ]]; then
-        src+=$(pkg:get-version "$full")
-      fi
+    if [[ ! $ver ]]; then
+      src+=$(pkg:get-version "$full")
     fi
 
     while read -r file; do
       mkdir -p "$(dirname ".bpan/$file")"
 
-      if $option_local; then
+      n=${file//[^\/]/}
+      n=${#n}
+      prefix=..
+      for (( i = 1; i < n; i++ )); do
+        prefix+=/..
+      done
+
+      from=$BPAN_INSTALL/$file
+      to=.bpan/$file
+      if [[ -h $to ]] ||
+          +is-file-diff "$to" "$from"
+      then
         (
           $option_verbose && set -x
-          ln -s "$local_root/$name/$file" ".bpan/$file"
-          say-y "UPDATED '.bpan/$file' -> '$local_root/$name/$file' (local)"
+          rm -f "$to"
+          cp -Lp "$from" "$to"
         )
+        say-y "UPDATED '$to' from '$from'"
       else
-        n=${file//[^\/]/}
-        n=${#n}
-        prefix=..
-        for (( i = 1; i < n; i++ )); do prefix+=/..; done
-
-        from=$root/local/$file
-        to=.bpan/$file
-        if [[ -h $to ]] ||
-           +is-file-diff "$to" "$from"
-        then
-          (
-            $option_verbose && set -x
-            rm -f "$to"
-            cp -Lp "$from" "$to"
-          )
-          say-y "UPDATED '$to' from '$from'"
-        else
-          say-y "CURRENT '$to'"
-        fi
+        say-y "CURRENT '$to'"
       fi
     done < <(
       cd "$src" || exit
@@ -171,7 +161,7 @@ update:man() (
     export MD2MAN_NUM MD2MAN_NAME MD2MAN_DESC MD2MAN_PROG
 
     temp=$(+mktemp)
-    "$root/local/bin/md2man" < "$md" > "$temp"
+    "$BPAN_INSTALL/bin/md2man" < "$md" > "$temp"
     if +is-file-same "$man" "$temp"; then
       say -y "CURRENT '$man'"
     else
