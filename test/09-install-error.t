@@ -13,7 +13,7 @@ test-errors <<'...'
 > bpan install gitbub:foo
 [bpan] Error: Invalid package domain 'gitbub'
 > bpan install
-[bpan] Error: 'bpan install' requires one or more packages
+usage: bpan [<bpan-opts>] install [<cmd-opts>] <pkg-id...>
 > bpan install getopt-bash=9.9.9
 [bpan] Error: Can't find commit for package 'github:bpan-org/getopt-bash' version '9.9.9'
 ...

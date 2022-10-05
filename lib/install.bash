@@ -15,6 +15,8 @@ $app install github:bpan-org/getopt-bash=0.1.0
 ...
 )
 
+install:default() (echo --help)
+
 install:usage() (
   echo "$app [<$app-opts>] $cmd [<cmd-opts>] <pkg-id...>"
 )
