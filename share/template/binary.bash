@@ -1,7 +1,18 @@
 #!/usr/bin/env bash
 
-root=$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd -P)
-source "$root/.bpan/lib/bpan.bash" --
+# This is a template Bash/BPAN bin script to get you started.
+
+# Locating our project root directory is the first step to bootstrap.
+root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)
+
+# Then we can use the bundled bootstrapping library 'bpan.bash'.
+# We source this with a dummy arg '--', otherwise $@ will be the calling args.
+# Use '--app' to get the 'app' variable set to our app's name.
+source "$root/.bpan/lib/bpan.bash" -- # --app
+
+# The 'bpan:source' function is used to source bash files from `./bpan/lib/`.
+# Files are added there with `bpan add --pkg=...`.
+
 # bpan:source bashplus
 
 # bpan:source getopt "\
