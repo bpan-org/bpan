@@ -39,13 +39,7 @@ pkg:parse-id() {
     error "Invalid package domain '$domain'"
   fi
 
-  if ${option_local:-false}; then
-    src=$local_root/$name
-    [[ -d $src ]] ||
-      error "No directory '$src'"
-  else
-    src=$BPAN_INSTALL/src/$owner/$name/$ver
-  fi
+  src=$BPAN_INSTALL/src/$owner/$name/$ver
 }
 
 pkg:index-update() (

@@ -99,6 +99,7 @@ add:main() (
   fi
 
   if $option_test; then
+    add:assert-config
     while read -r file; do
       add:file "$base/$file" "$file"
       additions=true
@@ -108,20 +109,24 @@ add:main() (
   fi
 
   if [[ $option_count_pkg -gt 0 ]]; then
+    source-once pkg
+    add:assert-config
     for pkg in "${option_pkg[@]}"; do
-      if ! grep -q "^update.package = $pkg$" \
-            <(config:all update.package)
-      then
-        (
-          config:set "require.package.$pkg" '0.0.0+'
-          config:add 'update.package' "$pkg"
-        )
-        additions=true
-      fi
+      pkg:parse-id "$pkg"
+      grep -q '\[package "'"$full"'"\]' "$bpan_index_file" ||
+        error "No such BPAN package '$pkg'"
+      grep -q "^$pkg$" <(config:all update.package) &&
+        error "Package '$pkg' already added"
+
+      config:set "require.package.$pkg" '0.0.0+'
+      config:add 'update.package' "$pkg"
+
+      additions=true
     done
   fi
 
   if [[ $option_count_file -gt 0 ]]; then
+    add:assert-config
     for file in "${option_file[@]}"; do
       to=$file
       from=$base/$file
@@ -156,6 +161,11 @@ add:main() (
       bpan update
     fi
   fi
+)
+
+add:assert-config() (
+  [[ -f .bpan/config ]] ||
+    error "Config file '.bpan/config' not found. Try '--config'."
 )
 
 add:set-env() {
