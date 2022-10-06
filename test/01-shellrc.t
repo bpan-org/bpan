@@ -31,7 +31,8 @@ note "tcsh testing doesn't work yet"
 source="BPAN_ROOT=$PWD ."
 test ash
 test dash
-test posh
++os-macos ||  # XXX
+  test posh
 test ksh
 test mksh
 test sh
