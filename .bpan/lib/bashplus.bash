@@ -5,7 +5,7 @@
 
 
 bashplus:version() (
-  VERSION=0.1.26
+  VERSION=0.1.27
   echo "$VERSION"
 )
 
@@ -191,7 +191,7 @@ bashplus:version() (
 # XXX Move to bashplus
 # Get file modification time in epoch seconds
 if +os-macos; then
-  +mtime() ( stat --printf %m "$1" )
+  +mtime() ( stat -f %m "$1" )
 else
   +mtime() ( stat -c %Y "$1" )
 fi

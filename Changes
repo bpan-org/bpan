@@ -1,3 +1,13 @@
+[version "0.1.48"]
+date = Wed Oct  5 07:55:21 PM PDT 2022
+done = Fix to not clobber config file symlink
+done = Fix Meta config package.version
+done = Default to --help for 'bpan install'
+done = Check that GitHub Actions is operational before release
+done = Make files added to bin/ be executable
+done = Fix bugs in 'bpan add --config...'
+done = Remove code for 'bpan update --local' for now
+
 [version "0.1.47"]
 date = Tue Oct  4 05:17:38 PM PDT 2022
 done = Implement the 'bpan new' command
