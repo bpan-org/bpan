@@ -1,3 +1,7 @@
+[version "0.1.50"]
+date = Thu Oct  6 04:33:13 PM PDT 2022
+done = Fix tests on Mac
+
 [version "0.1.49"]
 date = Thu Oct  6 04:11:16 PM PDT 2022
 done = Add 'make gh-pages' support
