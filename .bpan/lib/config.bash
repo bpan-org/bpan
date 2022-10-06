@@ -32,7 +32,7 @@ config:set() (
   file=${config_files[-1]?}
   git config --file "$file" "$@"
   # TODO replace perl here with pure bash.
-  perl -pi -e 's/^\t//' "$file"
+  config:untab "$file"
 )
 
 config:add() (
@@ -43,7 +43,7 @@ config:add() (
   file=${config_files[-1]?}
   git config --file "$file" --add "$@"
   # TODO replace perl here with pure bash.
-  perl -pi -e 's/^\t//' "$file"
+  config:untab "$file"
 )
 
 config:all() (
@@ -59,6 +59,13 @@ config:list() (
   [[ $config_file ]] && config_files=( "$config_file" )
   git config --file <(cat "${config_files[@]?}") --list |
     sort
+)
+
+config:untab() (
+  for file; do
+    text=$(< "$file")
+    echo "${text//$'\t'/}" > "$file"
+  done
 )
 
 config:die() (

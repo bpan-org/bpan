@@ -5,8 +5,8 @@ source test/init
 P=test/bin-pkg-bash
 rm -fr "$P"
 
-quiet=()
 quiet=(--quiet)
+quiet=()
 
 test-create-package "$P"
 
@@ -20,8 +20,7 @@ old_version=$(bpan config package.version)
 is "$old_version" 0.0.0 \
   "Initial version is %W"
 
-# bpan "${quiet[@]}" bump
-bpan --quiet bump
+bpan "${quiet[@]}" bump
 
 new_version=$(bpan config package.version)
 
@@ -30,5 +29,20 @@ is "$new_version" 0.1.0 \
 
 ok "$(! grep -q $'\t' .bpan/config)" \
   "Config file has no tab characters"
+
+echo >> License
+git commit --all --message='Add a line to License file'
+
+bpan "${quiet[@]}" bump
+
+new_version=$(bpan config package.version)
+
+is "$new_version" 0.1.1 \
+  "Bumped version is %W"
+
+ok "$(! grep -q $'\t' .bpan/config)" \
+  "Config file has no tab characters"
+
+head .bpan/config
 
 done-testing

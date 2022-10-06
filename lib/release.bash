@@ -279,7 +279,7 @@ release:gha-update-index() (
 
   git config -f "$bpan_index_file" "package.$package.date" "$(date -u)"
 
-  perl -pi -e 's/\t//' "$bpan_index_file"
+  config:untab "$bpan_index_file"
 
   git config user.email "update-index@bpan.org"
   git config user.name "BPAN Update Index"
