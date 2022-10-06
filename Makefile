@@ -16,10 +16,13 @@ clean:
 
 index.html: head.html body.html foot.html
 	cat $+ > $@
-	rm -f body.html
+	rm -f body.*
 
 %.html: %.md
 	showdown makehtml -i $< -o $@ >/dev/null
+
+body.md: ../doc/bpan.md
+	cp $< $@
 
 index.css: force
 	curl -s $(CSS_URL) > $@
