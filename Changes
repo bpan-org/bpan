@@ -1,3 +1,9 @@
+[version "0.1.49"]
+date = Thu Oct  6 04:11:16 PM PDT 2022
+done = Add 'make gh-pages' support
+done = Add more sanity checks to 'bpan add'
+done = Add doc comments to bin script template
+
 [version "0.1.48"]
 date = Wed Oct  5 07:55:21 PM PDT 2022
 done = Fix to not clobber config file symlink
