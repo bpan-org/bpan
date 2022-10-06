@@ -1,9 +1,0 @@
-li.author {
-    margin: 5px;
-    float: left;
-}
-@media (min-width: 768px) {
-  .container {
-    max-width: 910;
-  }
-}
