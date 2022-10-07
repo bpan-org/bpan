@@ -84,5 +84,10 @@ new:main() (
 
   bpan "${opts1[@]}" init "${opts2[@]}"
 
+  if git:has-untracked; then
+    git add .
+    git commit --message='Initial commit'
+  fi
+
   say -g "Created new BPAN project in '$path'"
 )

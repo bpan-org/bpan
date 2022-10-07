@@ -23,6 +23,12 @@ git:has-ref() (
   git rev-parse "$1" &>/dev/null
 )
 
+git:has-untracked() (
+  git:in-repo &&
+  git status |
+    grep -q '^Untracked files:'
+)
+
 git:in-repo() (
   git:is-repo .
 )
