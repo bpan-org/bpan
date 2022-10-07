@@ -19,6 +19,9 @@ index.html: head.html body.html foot.html
 	rm -f body.*
 
 %.html: %.md
+ifeq (,$(shell command -v showdown))
+	$(error 'showdown' not installed. 'npm install -g showdown')
+endif
 	showdown makehtml -i $< -o $@ >/dev/null
 
 body.md: ../doc/bpan.md
