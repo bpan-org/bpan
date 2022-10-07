@@ -1,4 +1,6 @@
 search:main() (
+  [[ -t 1 ]] && tty=true || tty=false
+
   if [[ $# -eq 0 ]]; then
     error "No search term provided"
   fi
@@ -9,6 +11,7 @@ search:main() (
   found=($(
     git config -l -f "$bpan_index_file" |
       grep -i -E "$pattern" |
+      grep '^package\.' |
       cut -d. -f2 |
       +sort |
       uniq || true
@@ -16,16 +19,20 @@ search:main() (
 
   num=${#found[*]}
   if [[ $num -eq 0 ]]; then
-    say-r "No matches found for search term '$term'"
+    $tty && say-r "No matches found for search term '$term'"
     return
   elif [[ $num -eq 1 ]]; then
-    say-g "Found 1 matching package:"
+    $tty && say-g "Found 1 matching package:"
   else
-    say-g "Found $num matching packages:"
+    $tty && say-g "Found $num matching packages:"
   fi
   echo
 
   for package in "${found[@]}"; do
-    say-y "* $package"
+    if $tty; then
+      say-y "* $package"
+    else
+      echo "$package"
+    fi
   done
 )
