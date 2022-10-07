@@ -1,3 +1,7 @@
+[version "0.1.51"]
+date = Thu Oct  6 05:17:05 PM PDT 2022
+done = Fix bugs in 'bpan search'
+
 [version "0.1.50"]
 date = Thu Oct  6 04:33:13 PM PDT 2022
 done = Fix tests on Mac
