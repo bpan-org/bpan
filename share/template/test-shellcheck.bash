@@ -10,21 +10,16 @@ source test/init
 skip=1064,1072,1073,1090,1091,2002,2030,2031,2034,2154,2207,2217
 
 while read -r file; do
+  [[ -h $file ]] && continue
   if [[ $file == *.bash ]] ||
-     [[ $(head -n1 "$file") == \#*bash ]]
+     [[ $(head -n1 "$file") == \#\!*bash ]]
   then
     ok "$(shellcheck -s bash -e "$skip" "$file")" \
       "Bash file '$file' passes shellcheck"
   fi
 done < <(
-  find . -type f \
-         -not -path '*/\.git/*' \
-         -not -path '*/local/*' |
-    grep -v '\.sw[op]' |
-    grep -v '\.bpan/src/' |
-    grep -v 'share/template/' |
-    cut -c3- |
-    LC_ALL=C +sort
+  git ls-files |
+    grep -v '^share/template'
 )
 
 done-testing
