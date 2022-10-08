@@ -8,10 +8,13 @@ test() {
   if +can "$shell"; then
     # shellcheck disable=2086
     is "$(
-      env -i PATH="$bash_bin":/bin:/usr/bin:/sbin $shell \
+      env -i \
+        HOME="$HOME" \
+        TERM="$TERM" \
+        PATH="$bash_bin":/bin:/usr/bin:/sbin \
+        $shell \
         "$@" \
-        -c "$source ./.rc && bpan | head -n1" \
-        2>/dev/null
+        -c "$source ./.rc && bpan | head -n1"
     )" \
       'usage: bpan [<options>] <cmd> [<cmd-opts...>] [<cmd-args>]' \
       "bpan works for $shell"
@@ -23,10 +26,13 @@ test() {
 
 source=source
 
+note "tcsh testing doesn't work yet"
 test bash --norc
 test zsh
 test fish
-note "tcsh testing doesn't work yet"
+
+source='.'
+test yash
 
 source="BPAN_ROOT=$PWD ."
 test ash
@@ -36,6 +42,10 @@ test dash
 test ksh
 test mksh
 test sh
+
+note "mrsh testing doesn't work yet"
+# source="BPAN_ROOT=$PWD; ."
+# test mrsh
 
 done-testing
 

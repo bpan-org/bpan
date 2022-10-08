@@ -1,6 +1,19 @@
 #!/bash
 
-# source this file in any of the following shells to activate bpan
+# Use one of the following commands to activate `bpan` in your shell:
+#
+# ash  |  BPAN_ROOT=/path/to/bpan . /path/to/bpan/.rc
+# bash |                     source /path/to/bpan/.rc
+# dash |  BPAN_ROOT=/path/to/bpan . /path/to/bpan/.rc
+# fish |                     source /path/to/bpan/.rc
+# ksh  |  BPAN_ROOT=/path/to/bpan . /path/to/bpan/.rc
+# mksh |  BPAN_ROOT=/path/to/bpan . /path/to/bpan/.rc
+# mrsh | BPAN_ROOT=/path/to/bpan; . /path/to/bpan/.rc
+# posh |  BPAN_ROOT=/path/to/bpan . /path/to/bpan/.rc
+# sh   |  BPAN_ROOT=/path/to/bpan . /path/to/bpan/.rc
+# tcsh |                     source /path/to/bpan/.rc
+# yash |                          . /path/to/bpan/.rc 2>/dev/null
+# zsh  |                     source /path/to/bpan/.rc
 
 # Note: tcsh must come first or this won't work (for tcsh).
 
@@ -13,7 +26,6 @@ set d = `dirname $s[$i]` \
 setenv BPAN_ROOT `cd $d && pwd -P` \
 setenv PATH "$BPAN_ROOT/bin:$BPAN_ROOT/local/bin:$PATH" \
 setenv MANPATH "$BPAN_ROOT/man:$BPAN_ROOT/local/man:`manpath -q`" \
-bpan --setup
 exit 0 \
 '
 
@@ -53,8 +65,19 @@ bpan --setup
 exit
 '
 
+# yash
+test -n "$YASH_VERSION" && eval '
+BPAN_SHELL=yash
+BPAN_ROOT=$(cd "$(dirname "$0")" && pwd -P)
+PATH=$BPAN_ROOT/bin:$BPAN_ROOT/local/bin:$PATH
+MANPATH=$BPAN_ROOT/man:$BPAN_ROOT/local/man:$(manpath -q)
+export BPAN_SHELL BPAN_ROOT PATH MANPATH
+bpan --setup
+return
+'
+
 # Other shells including:
-# ash, dash, ksh, mksh, posh, sh
+# ash, dash, ksh, mksh, mrsh, posh, sh
 test -d "$BPAN_ROOT" && eval '
 BPAN_SHELL=$0
 PATH=$BPAN_ROOT/bin:$BPAN_ROOT/local/bin:$PATH
