@@ -1,3 +1,10 @@
+[version "0.1.53"]
+date = Sat Oct  8 02:14:55 PM PDT 2022
+done = Add yash and mrsh to supported shells
+done = Small changes to share/template/local-config.ini
+done = Simplify the shellcheck test's code
+done = Make 'bpan new' commit the new files
+
 [version "0.1.52"]
 date = Thu Oct  6 05:32:53 PM PDT 2022
 done = Make 'bpan search' (no term) show help - @dcoker++
