@@ -7,3 +7,6 @@ distclean::
 
 gh-pages::
 	git worktree add --force $@ $@
+
+clean::
+	rm -f .bpan/pid-*
