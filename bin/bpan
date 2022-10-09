@@ -8,7 +8,7 @@ VERSION=0.1.53
 [[ ${BPAN_ROOT:-} ]] ||
   { echo "BPAN_ROOT not set. 'source /path/to/bpan/.rc'">&2; exit 1; }
 
-source "$BPAN_ROOT/lib/bpan.bash" --app
+source "$BPAN_ROOT/lib/bpan.bash" --app --env='^(BPAN|SSH)_' "$@"
 bpan:source bashplus
 bpan:source config
 bpan:source say

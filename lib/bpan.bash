@@ -4,7 +4,6 @@
 # 'die' is so common we define a very basic one here.
 # The 'bashplus' library defines a more full featured one.
 die() {
-  [[ $# -gt 0 ]] || set -- Died
   printf '%s\n' "$@" >&2
   exit 1
 }
@@ -31,8 +30,8 @@ bpan:main() {
   export PATH=${root%/.bpan}/.bpan/lib:$PATH
 
   # 'source bpan.bash ...' can take arguments:
-  local arg
-  for arg; do
+  while [[ $# -gt 0 ]]; do
+    local arg=$1; shift
     case "$arg" in
       # No arguments intended.
       # This is needed to ignore global '$@'.
@@ -48,6 +47,32 @@ bpan:main() {
           App=$(tr '[:lower:]' '[:upper:]' <<<"${app:0:1}")${app:1}
           APP=$(tr '[:lower:]' '[:upper:]' <<<"$app")
         fi
+        ;;
+
+      # Re-run the command in a clean environment.
+      # Call with '--env=^(FOO_|BAR_) "$@"' where value is a regexp of prefixes
+      # of variables to keep.
+      # Since we pass in '"$@"', this option must be last.
+      --env*)
+        local env=$root/.bpan/pid-$$
+        if [[ ! -f $env ]]; then
+          touch "$env"
+          local vars=()
+          if [[ $arg == --env=* ]]; then
+            IFS=$'\n' read -r -d '' -a vars \
+              <<<"$(set | grep -E "${arg#--env=}")" || true
+          fi
+          exec env -i \
+            BPAN_ROOT="$BPAN_ROOT" \
+            HOME="${HOME-}" \
+            PATH="${PATH-}" \
+            TERM="${TERM-}" \
+            "${vars[@]}" \
+            "$BASH" --norc --noprofile "$0" "$@"
+        fi
+        rm -f "$env"
+        trap "rm -f $root/.bpan/pid*" exit
+        break
         ;;
 
       *) die "Unknown argument '$arg' for '${BASH_SOURCE[0]}'";;
