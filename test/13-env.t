@@ -47,4 +47,7 @@ has "$output" "HELLO=" \
   "BASH_VERSION can  be seen in dirty env"
 
 
+rm -f "$BPAN_ROOT"/.bpan/pid-*
+
+
 done-testing
