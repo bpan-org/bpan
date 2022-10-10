@@ -1,0 +1,142 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
+<title>BPAN™ — Bash Package Are Nearby</title>
+<link rel="stylesheet" href="./index.css">
+<style>
+body {
+    box-sizing: border-box;
+    min-width: 200px;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 45px;
+}
+</style>
+</head>
+<body>
+<article class="markdown-body">
+<h1 id="bpan">BPAN</h1>
+
+<p>Bash Packages Are Nearby</p>
+
+<h2 id="bpan-documentation">BPAN Documentation</h2>
+
+<ul>
+  <li>[[bpan-overview]]</li>
+  <li>[[bpan-user-guide]]</li>
+  <li>[[bpan-author-guide]]</li>
+</ul>
+
+<h2 id="synopsis">Synopsis</h2>
+
+<p>Using the <code>bpan</code> CLI tool:</p>
+<pre><code>$ bpan --help
+$ bpan cmds
+$ bpan help &lt;command&gt;
+$ bpan search utils
+$ bpan install somebody/path-utils
+</code></pre>
+
+<p>Use the <code>bpan</code> Bash library in your Bash code:</p>
+<pre><code>#!/usr/bin/env bash
+
+source "$MY_PROJECT_ROOT/.bpan/lib/bpan.bash" --
+
+bpan:source bashplus=0.1.0
+bpan:source bpan-org/getopt
+bpan:source github:ingydotnet/json
+</code></pre>
+
+<p>Create new packages with BPAN:</p>
+<pre><code>$ bpan new --lib foo-bar-bash
+$ bpan add --pkg=json-bash
+$ bpan add --file=test/foo.t
+$ bpan update
+</code></pre>
+
+<p>Publish your Bash packages:</p>
+<pre><code>$ bpan bump --push  # Prep the next release commit
+$ bpan register .   # Add new package entry to Index
+$ bpan publish .    # Update package's Index entry
+</code></pre>
+
+<h2 id="description">Description</h2>
+
+<p>BPAN is the “Missing Bash Package Manager”.</p>
+
+<p>It does 3 big things for you and your Bash code:</p>
+
+<ul>
+  <li>Find/install CLI programs/libaries written in Bash</li>
+  <li>Install, manage, bundle Bash deps for a project</li>
+  <li>Register and publish Bash packages that you make</li>
+</ul>
+
+<h2 id="installation">Installation</h2>
+
+<p>BPAN, works and is tested under the following shells: <code>bash</code>, <code>zsh</code>, <code>fish</code>,<br />
+<code>ksh</code>, <code>mksh</code>, <code>tcsh</code>, <code>yash</code>, <code>ash</code>, <code>dash</code>, <code>mrsh</code>, <code>posh</code> and <code>sh</code>.</p>
+
+<ol>
+  <li>Clone the BPAN repo:
+    <pre><code>git clone https://github.com/bpan-org/bpan "$HOME/.bpan"
+</code></pre>
+  </li>
+  <li>Source the BPAN <code>.rc</code> file to use <code>bpan</code> immediately.<br />
+Use one of these commands, depending on your shell:
+    <pre><code>ash  |  BPAN_ROOT=/path/to/bpan . /path/to/bpan/.rc
+bash |                     source /path/to/bpan/.rc
+dash |  BPAN_ROOT=/path/to/bpan . /path/to/bpan/.rc
+fish |                     source /path/to/bpan/.rc
+ksh  |  BPAN_ROOT=/path/to/bpan . /path/to/bpan/.rc
+mksh |  BPAN_ROOT=/path/to/bpan . /path/to/bpan/.rc
+mrsh | BPAN_ROOT=/path/to/bpan; . /path/to/bpan/.rc
+posh |  BPAN_ROOT=/path/to/bpan . /path/to/bpan/.rc
+sh   |  BPAN_ROOT=/path/to/bpan . /path/to/bpan/.rc
+tcsh |                     source /path/to/bpan/.rc
+yash |                          . /path/to/bpan/.rc 2&gt;/dev/null
+zsh  |                     source /path/to/bpan/.rc
+</code></pre>
+  </li>
+  <li>Add the command in step 2 to your shell’s startup file (<code>$HOME/.bashrc</code>, etc).</li>
+</ol>
+
+<p>NOTE: <code>$HOME/.bpan/</code> can be changed above to any other location that you wish to<br />
+install BPAN.</p>
+
+<h3 id="prerequisites">Prerequisites</h3>
+
+<p>BPAN needs just a few very common things to work:</p>
+
+<ul>
+  <li>Bash 3.2+
+    <ul>
+      <li>The BPAN system is written in Bash (of course)</li>
+    </ul>
+  </li>
+  <li>Git 2.7+
+    <ul>
+      <li>Required by <code>bpan</code> CLI and many packages, but…</li>
+      <li>Not required by programs using packages (that don’t require it)</li>
+    </ul>
+  </li>
+  <li>GitHub account
+    <ul>
+      <li>Only needed to register and publish packages</li>
+      <li>BPAN publishing only works on GitHub at the current time</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="copyright-and-license">Copyright and License</h2>
+
+<p>Copyright 2022 by Ingy döt Net</p>
+
+<p>This is free software, licensed under:</p>
+
+<p>The MIT (X11) License</p>
+</article>
+</body>
+</html>

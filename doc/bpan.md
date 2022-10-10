@@ -6,9 +6,10 @@ Bash Packages Are Nearby
 
 ## BPAN Documentation
 
-* [[bpan-overview]]
-* [[bpan-user-guide]]
-* [[bpan-author-guide]]
+* [bpan-overview](doc/bpan-overview)
+* [bpan-glossary](doc/bpan-glossary)
+* [bpan-user-guide](doc/bpan-user-guide)
+* [bpan-author-guide](doc/bpan-author-guide)
 
 
 ## Synopsis
