@@ -217,7 +217,7 @@ is() {
 isnt() {
   local _test_tap__call_stack_level=
   _test_tap__call_stack_level=$(( _test_tap__call_stack_level + 1 ))
-  local got=$1 dontwant=$2 label=${3-}
+  local got=$1 want=$2 dontwant=$2 label=${3-}
   label=$(test-tap:label "$label")
   if [[ $got != "$dontwant" ]]; then
     pass "$label"
@@ -227,7 +227,8 @@ isnt() {
 }
 
 like() {
-  local got=$1 regex=$2 label=${3-}
+  local got=$1 want=$2 regex=$2 label=${3-}
+  label=$(test-tap:label "$label")
   if [[ $got =~ $regex ]]; then
     pass "$label"
   else
@@ -236,7 +237,8 @@ like() {
 }
 
 unlike() {
-  local got=$1 regex=$2 label=${3-}
+  local got=$1 want=$2 regex=$2 label=${3-}
+  label=$(test-tap:label "$label")
   if [[ ! $got =~ $regex ]]; then
     pass "$label"
   else
@@ -245,10 +247,8 @@ unlike() {
 }
 
 has() {
-  local got=$1
-  local want=$2
-  local label
-  label=$(test-tap:label "$3")
+  local got=$1 want=$2 label=${3-}
+  label=$(test-tap:label "$label")
   local n=$'\n'
 
   if [[ $got == *"$want"* ]]; then
@@ -265,10 +265,8 @@ has() {
 }
 
 hasnt() {
-  local got=$1
-  local want=$2
-  local label
-  label=$(test-tap:label "$3")
+  local got=$1 want=$2 label=${3-}
+  label=$(test-tap:label "$label")
   local n=$'\n'
 
   if [[ $got != *"$want"* ]]; then
