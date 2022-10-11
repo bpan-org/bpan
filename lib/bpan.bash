@@ -4,7 +4,6 @@
 # 'die' is so common we define a very basic one here.
 # The 'bashplus' library defines a more full featured one.
 die() {
-  [[ $# -gt 0 ]] || set -- Died
   printf '%s\n' "$@" >&2
   exit 1
 }
@@ -22,13 +21,6 @@ bpan:main() {
     set -o pipefail
     shopt -s inherit_errexit
   } 2>/dev/null || true
-
-  # Determine the package project/install's root directory:
-  local root
-  root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)
-
-  # Add the app's BPAN dependency dir to PATH:
-  export PATH=${root%/.bpan}/.bpan/lib:$PATH
 
   # 'source bpan.bash ...' can take arguments:
   local arg
@@ -53,12 +45,47 @@ bpan:main() {
       *) die "Unknown argument '$arg' for '${BASH_SOURCE[0]}'";;
     esac
   done
+
+  # BPAN_PATH is an array of directories for 'bpan:source' to find libraries:
+  BPAN_PATH=()
+
+  # Determine the package project/install's root directory:
+  local project_root
+  project_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)
+  project_root=${project_root#.bpan/}
+
+  # Add the project's BPAN dependency directory:
+  if [[ -d $project_root/.bpan/lib ]]; then
+    BPAN_PATH+=("$project_root/.bpan/lib")
+  fi
+
+  # Add BPAN's install directory:
+  if [[ ${BPAN_ROOT-} && -d ${BPAN_ROOT}/local/lib ]]; then
+    BPAN_PATH+=("$BPAN_ROOT/local/lib")
+  fi
 }
 
-# This sources libraries from the installed BPAN's .bpan/lib/ dir:
+# source libraries found in BPAN_PATH array.
+#
+# Will support calling forms:
+# * bpan:source foo
+# * bpan:source foo/bar
+# * bpan:source foo/bar arg1 arg2
+# * bpan:source foo/bar=1.2.3               # NOT YET
+# * bpan:source foo/bar=1.2.3+              # NOT YET
+# * bpan:source foo/bar=1.2.3+ arg1 arg2    # NOT YET
 bpan:source() {
+  [[ $# -gt 0 ]] ||
+    die "Usage: bpan:source <bpan-library-name> [<arg>...]"
   local name=$1; shift
-  source "${BPAN_ROOT?}/.bpan/lib/$name.bash" "$@"
+  local dir
+
+  for dir in "${BPAN_PATH[@]}"; do
+    if [[ -f $dir/$name.bash ]]; then
+      source "$dir/$name.bash" "$@"
+      return
+    fi
+  done
 }
 
 bpan:main "$@"
