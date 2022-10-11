@@ -46,6 +46,18 @@ bpan:main() {
     esac
   done
 
+  # Set the BPAN_INSTALL variable (unless already set):
+  if [[ ${BPAN_INSTALL-} ]]; then
+    [[ -d ${BPAN_INSTALL} ]] ||
+      die "BPAN_INSTALL='$BPAN_INSTALL' is not a directory"
+  else
+    if [[ ${BPAN_ROOT-} && -f $BPAN_ROOT/lib/bpan.bash ]]; then
+      BPAN_INSTALL=$BPAN_ROOT/local
+      [[ -d $BPAN_INSTALL/lib ]] ||
+        mkdir -p "$BPAN_INSTALL/lib"
+    fi
+  fi
+
   # BPAN_PATH is an array of directories for 'bpan:source' to find libraries:
   BPAN_PATH=()
 
@@ -60,20 +72,20 @@ bpan:main() {
   fi
 
   # Add BPAN's install directory:
-  if [[ ${BPAN_ROOT-} && -d ${BPAN_ROOT}/local/lib ]]; then
-    BPAN_PATH+=("$BPAN_ROOT/local/lib")
+  if [[ ${BPAN_INSTALL-} && -d ${BPAN_INSTALL}/lib ]]; then
+    BPAN_PATH+=("$BPAN_INSTALL}/lib")
   fi
 }
 
 # source libraries found in BPAN_PATH array.
 #
-# Will support calling forms:
+# TODO support calling forms:
 # * bpan:source foo
 # * bpan:source foo/bar
 # * bpan:source foo/bar arg1 arg2
-# * bpan:source foo/bar=1.2.3               # NOT YET
-# * bpan:source foo/bar=1.2.3+              # NOT YET
-# * bpan:source foo/bar=1.2.3+ arg1 arg2    # NOT YET
+# * bpan:source foo/bar=1.2.3               # TODO
+# * bpan:source foo/bar=1.2.3+              # TODO
+# * bpan:source foo/bar=1.2.3+ arg1 arg2    # TODO
 bpan:source() {
   [[ $# -gt 0 ]] ||
     die "Usage: bpan:source <bpan-library-name> [<arg>...]"
