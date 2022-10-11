@@ -24,7 +24,7 @@ bpan:main() {
 
   # 'source bpan.bash ...' can take arguments:
   local arg
-  for arg; do
+  for arg do
     case "$arg" in
       # No arguments intended.
       # This is needed to ignore global '$@'.

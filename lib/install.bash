@@ -34,7 +34,7 @@ install:main() (
 
   pkg:index-update
 
-  for id; do
+  for id do
     pkg:parse-id+ "$id"
 
     if [[ ! -d $src ]]; then

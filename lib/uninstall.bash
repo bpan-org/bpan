@@ -23,7 +23,7 @@ uninstall:main() (
 
   source-once pkg
 
-  for target; do
+  for target do
     pkg:parse-id "$target"
     path=$owner/$name/$ver
     name=$full=$ver
