@@ -43,7 +43,7 @@ $ bpan update
 
 Publish your Bash packages:
 ```
-$ bpan bump --push  # Prep the next release commit
+$ bpan bump --push  # Prep the next publish commit
 $ bpan register .   # Add new package entry to Index
 $ bpan publish .    # Update package's Index entry
 ```

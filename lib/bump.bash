@@ -1,12 +1,12 @@
 bump:options() (cat <<...
 push      Push changes upstream
-release   Release to BPAN index after bump
+publish   Publish to BPAN index after bump
 version=  New version string
 ...
 )
 
 bump:main() (
-  if $option_release; then
+  if $option_publish; then
     option_push=true
   fi
 
@@ -57,9 +57,9 @@ bump:main() (
   git log --pretty=oneline "$rev_list"
 
   name=$(config_file=.bpan/config config:get package.name)
-  if $option_release && [[ $name != bpan ]]; then
-    say -y "Running 'bpan release'"
-    $bpan release
+  if $option_publish && [[ $name != bpan ]]; then
+    say -y "Running 'bpan publish'"
+    $bpan publish
   fi
 )
 
@@ -92,9 +92,9 @@ bump:check-sanity() (
     branch=$(git:branch-name)
     [[ $branch ]] ||
       error "Can't push. Not checked out to a branch."
-    release_branch=$(config_file=.bpan/config config:get package.branch || echo main)
-    [[ $branch == "$release_branch" ]] ||
-      error "Can't push. Current branch is not '$release_branch'"
+    publish_branch=$(config_file=.bpan/config config:get package.branch || echo main)
+    [[ $branch == "$publish_branch" ]] ||
+      error "Can't push. Current branch is not '$publish_branch'"
   fi
 
   if ! [[ $list ]]; then

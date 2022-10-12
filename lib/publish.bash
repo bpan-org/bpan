@@ -1,27 +1,27 @@
-# TODO redirect from https://bpan.org/release-requests
+# TODO redirect from https://bpan.org/publish-requests
 
-release:options() (
-  echo "c,check     Just run preflight checks. Don't release"
+publish:options() (
+  echo "c,check     Just run preflight checks. Don't publish"
 )
 
-release:main() (
+publish:main() (
   # XXX asssert jq available
 
   if +in-gha; then
-    release:gha-main "$@"
+    publish:gha-main "$@"
     return
   fi
 
-  release:get-env
+  publish:get-env
 
-  release:check-release
+  publish:check-publish
 
   $option_check && return
 
-  release:trigger-release
+  publish:trigger-publish
 )
 
-release:get-env() {
+publish:get-env() {
   git:in-repo ||
     error "Not in a git repo"
 
@@ -52,15 +52,15 @@ release:get-env() {
 
   commit=$(git:sha1 "$version")
 
-  release_html_package_url=https://github.com/$user/$repo/tree/$version
+  publish_html_package_url=https://github.com/$user/$repo/tree/$version
 }
 
-release:check-release() (
-  release_branch=$(config:get package.branch) || true
-  release_branch=${release_branch:-main}
+publish:check-publish() (
+  publish_branch=$(config:get package.branch) || true
+  publish_branch=${publish_branch:-main}
 
-  [[ $(git:branch-name) == "$release_branch" ]] ||
-    error "Not on release branch '$release_branch'"
+  [[ $(git:branch-name) == "$publish_branch" ]] ||
+    error "Not on publish branch '$publish_branch'"
 
   tag=$version
   git:tag-exists "$tag" ||
@@ -73,7 +73,7 @@ release:check-release() (
     error "Tag '$tag' is not HEAD commit"
 
   if [[ $package == github:bpan-org/bpan ]]; then
-    error "Can't release '$package'. Not a package."
+    error "Can't publish '$package'. Not a package."
   fi
 
   say -y "Running tests"
@@ -81,7 +81,7 @@ release:check-release() (
   echo
 )
 
-release:trigger-release() (
+publish:trigger-publish() (
   json="{\
 \"package\":\"$package\",\
 \"version\":\"$version\",\
@@ -91,8 +91,8 @@ release:trigger-release() (
   body="\
 <!-- $json -->
 
-#### Requesting BPAN Package Release for [$package $version]\
-($release_html_package_url)
+#### Requesting BPAN Package Publish for [$package $version]\
+($publish_html_package_url)
 <details><summary>Details</summary>
 
 * **Package**: $package
@@ -115,14 +115,14 @@ $(
 **BPAN Index Updater triggered and will begin processing this request soon…**
 "
 
-  url=$(release:post-request "$body")
+  url=$(publish:post-request "$body")
 
-  say -g "Release for '$package' version '$version' requested"
+  say -g "Publish for '$package' version '$version' requested"
   echo
   say -y "  $url"
 )
 
-release:post-request() (
+publish:post-request() (
   api_status=$(
     curl -s https://www.githubstatus.com/api/v2/summary.json |
       jq -r '.components | .[] | select(.name == "Actions") | .status'
@@ -130,12 +130,12 @@ release:post-request() (
 
   if [[ $api_status != operational ]]; then
     error "\
-Can't release. GitHub Actions is not operational.
+Can't publish. GitHub Actions is not operational.
 status='$api_status'.
 See: https://www.githubstatus.com/"
   fi
 
-  bpan_release_url=https://api.github.com/repos/bpan-org/bpan-index/issues/1/comments
+  bpan_publish_url=https://api.github.com/repos/bpan-org/bpan-index/issues/1/comments
 
   if [[ ${BPAN_INDEX_REPO_URL-} ]]; then
     [[ $BPAN_INDEX_REPO_URL == */github.com/* ]] ||
@@ -143,7 +143,7 @@ See: https://www.githubstatus.com/"
     url=${BPAN_INDEX_REPO_URL%/}
     url=${url/\/github.com\//\/api.github.com\/repos\/}
     url=$url/issues/1/comments
-    bpan_release_url=$url
+    bpan_publish_url=$url
   fi
 
   body=$1
@@ -169,14 +169,14 @@ See: https://www.githubstatus.com/"
       --header "Accept: application/vnd.github+json" \
       --header "Authorization: Bearer $token" \
       --data "$data" \
-      "$bpan_release_url" |
+      "$bpan_publish_url" |
     grep '"html_url"' |
     head -n1 |
     cut -d'"' -f4
   ) || true
 
   [[ $url ]] ||
-    error "Release request failed"
+    error "Publish request failed"
 
   echo "$url"
 )
@@ -187,21 +187,21 @@ See: https://www.githubstatus.com/"
 # GHA support
 #------------------------------------------------------------------------------
 
-release:gha-main() (
+publish:gha-main() (
   ok=false
 
-  +trap release:gha-post-status
+  +trap publish:gha-post-status
 
-  release:gha-get-env
+  publish:gha-get-env
 
-  release:gha-check-release
+  publish:gha-check-publish
 
-  release:gha-update-index
+  publish:gha-update-index
 
   ok=true
 )
 
-release:gha-get-env() {
+publish:gha-get-env() {
   bpan_index_file=index.ini
 
   set -x
@@ -216,9 +216,9 @@ release:gha-get-env() {
   set +x
   comment_body+="
 
-1. [Review Release and Update Index]($gha_job_html_url)
+1. [Review Publish and Update Index]($gha_job_html_url)
 "
-  release:gha-update-comment-body "$comment_body"
+  publish:gha-update-comment-body "$comment_body"
   $option_debug && set -x
 
   if [[ ${BPAN_INDEX_UPDATE_TESTING-} ]]; then
@@ -227,7 +227,7 @@ release:gha-get-env() {
   fi
 }
 
-release:gha-check-release() {
+publish:gha-check-publish() {
   config=package/.bpan/config
   [[ -f $config ]] ||
     die "Package '$package' has no '.bpan/config' file"
@@ -258,7 +258,7 @@ release:gha-check-release() {
     die "$package v$version failed tests"
 }
 
-release:gha-update-index() (
+publish:gha-update-index() (
   [[ ${#commit} -eq 40 ]] ||
     die "Can't get commit for '$package' v$version"
 
@@ -294,9 +294,9 @@ release:gha-update-index() (
 )
 
 # Add the GHA job url to the request comment:
-release:gha-update-comment-body() (
+publish:gha-update-comment-body() (
   $option_debug &&
-    echo "+ release:gha-update-comment-body ..."
+    echo "+ publish:gha-update-comment-body ..."
 
   content=$1
   content=${content//\"/\\\"}
@@ -318,7 +318,7 @@ release:gha-update-comment-body() (
 
 
 # React thumbs-up or thumbs-down on request comment:
-release:gha-post-status() (
+publish:gha-post-status() (
   [[ ${gha_event_comment_reactions_url} ]] || return
 
   set +x
@@ -334,20 +334,20 @@ release:gha-post-status() (
     )
     line_num=$(( ${line_num:-0} + 1 ))
 
-    release_html_index_url=$(git config remote.origin.url)
+    publish_html_index_url=$(git config remote.origin.url)
 
     comment_body+="\
-1. [Release Successful - \
-Index Updated]($release_html_index_url/blob/main/index.ini#L$line_num)
+1. [Publish Successful - \
+Index Updated]($publish_html_index_url/blob/main/index.ini#L$line_num)
 "
   else
     thumb='-1'
     comment_body+="\
-1. [Release Failed - See Logs]($gha_job_html_url)
+1. [Publish Failed - See Logs]($gha_job_html_url)
 "
   fi
 
-  release:gha-update-comment-body "$comment_body"
+  publish:gha-update-comment-body "$comment_body"
   $option_debug && set -x
 
   auth_header=$(
@@ -366,8 +366,8 @@ Index Updated]($release_html_index_url/blob/main/index.ini#L$line_num)
     rc=$?
 
   if [[ $rc -eq 0 ]]; then
-    say -g 'Release Successful'
+    say -g 'Publish Successful'
   else
-    say -r 'Release Failed'
+    say -r 'Publish Failed'
   fi
 )

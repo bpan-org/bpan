@@ -36,7 +36,7 @@ Project Commands:
   update        Update project $APP assets
   test          Run the project tests
   bump          Prepare next version
-  release       Publish the project to $APP index
+  publish       Publish the project to $APP index
   register      Register a new $APP package
 
 Information Commands:
