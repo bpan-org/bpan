@@ -36,8 +36,7 @@ register:preflight() {
     error "Git repo has uncommitted changes"
   o "Git repo is in a clean state"
 
-  local config_file=.bpan/config
-  [[ -f $config_file ]] ||
+  [[ -f .bpan/config ]] ||
     error "Not in a bpan project directory"
   o "Inside a BPAN project directory"
 

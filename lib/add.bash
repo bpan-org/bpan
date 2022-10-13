@@ -95,7 +95,6 @@ add:main() (
   then
     add:config
     additions=true
-    config_file=.bpan/config
   fi
 
   if $option_test; then
@@ -115,11 +114,11 @@ add:main() (
       pkg:parse-id "$pkg"
       grep -q '\[package "'"$full"'"\]' "$bpan_index_file" ||
         error "No such BPAN package '$pkg'"
-      grep -q "^$pkg$" <(config:all update.package) &&
+      grep -q "^$pkg$" <(config:all --file=.bpan/config update.package) &&
         error "Package '$pkg' already added"
 
-      config:set "require.package.$pkg" '0.0.0+'
-      config:add 'update.package' "$pkg"
+      config:set --file=.bpan/config "require.package.$pkg" '0.0.0+'
+      config:add --file=.bpan/config 'update.package' "$pkg"
 
       additions=true
     done
@@ -163,10 +162,14 @@ add:main() (
   fi
 )
 
-add:assert-config() (
+add:assert-config() {
   [[ -f .bpan/config ]] ||
     error "Config file '.bpan/config' not found. Try '--config'."
-)
+
+  config:init \
+    "$BPAN_ROOT/config" \
+    "$(pwd)/.bpan/config"
+}
 
 add:set-env() {
   base=${option_from:-$BPAN_ROOT/share/file}
@@ -180,11 +183,11 @@ add:set-env() {
       cut -d= -f2
   )
 
-  config_file=${option_config:-.bpan/config}
+  local config=${option_config:-.bpan/config}
 
   unset name
-  if [[ -e $config_file ]]; then
-    name=$(config:get package.name) || true
+  if [[ -e $config ]]; then
+    name=$(config:get --file="$config" package.name) || true
   fi
   [[ ${name-} ]] || name=$(basename "$PWD")
 }

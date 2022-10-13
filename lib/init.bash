@@ -127,8 +127,12 @@ init:main() (
 
   add:set-env
 
-  [[ -f $config_file ]] ||
+  [[ -f .bpan/config ]] ||
     add:config
+
+  config:init \
+    "$BPAN_ROOT/config" \
+    "$(pwd)/.bpan/config"
 
   while read -r file; do
     from=$base/$file
@@ -161,7 +165,7 @@ init:main() (
   done < <(
     git config -f "$base/bpan-file.ini" --list |
       grep '^file.init' |
-      cut -d= -f2- |
+      cut -d '=' -f2- |
       grep -v '^\.bpan/config$'
   )
 

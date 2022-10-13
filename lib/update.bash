@@ -15,9 +15,9 @@ update:main() (
     source-once install
     source-once pkg
 
-    config_file=.bpan/config
-    [[ -f $config_file ]] ||
-      error "Can't 'bpan update'. No '$config_file' file."
+    config=.bpan/config
+    [[ -f $config ]] ||
+      error "Can't 'bpan update'. No '$config' file."
 
     pkg:index-update
 
@@ -53,8 +53,7 @@ update:files() (
       add:file-copy "$from" "$to"
     fi
   done < <(
-    config_file=.bpan/config
-    config:list |
+    config:list --file=.bpan/config |
       grep '^update\.file'
   )
 )
@@ -169,8 +168,7 @@ update:man() (
       say -y "UPDATED '$man' from '$md'"
     fi
   done < <(
-    config_file=.bpan/config
-    config:list |
+    config:list --file=.bpan/config |
       grep '^update\.man'
   )
 )

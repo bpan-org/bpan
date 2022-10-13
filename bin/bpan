@@ -2,11 +2,14 @@
 
 VERSION=0.1.53
 
+die() { printf '%s\n' "$@">&2;exit 1;}
+
 ( shopt -s compat31 2>/dev/null ) ||
-  { echo "bpan requires bash version 3.2 or higher">&2; exit 1; }
+  die "'bpan' requires 'bash' version 3.2 or higher."
 
 [[ ${BPAN_ROOT:-} ]] ||
-  { echo "BPAN_ROOT not set. 'source /path/to/bpan/.rc'">&2; exit 1; }
+  die "BPAN_ROOT not set." \
+      "Try: 'source /path/to/bpan/.rc'."
 
 source "$BPAN_ROOT/lib/bpan.bash" --app
 bpan:source bashplus
@@ -90,22 +93,24 @@ main() (
 )
 
 set-env() {
-  BPAN_PROJECT_ROOT=''
+  root=$BPAN_ROOT
+  [[ -f $root/bin/$app ]] ||
+    error "BPAN_ROOT variable has bad value '$root'"
+
+  local files=("$BPAN_ROOT/etc/config")
   local dir
+
+  if [[ -f $BPAN_ROOT/config ]]; then
+    files+=("$BPAN_ROOT/config")
+  fi
   if git:in-repo . &&
      dir=$(git:top-dir) &&
      [[ -f $dir/.bpan/config ]]
   then
-    BPAN_PROJECT_ROOT=$dir
+    files+=( "$dir/.bpan/config" )
   fi
 
-  config_files=( "$BPAN_ROOT/config" )
-  [[ $BPAN_PROJECT_ROOT ]] &&
-    config_files+=( "$BPAN_PROJECT_ROOT/.bpan/config" )
-
-  root=$BPAN_ROOT
-  [[ -f $root/bin/$app ]] ||
-    error "BPAN_ROOT variable has bad value '$root'"
+  config:init "${files[@]}"
 
   if [[ ${BPAN_INSTALL-} ]]; then
     if [[ $BPAN_INSTALL == $root/local ]]; then
@@ -176,7 +181,8 @@ todo() {
 }
 
 error() {
-  die --red --level=1 "[$app] Error: $1"
+  local line1=${1:-unknown reason}; shift
+  die --red --level=1 "[$app] Error: $line1" "$@"
 }
 
 main "$@"

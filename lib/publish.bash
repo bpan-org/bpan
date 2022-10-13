@@ -243,7 +243,7 @@ publish:gha-check-publish() {
   fi
 
   : "Check that requesting user is package author"
-  owner_github=$(config_file=$config config:get owner.github) ||
+  owner_github=$(config:get --file="$config" owner.github) ||
     die "No author.github entry in '$package' config"
   [[ $owner_github == "$gha_triggering_actor" ]] ||
     die "Request from '$triggering_actor' should be from '$owner_github'"

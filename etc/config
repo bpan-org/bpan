@@ -1,0 +1,18 @@
+# BPAN System Config
+#
+# This file contains various 'constants' needed by BPAN.
+# Usually these are not changed, but they can changed for testing or setting
+# up a custom system.
+
+[bpan]
+api-version = 1
+
+# Place where bpan installs packages.
+# This can be overridden with BPAN_INSTALL variable.
+
+[core]
+index-repo = https://github.com/bpan-org/bpan-index
+install-dir = $BPAN_ROOT/local
+index-lifespan = 5
+
+# vim: ft=gitconfig:

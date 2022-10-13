@@ -1,10 +1,12 @@
 setup:main() (
-  config_file=$BPAN_ROOT/config
+  config=$BPAN_ROOT/config
   local_dir=$BPAN_ROOT/local
 
-  config_file=$BPAN_ROOT/.bpan/config \
+  (
+    config:init "$BPAN_ROOT/.bpan/config"
     bpan:require-commands ||
       warn "Please install missing BPAN requirements above"
+  )
 
   if ! [[ -d $local_dir ]]; then
     mkdir "$local_dir"
@@ -13,7 +15,7 @@ setup:main() (
     pkg:index-update
   fi
 
-  [[ -f $config_file ]] ||
+  [[ -f $config ]] ||
     setup:new-config-file
 )
 

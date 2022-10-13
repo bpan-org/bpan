@@ -59,8 +59,7 @@ env:date-time() (
 
 env:github-user-id() (
   if [[ -f $BPAN_ROOT/config ]]; then
-    config_file=$BPAN_ROOT/config
-    id=$(config:get github.user) || true
+    id=$(config:get --file="$BPAN_ROOT/config" github.user) || true
   fi
 
   if ! [[ $id ]]; then

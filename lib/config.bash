@@ -15,25 +15,24 @@ config:options() (
 )
 
 config:main() (
-  files=()
   if [[ ${option_file-} ]]; then
-    config_file=$option_file
+    config=$option_file
   elif $option_local; then
     git:assert-in-repo
-    config_file=$(git:top-dir)/.bpan/config
+    config=$(git:top-dir)/.bpan/config
   elif $option_global; then
     git:assert-in-repo
-    config_file=$BPAN_ROOT/config
+    config=$BPAN_ROOT/config
   else
     # XXX should we assign this by default?
-    config_file=.bpan/config
+    config=.bpan/config
   fi
 
   if $option_list; then
-    config:list
+    config:list --file="$config"
   elif [[ $# -eq 1 ]]; then
-    config:get "$@"
+    config:get --file="$config" "$@"
   elif [[ $# -eq 2 ]]; then
-    config:set "$@"
+    config:set --file="$config" "$@"
   fi
 )
