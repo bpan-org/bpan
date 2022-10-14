@@ -1,3 +1,16 @@
+[version "0.1.54"]
+date = Fri Oct 14 02:09:26 PM PDT 2022
+done = Assert index.ini before search
+done = Use 'git worktree' to install a version of a package
+done = Move functions called once out of test/init-local
+done = Rewrite config.bash with better API
+done = Rename config template files
+done = Rename 'release' command to 'publish'
+done = Refactor 'for x; do' to 'for x do'
+done = Set BPAN_INSTALL in bpan.bash
+done = Have 'bpan:source' source from ${BPAN_PATH[@]}
+done = Update test-tap
+
 [version "0.1.53"]
 date = Sat Oct  8 02:14:55 PM PDT 2022
 done = Add yash and mrsh to supported shells
