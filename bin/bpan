@@ -92,6 +92,7 @@ main() (
   fi
 )
 
+# Determine the bpan config files and the BPAN_INSTALL directory.
 set-env() {
   root=$BPAN_ROOT
   [[ -f $root/bin/$app ]] ||
@@ -103,6 +104,7 @@ set-env() {
   if [[ -f $BPAN_ROOT/config ]]; then
     files+=("$BPAN_ROOT/config")
   fi
+
   if git:in-repo . &&
      dir=$(git:top-dir) &&
      [[ -f $dir/.bpan/config ]]
@@ -112,16 +114,13 @@ set-env() {
 
   config:init "${files[@]}"
 
-  if [[ ${BPAN_INSTALL-} ]]; then
+  export BPAN_INSTALL=${BPAN_INSTALL:-$root/local}
+  if [[ ! -d $BPAN_INSTALL ]]; then
     if [[ $BPAN_INSTALL == $root/local ]]; then
       mkdir -p "$BPAN_INSTALL"
     else
-      [[ -d $BPAN_INSTALL ]] ||
-        error "BPAN_INSTALL='$BPAN_INSTALL' - directory not found"
+      error "BPAN_INSTALL='$BPAN_INSTALL' - directory not found"
     fi
-  else
-    BPAN_INSTALL=$root/local
-    export BPAN_INSTALL
   fi
 
   BPAN_INDEX_API_VERSION=1
