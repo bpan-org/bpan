@@ -25,7 +25,7 @@ uninstall:main() (
 
   for target do
     pkg:parse-id "$target"
-    path=$owner/$name/$ver
+    path=$domain/$owner/$name/$ver
     name=$full=$ver
     if [[ -d $BPAN_INSTALL/src/$path ]]; then
       say-y "Uninstalling '$name':"

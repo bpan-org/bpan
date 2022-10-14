@@ -11,7 +11,7 @@ pkg:parse-id+() {
 
   commit=$(pkg:get-commit "$full" "$ver")
 
-  src=$BPAN_INSTALL/src/$owner/$name/$ver
+  src=$BPAN_INSTALL/src/$domain/$owner/$name/$ver
 }
 
 pkg:parse-id() {
@@ -39,7 +39,7 @@ pkg:parse-id() {
     error "Invalid package domain '$domain'"
   fi
 
-  src=$BPAN_INSTALL/src/$owner/$name/$ver
+  src=$BPAN_INSTALL/src/$domain/$owner/$name/$ver
 }
 
 pkg:index-update() (
@@ -55,7 +55,7 @@ pkg:index-update() (
     git clone --quiet "$bpan_index_repo_url" "$BPAN_INSTALL/$bpan_index_repo_dir"
   fi
 
-  if ${option_index:-false} ||
+  if ${force_update:-false} ||
      [[ ${1-} == --force ]] ||
      [[ ! -f $bpan_index_file ]] ||
      [[ ! -h $bpan_index_file ]] ||

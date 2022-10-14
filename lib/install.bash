@@ -21,33 +21,45 @@ install:usage() (
   echo "$app [<$app-opts>] $cmd [<cmd-opts>] <pkg-id...>"
 )
 
-install:options() (
-  echo "U,unsafe      Install an unindexed package"
-  echo "I,index       Refresh index file"
-)
-
 install:main() (
   [[ $# -gt 0 ]] ||
     error "'$app $cmd' requires one or more packages"
 
   source-once pkg
 
-  pkg:index-update
+  force_update=true pkg:index-update
 
   for id do
     pkg:parse-id+ "$id"
 
-    if [[ ! -d $src ]]; then
-      mkdir -p "$(dirname "$src")"
+    base=${src%/*}
+    if [[ -d $base ]]; then
+      if [[ ! -d $src ]]; then
+        (
+          say -y "Fetch $base"
+          $option_verbose && set -x
+
+          GIT_TERMINAL_PROMPT=0 git -C "$base" fetch \
+            --quiet \
+            2>/dev/null
+        ) || error "Can't 'git -C $base fetch'"
+      fi
+    else
+      mkdir -p "$(dirname "$base")"
       (
-        say -y "Clone $repo -> $src"
+        say -y "Clone $repo -> $base"
         $option_verbose && set -x
+
         GIT_TERMINAL_PROMPT=0 git clone \
           --quiet \
-          --depth 1 \
-          --branch "$ver" \
-          "$repo" "$src" 2>/dev/null
+          --no-checkout \
+          "$repo" "$base" 2>/dev/null
       ) || error "Can't 'git clone $repo'"
+    fi
+
+    if [[ ! -d $src ]]; then
+      git -C "$base" worktree add --force --quiet "$src" "$ver" ||
+        error "Can't add git worktree for '$full=$var'"
       if [[ $(git -C "$src" rev-parse HEAD) != "$commit" ]]; then
         rm -fr "$src"
         error "Bad commit: package '$full' version '$ver' commit '$commit'"
@@ -64,6 +76,7 @@ install:main() (
 
         link=$BPAN_INSTALL/$file
         target=src/$owner/$name/$ver/$file
+        target=src/$domain/$owner/$name/$ver/$file
         if [[ ! -f $link ]] ||
            [[ $(readlink "$link") != $prefix/$target ]]
         then
