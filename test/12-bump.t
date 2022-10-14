@@ -8,6 +8,17 @@ rm -fr "$P"
 quiet=()
 quiet=(--quiet)
 
+test-create-package() {
+  local dir=$1
+
+  note "mkdir '$dir' && cd '$dir' && bpan --quiet init --bin --config=Meta"
+  (
+    mkdir -p "$dir"
+    cd "$dir" || exit
+    bpan "${quiet[@]}" init --bin --config=Meta
+  )
+}
+
 test-create-package "$P"
 
 cd "$P" || exit

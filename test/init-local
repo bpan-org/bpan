@@ -9,28 +9,3 @@ test-errors() {
       "'$cmd' fails with: $msg"
   done
 }
-
-test-install-setup() {
-  export BPAN_INSTALL=$PWD//test/local
-  rm -fr "$BPAN_INSTALL"
-  mkdir -p "$BPAN_INSTALL"
-
-  I=$BPAN_INSTALL
-
-  trap test-install-teardown exit
-}
-
-test-install-teardown() (
-  rm -fr ./test/local
-)
-
-test-create-package() {
-  local dir=$1
-
-  note "mkdir '$dir' && cd '$dir' && bpan --quiet init --bin --config=Meta"
-  (
-    mkdir -p "$dir"
-    cd "$dir" || exit
-    bpan "${quiet[@]}" init --bin --config=Meta
-  )
-}
