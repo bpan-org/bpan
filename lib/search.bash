@@ -10,6 +10,11 @@ search:main() (
   term=$(IFS='|'; echo "$*")
   pattern="=.*($term)"
 
+  if [[ ! -f $bpan_index_file ]]; then
+    source-once pkg
+    pkg:index-update
+  fi
+
   # shellcheck disable=2207
   found=($(
     git config -l -f "$bpan_index_file" |
