@@ -1,5 +1,8 @@
 #!/bash
 
+BPAN_INSTALL=$PWD/test/local
+mkdir -p "$BPAN_INSTALL"
+
 bpan:source git-utils --
 
 test-errors() {
