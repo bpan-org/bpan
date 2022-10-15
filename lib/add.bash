@@ -136,10 +136,10 @@ add:main() (
 
       if [[ $file =~ ^bin/([-a-z0-9]+)$ ]]; then
         from=$base/bin/NAME
-      elif [[ $file =~ lib/([-a-z0-9]+).bash$ ]]; then
+      elif [[ $file =~ ^lib/([-a-z0-9]+).bash$ ]]; then
         from=$base/lib/NAME.bash
-      elif [[ $file =~ doc/([-a-z0-9]+).bash$ ]]; then
-        from=$base/lib/NAME.bash
+      elif [[ $file =~ ^doc/([-a-z0-9]+).md$ ]]; then
+        from=$base/doc/NAME.md
       elif [[ -f $from ]]; then
         true
       else
@@ -194,6 +194,8 @@ add:set-env() {
 
 add:list-files() (
   while read -r file; do
+    file="${file/bin-NAME/$name}"
+    file="${file/lib-NAME/$name}"
     file="${file/NAME/$name}"
     file="${file/gitignore/.gitignore}"
     echo "$file"

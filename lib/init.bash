@@ -136,8 +136,29 @@ init:main() (
 
   while read -r file; do
     from=$base/$file
-    to=${file/NAME/${name/-bash/}}
+    to=$file
+    to=${to/bin-NAME/${name/-bash/}}
+    to=${to/lib-NAME/${name/-bash/}}
+    to=${to/NAME/${name/-bash/}}
     to=${to/gitignore/.gitignore}
+
+    if [[ $file == bin/* ]] ||
+         [[ $file == .bpan/lib/* ]]
+    then
+      $option_bin || continue
+    elif [[ $file == lib/* ]]; then
+      $option_lib || continue
+    elif [[ $file == .rc ]]; then
+      [[ -f bin/${name/-bash} ]] || continue
+    elif [[ $file == doc/bin-* ]]; then
+      $option_bin || continue
+    elif [[ $file == doc/lib-* ]]; then
+      $option_lib || continue
+    fi
+
+    if ! [[ -e $to ]]; then
+      add:file "$from" "$to"
+    fi
 
     if [[ $file == doc/* ]]; then
       touch ReadMe.md
@@ -149,18 +170,6 @@ init:main() (
           config:add update.man3 "$to"
         fi
       }
-    elif [[ $file == bin/* ]] ||
-         [[ $file == .bpan/lib/* ]]
-    then
-      $option_bin || continue
-    elif [[ $file == lib/* ]]; then
-      $option_lib || continue
-    elif [[ $file == .rc ]]; then
-      [[ -f bin/${name/-bash} ]] || continue
-    fi
-
-    if ! [[ -e $to ]]; then
-      add:file "$from" "$to"
     fi
   done < <(
     git config -f "$base/bpan-file.ini" --list |

@@ -23,6 +23,22 @@ Your tagline for '(% pkg %)'
   bpan install (% pkg %)
   ```
 
+<!-- Note to author:
+  This section only applies if you have a `.rc` file,
+  otherwise remove this section.
+-->
+* From source:
+  ```
+  git clone (% config:package.repo %) /path/to/(% pkg %)
+  ```
+
+  Then add the following line to your shell's startup file:
+  ```
+  source /path/to/(% pkg %)/.rc
+  ```
+
+  This supports 12 interactive shells including `bash`, `zsh` and `fish`.
+
 ## Copyright and License
 
 Copyright (% copyright-year %) by (% author-name %)
