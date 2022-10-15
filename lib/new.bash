@@ -61,7 +61,7 @@ new:main() (
     error "'bpan new' requires --bin or --lib (or both)"
   fi
 
-  if [[ -d $dir ]] && ! +empty "$dir"; then
+  if [[ -d $dir ]] && ! +is-empty "$dir"; then
     error "Directory '$dir' already exists and is not empty"
   fi
 
