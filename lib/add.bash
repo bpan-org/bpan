@@ -319,12 +319,22 @@ add:file-render() (
 
   text=$(< "$1")
 
-  while [[ $text =~ \(%(\ *[-a-zA-Z0-9]+\ *)%\) ]]; do
+  while [[ $text =~ \(%(\ *[-:.a-zA-Z0-9]+\ *)%\) ]]; do
     match=${BASH_REMATCH[1]}
     cmd=${match##\ }
     cmd=${cmd%%\ }
 
-    text=${text/\(%$match%\)/$("env:$cmd")}
+    if [[ $cmd == config:* ]]; then
+      val=$(config:get "${cmd#config:}" || echo ___)
+    else
+      val=$(env:"$cmd")
+    fi
+
+    if [[ $val =~ [\#] ]]; then
+      val='"'$val'"'
+    fi
+
+    text=${text/\(%$match%\)/$val}
   done
 
   echo "$text"

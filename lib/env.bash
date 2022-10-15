@@ -53,6 +53,10 @@ env:copyright-year() (
   echo "$year"
 )
 
+env:date-year() (
+  date '+%Y'
+)
+
 env:date-time() (
   date
 )
