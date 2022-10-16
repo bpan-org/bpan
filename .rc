@@ -26,6 +26,7 @@ set d = `dirname $s[$i]` \
 setenv BPAN_ROOT `cd $d && pwd -P` \
 setenv PATH "$BPAN_ROOT/bin:$BPAN_ROOT/local/bin:$PATH" \
 setenv MANPATH "$BPAN_ROOT/man:$BPAN_ROOT/local/man:`manpath -q`" \
+bpan setup \
 exit 0 \
 '
 
@@ -36,8 +37,8 @@ BPAN_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
 PATH=$BPAN_ROOT/bin:$BPAN_ROOT/local/bin:$PATH
 MANPATH=$BPAN_ROOT/man:$BPAN_ROOT/local/man:$(manpath -q)
 export BPAN_SHELL BPAN_ROOT PATH MANPATH
-source "$BPAN_ROOT/share/complete.sh"
 bpan --setup
+source "$BPAN_ROOT/share/complete.sh"
 return
 '
 
@@ -48,8 +49,8 @@ BPAN_ROOT=$(cd "$(dirname "$0")" && pwd -P)
 PATH=$BPAN_ROOT/bin:$BPAN_ROOT/local/bin:$PATH
 MANPATH=$BPAN_ROOT/man:$BPAN_ROOT/local/man:$(manpath -q)
 export BPAN_SHELL BPAN_ROOT PATH MANPATH
-source "$BPAN_ROOT/share/complete.sh"
 bpan --setup
+source "$BPAN_ROOT/share/complete.sh"
 return
 '
 
@@ -60,8 +61,8 @@ set BPAN_ROOT (cd (dirname (status filename)) && pwd -P)
 set PATH $BPAN_ROOT/bin:$BPAN_ROOT/local/bin:$PATH
 set MANPATH $BPAN_ROOT/man:$BPAN_ROOT/local/man:(manpath -q)
 export BPAN_SHELL BPAN_ROOT PATH MANPATH
-grep -B999 "#/FISH" share/complete.sh | string split0 | source
 bpan --setup
+grep -B999 "#/FISH" share/complete.sh | string split0 | source
 exit
 '
 
