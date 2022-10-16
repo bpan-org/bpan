@@ -162,7 +162,7 @@ register:update-bpan-index() (
     (
       updated=false
       while read -r line; do
-        if ! $updated && [[ $line == '[package'* && $head > "$line" ]]
+        if ! $updated && [[ $line == '[package'* && $head < "$line" ]]
         then
           echo "$entry"
           echo
