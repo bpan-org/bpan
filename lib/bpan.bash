@@ -1,6 +1,8 @@
 # This is the BPAN Bash bootstrap library.
 # It sets up a sane Bash program runtime environment with minimal code.
 
+bpan:version() ( echo '0.1.54' )
+
 # 'die' is so common we define a very basic one here.
 # The 'bashplus' library defines a more full featured one.
 die() { printf '%s\n' "$@" >&2; exit 1; }
