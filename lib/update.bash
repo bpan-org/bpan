@@ -160,7 +160,7 @@ update:man() (
     export MD2MAN_NUM MD2MAN_NAME MD2MAN_DESC MD2MAN_PROG
 
     temp=$(+mktemp)
-    "$BPAN_INSTALL/bin/md2man" < "$md" > "$temp"
+    md2man < "$md" > "$temp"
     if +is-file-same "$man" "$temp"; then
       say -y "CURRENT '$man'"
     else

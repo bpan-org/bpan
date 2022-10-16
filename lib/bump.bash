@@ -2,6 +2,7 @@ bump:options() (cat <<...
 push      Push changes upstream
 publish   Publish to BPAN index after bump
 version=  New version string
+dryrun    Don't tag, commit or push
 ...
 )
 
@@ -21,17 +22,22 @@ bump:main() (
 
   bump:check-sanity
 
+  say -y "Bumping to version '$new_version'"
+  bump:update-config-file
+  bump:update-changes-file
+  bump:update-version-vars
+
   say -y "Running 'bpan update'"
   $bpan update
 
   say -y "Running 'bpan test'"
   $bpan test
 
-  say -y "Bumping to version '$new_version'"
-
-  bump:update-changes-file
-  bump:update-config-file
-  bump:update-version-vars
+  if $option_dryrun; then
+    echo
+    say -y "*** DRYRUN BUMP COMPLETE ***"
+    return
+  fi
 
   git commit -q -a -m "Version $new_version"
 
@@ -64,8 +70,6 @@ bump:main() (
 )
 
 bump:check-sanity() (
-  +assert-perl
-
   git:in-top-dir ||
     error "'$app $cmd' must be at repo toplevel"
   git:is-clean ||
@@ -149,20 +153,24 @@ bump:update-config-file() (
 )
 
 bump:update-version-vars() (
-  for file in $(shopt -s nullglob; echo bin/* lib/*); do
-    temp=$(+mktemp)
-    perl -pe 's/^(\s*VERSION)=\d+\.\d+\.\d+(.*)/$1='"$new_version"'$2/' \
-      < "$file" > "$temp"
-    if [[ -x $file ]]; then
-      chmod '=rwx' "$temp"
-    else
-      chmod '=rw' "$temp"
+  while read -r file; do
+    grep -q -i "version.*${old_version//./\\.}" "$file" ||
+      continue
+
+    text=$(< "$file")
+    orig=$text
+
+    text=${text//$old_version/$new_version}
+
+    if [[ $text != "$orig" ]]; then
+      echo "$text" > "$file"
+      say -y \
+        "Updated version in file '$file'"
     fi
-    if +is-file-diff "$file" "$temp"; then
-      mv "$temp" "$file"
-      say -y "Updated VERSION=... in '$file'"
-    fi
-  done
+  done < <(
+    [[ -d bin ]] && find bin -type f
+    [[ -d lib ]] && find lib -type f
+  )
 )
 
 bump:old-version() (
