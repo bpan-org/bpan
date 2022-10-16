@@ -166,6 +166,9 @@ bump:update-version-vars() (
 )
 
 bump:old-version() (
+  [[ -f .bpan/config ]] ||
+    error "Config file '.bpan/config' not found"
+
   version=$($bpan config --local package.version)
 
   [[ $version ]] ||
