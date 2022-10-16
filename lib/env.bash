@@ -47,7 +47,7 @@ env:author-email() (
 
 env:copyright-year() (
   if [[ -f .bpan/config ]]; then
-    year=$(config:get package.copyright) || true
+    year=$(ini:get package.copyright) || true
   fi
   year=${year:-$(date '+%Y')}
   echo "$year"
@@ -63,7 +63,7 @@ env:date-time() (
 
 env:github-user-id() (
   if [[ -f $BPAN_ROOT/config ]]; then
-    id=$(config:get --file="$BPAN_ROOT/config" github.user) || true
+    id=$(ini:get --file="$BPAN_ROOT/config" github.user) || true
   fi
 
   if ! [[ $id ]]; then

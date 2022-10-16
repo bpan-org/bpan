@@ -5,7 +5,7 @@
 
 
 bashplus:version() (
-  VERSION=0.1.28
+  VERSION=0.1.30
   echo "$VERSION"
 )
 
@@ -48,7 +48,8 @@ bashplus:version() (
     printf '%s\n' "$@" >&2
     echo -en "$Z"
 
-    if [[ $# -ne 1 || $1 != *$'\n' ]]; then
+    # If last msg line does not end with newline, then print line number:
+    if [[ ${!#} != *$'\n' ]]; then
       local caller
       IFS=' ' read -r -a caller <<< "$(caller "$level")"
       if (( ${#caller[@]} == 2 )); then

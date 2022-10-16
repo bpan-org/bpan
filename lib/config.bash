@@ -29,10 +29,10 @@ config:main() (
   fi
 
   if $option_list; then
-    config:list --file="$config"
+    ini:list --file="$config"
   elif [[ $# -eq 1 ]]; then
-    config:get --file="$config" "$@"
+    ini:get --file="$config" "$@"
   elif [[ $# -eq 2 ]]; then
-    config:set --file="$config" "$@"
+    ini:set --file="$config" "$@"
   fi
 )

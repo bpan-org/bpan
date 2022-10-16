@@ -13,7 +13,7 @@ die() { printf '%s\n' "$@">&2;exit 1;}
 
 source "$BPAN_ROOT/lib/bpan.bash" --app
 bpan:source bashplus
-bpan:source config
+bpan:source ini
 bpan:source say
 bpan:source bpan-util
 bpan:source git-utils
@@ -112,7 +112,7 @@ set-env() {
     files+=( "$dir/.bpan/config" )
   fi
 
-  config:init "${files[@]}"
+  ini:init "${files[@]}"
 
   export BPAN_INSTALL=${BPAN_INSTALL:-$root/local}
   if [[ ! -d $BPAN_INSTALL ]]; then

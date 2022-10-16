@@ -3,7 +3,7 @@ setup:main() (
   local_dir=$BPAN_ROOT/local
 
   (
-    config:init "$BPAN_ROOT/.bpan/config"
+    ini:init "$BPAN_ROOT/.bpan/config"
     bpan:require-commands ||
       warn "Please install missing BPAN requirements above"
   )

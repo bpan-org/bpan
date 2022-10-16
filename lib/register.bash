@@ -23,7 +23,7 @@ register:main() (
 )
 
 register:preflight() {
-  token=$(config:get github.token) || true
+  token=$(ini:get github.token) || true
   [[ $token =~ ^ghp_[a-zA-Z0-9]{36}$ ]] ||
     error "Your configured 'github.token' does not seem valid"
   o "GitHub token tooks ok"
@@ -178,7 +178,7 @@ register:update-bpan-index() (
   )
 
   git -C "$index_dir" commit --quiet --all \
-    --message="Add $fork_branch $package_version"
+    --message="Add github:$fork_branch=$package_version"
   o "Committed the new index entry to the bpan-index fork"
 
   git -C "$index_dir" push --quiet --force origin "$fork_branch" &>/dev/null

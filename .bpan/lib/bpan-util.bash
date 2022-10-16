@@ -22,7 +22,7 @@ bpan:require-commands() (
       }
     fi
   done < <(
-    config:list |
+    ini:list |
       grep "^require\.command\."
   )
 

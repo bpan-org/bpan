@@ -130,7 +130,7 @@ init:main() (
   [[ -f .bpan/config ]] ||
     add:config
 
-  config:init \
+  ini:init \
     "$BPAN_ROOT/config" \
     "$(pwd)/.bpan/config"
 
@@ -162,12 +162,12 @@ init:main() (
 
     if [[ $file == doc/* ]]; then
       touch ReadMe.md
-      config:all update.file | grep -q '^ReadMe\.md' || {
-        config:add update.file "ReadMe.md $to"
+      ini:all update.file | grep -q '^ReadMe\.md' || {
+        ini:add update.file "ReadMe.md $to"
         if [[ -d bin ]]; then
-          config:add update.man1 "$to"
+          ini:add update.man1 "$to"
         else
-          config:add update.man3 "$to"
+          ini:add update.man3 "$to"
         fi
       }
     fi
@@ -185,7 +185,7 @@ init:main() (
     done
   fi
 
-  pkg=$(config:get package.name)
+  pkg=$(ini:get package.name)
   name=${pkg%-bash}
 
   if [[ ! -d .git ]]; then

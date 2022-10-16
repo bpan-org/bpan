@@ -56,7 +56,7 @@ bump:main() (
   say -y Commits:
   git log --pretty=oneline "$rev_list"
 
-  name=$(config:get --file=.bpan/config package.name)
+  name=$(ini:get --file=.bpan/config package.name)
   if $option_publish && [[ $name != bpan ]]; then
     say -y "Running 'bpan publish'"
     $bpan publish
@@ -92,7 +92,7 @@ bump:check-sanity() (
     branch=$(git:branch-name)
     [[ $branch ]] ||
       error "Can't push. Not checked out to a branch."
-    publish_branch=$(config:get --file=.bpan/config package.branch || echo main)
+    publish_branch=$(ini:get --file=.bpan/config package.branch || echo main)
     [[ $branch == "$publish_branch" ]] ||
       error "Can't push. Current branch is not '$publish_branch'"
   fi

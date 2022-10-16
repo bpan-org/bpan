@@ -41,6 +41,7 @@ ping = 0
 
 [update]
 package = bashplus
+package = ini-bash
 package = getopt-bash
 package = test-tap-bash
 file = License

@@ -36,7 +36,7 @@ update:list() (
 
 update:files() (
   source-once add
-  name=$(config:get package.name)
+  name=$(ini:get package.name)
   while read -r line; do
     line=${line#file.bpan.}
     action=${line%%=*}
@@ -53,7 +53,7 @@ update:files() (
       add:file-copy "$from" "$to"
     fi
   done < <(
-    config:list --file=.bpan/config |
+    ini:list --file=.bpan/config |
       grep '^update\.file'
   )
 )
@@ -124,7 +124,7 @@ update:require() (
     )
 
   done < <(
-    config:list |
+    ini:list |
       grep '^update\.package'
   )
 )
@@ -168,7 +168,7 @@ update:man() (
       say -y "UPDATED '$man' from '$md'"
     fi
   done < <(
-    config:list --file=.bpan/config |
+    ini:list --file=.bpan/config |
       grep '^update\.man'
   )
 )

@@ -114,11 +114,11 @@ add:main() (
       pkg:parse-id "$pkg"
       grep -q '\[package "'"$full"'"\]' "$bpan_index_file" ||
         error "No such BPAN package '$pkg'"
-      grep -q "^$pkg$" <(config:all --file=.bpan/config update.package) &&
+      grep -q "^$pkg$" <(ini:all --file=.bpan/config update.package) &&
         error "Package '$pkg' already added"
 
-      config:set --file=.bpan/config "require.package.$pkg" '0.0.0+'
-      config:add --file=.bpan/config 'update.package' "$pkg"
+      ini:set --file=.bpan/config "require.package.$pkg" '0.0.0+'
+      ini:add --file=.bpan/config 'update.package' "$pkg"
 
       additions=true
     done
@@ -166,7 +166,7 @@ add:assert-config() {
   [[ -f .bpan/config ]] ||
     error "Config file '.bpan/config' not found. Try '--config'."
 
-  config:init \
+  ini:init \
     "$BPAN_ROOT/config" \
     "$(pwd)/.bpan/config"
 }
@@ -187,7 +187,7 @@ add:set-env() {
 
   unset name
   if [[ -e $config ]]; then
-    name=$(config:get --file="$config" package.name) || true
+    name=$(ini:get --file="$config" package.name) || true
   fi
   [[ ${name-} ]] || name=$(basename "$PWD")
 }
@@ -246,7 +246,7 @@ add:file() (
   )
 
   if grep -q "^$to$" <<<"$update_files"; then
-    config:add update.file "$file"
+    ini:add update.file "$file"
   fi
 
   if [[ $to == bin/* ]]; then
@@ -259,7 +259,7 @@ add:file() (
 add:package-added() (
   package=$1
 
-  config:all update.package |
+  ini:all update.package |
     grep -q "^$package$"
 )
 
@@ -270,8 +270,8 @@ add:package() (
     error "Package '$package' already added"
   fi
 
-  config:add update.package "$package"
-  config:set require.package."$package" '0.0.0+'
+  ini:add update.package "$package"
+  ini:set require.package."$package" '0.0.0+'
 
   say -y "${msg:-"ADDED PACKAGE '$package'"}"
 )
@@ -327,7 +327,7 @@ add:file-render() (
     cmd=${cmd%%\ }
 
     if [[ $cmd == config:* ]]; then
-      val=$(config:get "${cmd#config:}" || echo ___)
+      val=$(ini:get "${cmd#config:}" || echo ___)
     else
       val=$(env:"$cmd")
     fi

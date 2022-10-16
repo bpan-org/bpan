@@ -28,7 +28,7 @@ publish:get-env() {
   [[ -f .bpan/config ]] ||
     error "Not in a BPAN package repo"
 
-  token=$(config:get github.token) || true
+  token=$(ini:get github.token) || true
   if [[ -z $token || $token == ___ ]]; then
     error "Missing or invalid github.token in $BPAN_ROOT/config"
   fi
@@ -47,7 +47,7 @@ publish:get-env() {
 
   package=github:$user/$repo
 
-  version=$(config:get package.version) ||
+  version=$(ini:get package.version) ||
     error "Can't find 'package.version' in .bpan/config"
 
   commit=$(git:sha1 "$version")
@@ -56,7 +56,7 @@ publish:get-env() {
 }
 
 publish:check-publish() (
-  publish_branch=$(config:get package.branch) || true
+  publish_branch=$(ini:get package.branch) || true
   publish_branch=${publish_branch:-main}
 
   [[ $(git:branch-name) == "$publish_branch" ]] ||
@@ -243,7 +243,7 @@ publish:gha-check-publish() {
   fi
 
   : "Check that requesting user is package author"
-  owner_github=$(config:get --file="$config" owner.github) ||
+  owner_github=$(ini:get --file="$config" owner.github) ||
     die "No author.github entry in '$package' config"
   [[ $owner_github == "$gha_triggering_actor" ]] ||
     die "Request from '$triggering_actor' should be from '$owner_github'"
@@ -277,9 +277,8 @@ publish:gha-update-index() (
       "package.$package.v${version//./-}" "$commit"
   fi
 
-  git config -f "$bpan_index_file" "package.$package.date" "$(date -u)"
-
-  config:untab "$bpan_index_file"
+  ini:set --file="$bpan_index_file" \
+    "package.$package.date" "$(date -u)"
 
   git config user.email "update-index@bpan.org"
   git config user.name "BPAN Update Index"
