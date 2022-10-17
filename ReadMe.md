@@ -67,7 +67,7 @@ host machine.
 The standard location is `$HOME/.bpan/` but you can change it to anything you
 like.
 
-BPAN, works and is tested under the following shells: `bash`, `zsh`, `fish`,
+BPAN works and is tested under the following shells: `bash`, `zsh`, `fish`,
 `ksh`, `mksh`, `tcsh`, `yash`, `ash`, `dash`, `mrsh`, `posh` and `sh`.
 
 
