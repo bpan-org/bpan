@@ -76,17 +76,17 @@ BPAN, works and is tested under the following shells: `bash`, `zsh`, `fish`,
 You can run this command from any of the above shells to install BPAN:
 
 ```
-curl -Lo- https://bpan.org/install | bash
+curl -sL get.bpan.org | bash
 ```
 
 The script will try to identify your interactive shell type, and will choose an
-install location of `$HOME/.bpan/`.
+installation location of `$HOME/.bpan/`.
 
-You can override these like this:
+You can override these with the `BPAN_SHELL` and `BPAN_ROOT` environment
+variables like this:
 
 ```
-curl -Lo- https://bpan.org/install |
-    BPAN_SHELL=yash BPAN_ROOT=/some/path bash
+curl -sL get.bpan.org | BPAN_SHELL=abcsh BPAN_ROOT=/some/path bash
 ```
 
 

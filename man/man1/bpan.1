@@ -212,16 +212,15 @@ Installing \s-1BPAN\s0 is simple and everything happens in a single directory on
 You can run this command from any of the above shells to install \s-1BPAN:\s0
 .PP
 .Vb 1
-\&    curl \-Lo\- https://bpan.org/install | bash
+\&    curl \-sL get.bpan.org | bash
 .Ve
 .PP
-The script will try to identify your interactive shell type, and will choose an install location of \f(CW\*(C`$HOME/.bpan/\*(C'\fR.
+The script will try to identify your interactive shell type, and will choose an installation location of \f(CW\*(C`$HOME/.bpan/\*(C'\fR.
 .PP
-You can override these like this:
+You can override these with the \f(CW\*(C`BPAN_SHELL\*(C'\fR and \f(CW\*(C`BPAN_ROOT\*(C'\fR environment variables like this:
 .PP
-.Vb 2
-\&    curl \-Lo\- https://bpan.org/install |
-\&        BPAN_SHELL=yash BPAN_ROOT=/some/path bash
+.Vb 1
+\&    curl \-sL get.bpan.org | BPAN_SHELL=abcsh BPAN_ROOT=/some/path bash
 .Ve
 .PP
 \fIInstall \s-1BPAN\s0 from its Source Repository\fR

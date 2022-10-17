@@ -96,21 +96,23 @@ fi
     "ash, bash, dash, fish, ksh, mksh, mrsh, posh, sh, tcsh, yash or zsh"
 
 # Determine BPAN_ROOT:
-if [[ ! ${BPAN_ROOT-} && ! -e $HOME/.bpan ]]; then
-  BPAN_ROOT=$HOME/.bpan
-fi
-
-if [[ ${BPAN_ROOT:-} ]]; then
+if [[ ${BPAN_ROOT-} ]]; then
   if [[ $BPAN_ROOT != /* ]]; then
-    error "BPAN_ROOT='$BPAN_ROOT'" \
-      "BPAN_ROOT must be set to the absolute path of a directory," \
+    error "You set BPAN_ROOT='$BPAN_ROOT'" \
+      "BPAN_ROOT must be the absolute path of a directory," \
       "and the directory must not yet exist."
   fi
-fi
-
-if [[ ! ${BPAN_ROOT-} ]]; then
-  error "Can't determine a value for BPAN install location." \
-    "Set the BPAN_ROOT environment variable and try again."
+  if [[ -e $BPAN_ROOT ]]; then
+    error "You set BPAN_ROOT='$BPAN_ROOT'" \
+      "but that directory already exists."
+  fi
+else
+  BPAN_ROOT=$HOME/.bpan
+  if [[ -e $BPAN_ROOT ]]; then
+    error "You didn't set BPAN_ROOT," \
+      "so defaulting to '$BPAN_ROOT'," \
+      "but that directory already exists."
+  fi
 fi
 
 echo -e "\
