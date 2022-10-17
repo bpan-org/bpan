@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH "bpan" 1 "2022-10-16" "md2man v0.1.0" "Bash Package Manager"
+.TH "bpan" 1 "2022-10-17" "md2man v0.1.0" "Bash Package Manager"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -202,7 +202,32 @@ Install, manage, bundle Bash deps for a project
 Register and publish Bash packages that you make
 .SS "\s-1INSTALLATION\s0"
 .IX Subsection "INSTALLATION"
+Installing \s-1BPAN\s0 is simple and everything happens in a single directory on your host machine. The standard location is \f(CW\*(C`$HOME/.bpan/\*(C'\fR but you can change it to anything you like.
+.PP
 \&\s-1BPAN,\s0 works and is tested under the following shells: \f(CW\*(C`bash\*(C'\fR, \f(CW\*(C`zsh\*(C'\fR, \f(CW\*(C`fish\*(C'\fR, \f(CW\*(C`ksh\*(C'\fR, \f(CW\*(C`mksh\*(C'\fR, \f(CW\*(C`tcsh\*(C'\fR, \f(CW\*(C`yash\*(C'\fR, \f(CW\*(C`ash\*(C'\fR, \f(CW\*(C`dash\*(C'\fR, \f(CW\*(C`mrsh\*(C'\fR, \f(CW\*(C`posh\*(C'\fR and \f(CW\*(C`sh\*(C'\fR.
+.PP
+\fIInstalling with the \s-1BPAN\s0 Installation Script\fR
+.IX Subsection "Installing with the BPAN Installation Script"
+.PP
+You can run this command from any of the above shells to install \s-1BPAN:\s0
+.PP
+.Vb 1
+\&    curl \-Lo\- https://bpan.org/install | bash
+.Ve
+.PP
+The script will try to identify your interactive shell type, and will choose an install location of \f(CW\*(C`$HOME/.bpan/\*(C'\fR.
+.PP
+You can override these like this:
+.PP
+.Vb 2
+\&    curl \-Lo\- https://bpan.org/install |
+\&        BPAN_SHELL=yash BPAN_ROOT=/some/path bash
+.Ve
+.PP
+\fIInstall \s-1BPAN\s0 from its Source Repository\fR
+.IX Subsection "Install BPAN from its Source Repository"
+.PP
+\&\s-1NOTE:\s0 You can replace \f(CW\*(C`$HOME/.bpan\*(C'\fR below with any directory path you wish.
 .IP "1. Clone the \s-1BPAN\s0 repo:" 4
 .IX Item "1. Clone the BPAN repo:"
 .Vb 1

@@ -62,8 +62,37 @@ It does 3 big things for you and your Bash code:
 
 ## Installation
 
+Installing BPAN is simple and everything happens in a single directory on your
+host machine.
+The standard location is `$HOME/.bpan/` but you can change it to anything you
+like.
+
 BPAN, works and is tested under the following shells: `bash`, `zsh`, `fish`,
 `ksh`, `mksh`, `tcsh`, `yash`, `ash`, `dash`, `mrsh`, `posh` and `sh`.
+
+
+### Installing with the BPAN Installation Script
+
+You can run this command from any of the above shells to install BPAN:
+
+```
+curl -Lo- https://bpan.org/install | bash
+```
+
+The script will try to identify your interactive shell type, and will choose an
+install location of `$HOME/.bpan/`.
+
+You can override these like this:
+
+```
+curl -Lo- https://bpan.org/install |
+    BPAN_SHELL=yash BPAN_ROOT=/some/path bash
+```
+
+
+### Install BPAN from its Source Repository
+
+NOTE: You can replace `$HOME/.bpan` below with any directory path you wish.
 
 1. Clone the BPAN repo:
    ```

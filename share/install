@@ -1,0 +1,185 @@
+#!/usr/bin/env bash
+
+
+# [[ ${DEBUG-} ]] && set -x
+shell_re='^(ash|bash|dash|fish|ksh|mksh|mrsh|posh|sh|tcsh|yash|zsh)$'
+
+if [[ -t 1 ]]; then
+  R='\e[31m' G='\e[32m' Y='\e[33m' Z='\e[0m'
+else
+  R='' G='' Y='' Z=''
+fi
+
+shopt -s inherit_errexit 2>/dev/null
+set -e -u -o pipefail
+
+error() {
+  (
+    echo -e "${R}Error: $1"
+    shift
+    printf '       %s\n' "$@"
+    echo -e "$Z"
+    hint
+  ) >&2
+  exit 1
+}
+
+hint() (
+  echo -e "\
+${Y}NOTE: Use these environment variables if you need to:
+
+* BPAN_ROOT - The BPAN installation directory location.
+  * Default is '$HOME/.bpan'.
+* BPAN_SHELL - The interactive shell you are using.
+  * Use this if script can't figure it out.$Z
+"
+)
+
+say() (
+  printf "${Y}o %s\n$Z" "$1"
+)
+
+prompt() {
+  local prompt=${1?}
+  while true; do
+    answer=''
+    printf "%s: " "$prompt"
+    read -r answer </dev/tty
+    [[ $answer ]] || continue
+    if [[ $prompt == *'[yn]'* ]]; then
+      if [[ $answer != y && $answer != n ]]; then
+        continue
+      fi
+    fi
+    return
+  done
+}
+
+[[ $(id -u) != 0 ]] ||
+  error "BPAN doesn't currently install when user is 'root'."
+
+[[ $(command -v git) ]] ||
+  error "Can't install BPAN without 'git'."
+
+[[ ${HOME-} && -d $HOME && -w $HOME ]] ||
+  error "HOME env var not set or not valid."
+
+[[ ${TERM-} ]] ||
+  error "TERM env var not set."
+
+[[ -r /dev/tty ]] ||
+  error "Can't read from tty!"
+
+# Determine BPAN_SHELL:
+# shellcheck disable=2009
+if [[ ! ${BPAN_SHELL-} ]]; then
+  shell=$(
+    ps -axo pid,comm |
+      grep " *${PPID}[ ]" |
+      head -n1
+  ) 2>/dev/null || true
+  shell="${shell#"${shell%%[![:space:]]*}"}"
+  shell=$(cut -d ' ' -f2 <<<"$shell")
+  if [[ $shell =~ $shell_re ]]; then
+    BPAN_SHELL=$shell
+  fi
+fi
+
+if [[ ! ${BPAN_SHELL-} ]]; then
+  error "Can't determine which shell you are using." \
+    "Set the BPAN_SHELL environment variable and try again."
+fi
+
+[[ $BPAN_SHELL =~ $shell_re ]] ||
+  error \
+    "BPAN_SHELL='$BPAN_SHELL' is invalid. Must be set to one of:" \
+    "ash, bash, dash, fish, ksh, mksh, mrsh, posh, sh, tcsh, yash or zsh"
+
+# Determine BPAN_ROOT:
+if [[ ! ${BPAN_ROOT-} && ! -e $HOME/.bpan ]]; then
+  BPAN_ROOT=$HOME/.bpan
+fi
+
+if [[ ${BPAN_ROOT:-} ]]; then
+  if [[ $BPAN_ROOT != /* ]]; then
+    error "BPAN_ROOT='$BPAN_ROOT'" \
+      "BPAN_ROOT must be set to the absolute path of a directory," \
+      "and the directory must not yet exist."
+  fi
+fi
+
+if [[ ! ${BPAN_ROOT-} ]]; then
+  error "Can't determine a value for BPAN install location." \
+    "Set the BPAN_ROOT environment variable and try again."
+fi
+
+echo -e "\
+
+${G}Ready to install BPAN with:$Z
+
+  BPAN_ROOT=$BPAN_ROOT
+  BPAN_SHELL=$BPAN_SHELL
+
+"
+prompt "Continue? [yn]"
+
+echo
+
+[[ $answer == y ]] || {
+  echo -e "$R*** NOT installing BPAN now. ***$Z"
+  echo
+  hint
+  exit 0
+}
+
+echo -e "${G}Installing BPAN now...$Z"
+sleep 1
+
+(
+  set -x
+  git clone -q https://github.com/bpan-org/bpan "$BPAN_ROOT"
+)
+
+case "$BPAN_SHELL" in
+  ash | dash | ksh | mksh | posh | sh)
+    cmd="BPAN_ROOT='$BPAN_ROOT' . $BPAN_ROOT/.rc" ;;
+  mrsh)
+    cmd="BPAN_ROOT='$BPAN_ROOT'; . $BPAN_ROOT/.rc" ;;
+  bash | fish | tcsh | zsh)
+    cmd="source $BPAN_ROOT/.rc" ;;
+  yash)
+    cmd=". $BPAN_ROOT/.rc 2>/dev/null" ;;
+  *)
+    error "*** Unexpected error ***" ;;
+esac
+
+
+
+# XXX Figure out why processing stops after the following:
+
+# # Source the bpan/.rc file to do initial setup of $BPAN_ROOT/config.
+# echo
+# echo "Initializing your BPAN user config file: '$BPAN_ROOT/config'"
+# true && (
+#   eval "set +e +u; $cmd"
+# )
+
+
+
+echo -e "\
+
+$G*** Success! ***$Z
+
+${Y}BPAN is installed in directory:$Z
+
+  $BPAN_ROOT
+
+${Y}Enable the 'bpan' command for the '$BPAN_SHELL' shell with:$Z
+
+  $cmd
+
+${Y}Run the above command now to enable 'bpan' in this shell session.
+Add it to your '$BPAN_SHELL' shell's startup file to enable it for all
+future '$BPAN_SHELL' shell sessions.
+$Z
+"
