@@ -144,13 +144,13 @@ sleep 1
 
 case "$BPAN_SHELL" in
   ash | dash | ksh | mksh | posh | sh)
-    cmd="BPAN_ROOT='$BPAN_ROOT' . $BPAN_ROOT/.rc" ;;
+    cmd="BPAN_ROOT='$BPAN_ROOT' . '$BPAN_ROOT/.rc'" ;;
   mrsh)
-    cmd="BPAN_ROOT='$BPAN_ROOT'; . $BPAN_ROOT/.rc" ;;
+    cmd="BPAN_ROOT='$BPAN_ROOT'; . '$BPAN_ROOT/.rc'" ;;
   bash | fish | tcsh | zsh)
-    cmd="source $BPAN_ROOT/.rc" ;;
+    cmd="source '$BPAN_ROOT/.rc'" ;;
   yash)
-    cmd=". $BPAN_ROOT/.rc 2>/dev/null" ;;
+    cmd=". '$BPAN_ROOT/.rc' 2>/dev/null" ;;
   *)
     error "*** Unexpected error ***" ;;
 esac
