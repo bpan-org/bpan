@@ -1,3 +1,7 @@
+[version "0.1.56"]
+date = Sun Oct 16 10:10:39 PM PDT 2022
+done = Fixes to share/install and Installation doc
+
 [version "0.1.55"]
 date = Sun Oct 16 06:38:27 PM PDT 2022
 done = Add a BPAN installation script 'share/install'
