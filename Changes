@@ -1,3 +1,18 @@
+[version "0.1.55"]
+date = Sun Oct 16 06:38:27 PM PDT 2022
+done = Add a BPAN installation script 'share/install'
+done = Call 'bpan setup' in .rc before tab completion setup
+done = Add bpan:version function to bpan.bash
+done = Refactor bump.bash
+done = Add check for config file in bump.bash
+done = Replace .bpan/lib/config.bash with ini-bash package
+done = Fix bug in 'bpan register' index updater
+done = Support adding different doc files for --bin and --lib
+done = Allow templates to access config values
+done = Fix typo bug in lib/new.bash
+done = Make BPAN_INSTALL = test/local for all tests
+done = Make bpan.bash smaller
+
 [version "0.1.54"]
 date = Fri Oct 14 02:09:26 PM PDT 2022
 done = Assert index.ini before search
