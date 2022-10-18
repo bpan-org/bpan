@@ -33,13 +33,14 @@ getopt() {
   local output
   local rc=0
   output=$(
-    echo "$getopt_parseopt" |
-      git rev-parse --parseopt --stuck-long -- "$@"
+    git rev-parse --parseopt --stuck-long -- "$@" <<<"$getopt_parseopt"
   ) || rc=$?
 
   if [[ $rc -ne 0 ]]; then
     if [[ $output == cat* ]]; then
-      eval "$output" | getopt:pager
+      local pager=${PAGER-}
+      [[ $pager && $pager != less ]] || pager='less -FRX'
+      eval "$output" | $pager
     elif [[ $output ]]; then
       die "Unexpected results from 'git rev-parse --parseopt'"
     fi
@@ -376,10 +377,6 @@ getopt:msg() (
 
 getopt:error() {
   die "[getopt] Error: $1"
-}
-
-getopt:pager() {
-  less -FRX
 }
 
 [[ $0 == "${BASH_SOURCE[0]}" ]] ||
