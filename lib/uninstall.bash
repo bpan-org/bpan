@@ -16,8 +16,6 @@ $app uninstall github:bpan-org/getopt-bash=0.1.0
 )
 
 uninstall:main() (
-  +assert-perl
-
   [[ $# -gt 0 ]] ||
     error "'$app $cmd' requires one or more packages"
 
@@ -41,7 +39,10 @@ uninstall:package() (
 
   cd "$BPAN_INSTALL" || exit
 
-  while read -r link file; do
+  while read -r line; do
+    link=${line%% -> *}
+    link=${link##* }
+    file=${line##* -> }
     [[ $link ]] || continue
     file=${file##*../src/}
     say -w "- Unlink $link -> $file"
@@ -49,8 +50,7 @@ uninstall:package() (
   done <<< "$(
     find bin lib man share -type l -print0 2>/dev/null |
       xargs -r -0 ls -l |
-      grep -F "$path" |
-      perl -pe 's/^.*[0-9] +([a-z].*) +-> +(.*)/$1\t$2/'
+      grep -F "$path"
   )"
   say +w "- Removing package src/$path/"
   rm -fr "src/$path/"
