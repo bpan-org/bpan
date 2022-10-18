@@ -384,3 +384,5 @@ getopt:pager() {
 
 [[ $0 == "${BASH_SOURCE[0]}" ]] ||
   getopt:source "$@"
+
+export -f getopt

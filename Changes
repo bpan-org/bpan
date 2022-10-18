@@ -1,3 +1,10 @@
+[version "0.1.57"]
+date = Tue Oct 18 07:11:47 AM PDT 2022
+done = Fix a bug in bpan:source function
+done = Remove all perl usage in bpan
+done = Quote paths in installer output
+done = Fix doc typo
+
 [version "0.1.56"]
 date = Sun Oct 16 10:10:39 PM PDT 2022
 done = Fixes to share/install and Installation doc

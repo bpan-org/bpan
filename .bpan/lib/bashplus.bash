@@ -4,10 +4,7 @@
 # * Many are improved versions of existing builtins/commands.
 
 
-bashplus:version() (
-  VERSION=0.1.30
-  echo "$VERSION"
-)
+bashplus:version() ( echo '0.1.31' )
 
 
 # Define these first for use within:
