@@ -145,6 +145,7 @@ register:update-bpan-index() (
   fi
   o "Cloned '$fork_repo_url'"
 
+  bpan_index_repo_url=$(ini:get index.bpan.repo-url)
   fork_branch=$package_owner/$package_name
 
   git -C "$index_dir" checkout --quiet -b "$fork_branch"
@@ -186,6 +187,7 @@ register:update-bpan-index() (
 )
 
 register:post-pull-request() (
+  bpan_index_repo_url=$(ini:get index.bpan.repo-url)
   fork_branch=$package_owner/$package_name
   head=$github_id:$fork_branch
   base=main

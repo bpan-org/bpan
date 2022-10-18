@@ -114,7 +114,9 @@ set-env() {
 
   ini:init "${files[@]}"
 
-  export BPAN_INSTALL=${BPAN_INSTALL:-$root/local}
+  BPAN_INSTALL=${BPAN_INSTALL:-$(ini:get install.prefix)}
+  BPAN_INSTALL=${BPAN_INSTALL/\$BPAN_ROOT/$BPAN_ROOT}
+  export BPAN_INSTALL
   if [[ ! -d $BPAN_INSTALL ]]; then
     if [[ $BPAN_INSTALL == $root/local ]]; then
       mkdir -p "$BPAN_INSTALL"
@@ -123,13 +125,10 @@ set-env() {
     fi
   fi
 
+  # TODO Check ini files bpan.api-version.
   BPAN_INDEX_API_VERSION=1
 
-  # TODO add to global config
-  bpan_index_repo_url=https://github.com/bpan-org/bpan-index
-  bpan_index_repo_dir=src/github/bpan-org/bpan-index
   bpan_index_file=$BPAN_INSTALL/index.ini
-  bpan_index_life=5
 }
 
 getopt-cmds-spec() {

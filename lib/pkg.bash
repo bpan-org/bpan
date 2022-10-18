@@ -43,6 +43,9 @@ pkg:parse-id() {
 }
 
 pkg:index-update() (
+  bpan_index_repo_url=$(ini:get index.bpan.repo-url)
+  bpan_index_repo_dir=$(ini:get index.bpan.repo-dir)
+
   if [[ ! -h $bpan_index_file ]]; then
     rm -f "$bpan_index_file"
     mkdir -p "$(dirname "$bpan_index_file")"
@@ -52,7 +55,9 @@ pkg:index-update() (
   fi
 
   if [[ ! -f $bpan_index_file ]]; then
-    git clone --quiet "$bpan_index_repo_url" "$BPAN_INSTALL/$bpan_index_repo_dir"
+    git clone --quiet \
+      "$bpan_index_repo_url" \
+      "$BPAN_INSTALL/$bpan_index_repo_dir"
   fi
 
   if ${force_update:-false} ||
@@ -84,7 +89,8 @@ pkg:index-too-old() (
   [[ -f $head ]] || return 0
   curr_time=$(+time)
   pull_time=$(+mtime "$head")
-  (( curr_time - (bpan_index_life * 60) > pull_time ))
+  minutes=$(ini:get index.bpan.cache-time || echo 5)
+  (( curr_time - (minutes * 60) > pull_time ))
 )
 
 pkg:api-mismatch() {

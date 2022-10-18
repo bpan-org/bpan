@@ -5,8 +5,6 @@ publish:options() (
 )
 
 publish:main() (
-  # XXX asssert jq available
-
   if +in-gha; then
     publish:gha-main "$@"
     return
@@ -123,28 +121,21 @@ $(
 )
 
 publish:post-request() (
-  api_status=$(
-    curl -s https://www.githubstatus.com/api/v2/summary.json |
-      jq -r '.components | .[] | select(.name == "Actions") | .status'
-  )
+  if +is-cmd jq; then
+    api_status=$(
+      curl -s https://www.githubstatus.com/api/v2/summary.json |
+        jq -r '.components | .[] | select(.name == "Actions") | .status'
+    )
 
-  if [[ $api_status != operational ]]; then
-    error "\
-Can't publish. GitHub Actions is not operational.
-status='$api_status'.
-See: https://www.githubstatus.com/"
+    if [[ $api_status != operational ]]; then
+      error "\
+  Can't publish. GitHub Actions is not operational.
+  status='$api_status'.
+  See: https://www.githubstatus.com/"
+    fi
   fi
 
-  bpan_publish_url=https://api.github.com/repos/bpan-org/bpan-index/issues/1/comments
-
-  if [[ ${BPAN_INDEX_REPO_URL-} ]]; then
-    [[ $BPAN_INDEX_REPO_URL == */github.com/* ]] ||
-      error "'BPAN_INDEX_REPO_URL' must be a github repo url"
-    url=${BPAN_INDEX_REPO_URL%/}
-    url=${url/\/github.com\//\/api.github.com\/repos\/}
-    url=$url/issues/1/comments
-    bpan_publish_url=$url
-  fi
+  bpan_publish_url=$(ini:get index.bpan.publish-url)
 
   body=$1
   body=${body//$'"'/\\'"'}
