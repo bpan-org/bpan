@@ -66,7 +66,7 @@ bpan:source() {
   done
 
   dir=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)
-  dir=${dir#.bpan/}
+  dir=${dir%/.bpan}
   if [[ -f $dir/.bpan/lib/$name.bash ]]; then
     source "$dir/.bpan/lib/$name.bash" "$@"
     return
