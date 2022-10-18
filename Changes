@@ -1,3 +1,7 @@
+[version "0.1.59"]
+date = Tue Oct 18 11:58:01 AM PDT 2022
+done = Fix and test 'bpan config' command
+
 [version "0.1.58"]
 date = Tue Oct 18 10:39:28 AM PDT 2022
 done = Update bpan assets
