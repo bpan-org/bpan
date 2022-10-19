@@ -172,7 +172,7 @@ add:assert-config() {
 }
 
 add:set-env() {
-  base=${option_from:-$BPAN_ROOT/share/file}
+  base=${option_from:-$BPAN_ROOT/share/add}
   [[ -d $base ]] || die "'$base' does not exist"
   [[ -f $base/bpan-file.ini ]] ||
     error "'$base' is an invalid BPAN template file directory"
