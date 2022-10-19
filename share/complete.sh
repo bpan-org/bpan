@@ -1,3 +1,5 @@
+# shellcheck shell=bash disable=2207
+
 #FISH
 test -n "$FISH_VERSION" && eval '
 set -l cmds (bpan --complete)
@@ -36,9 +38,9 @@ if type complete &>/dev/null; then
 
 elif type compdef &>/dev/null; then
   _bpan_completion() {
+    # shellcheck disable=2046
     compadd -- $(
-      si=$IFS
-      COMP_CWORD=$((CURRENT-1)) \
+      COMP_CWORD=$((CURRENT - 1)) \
       COMP_LINE=$BUFFER \
       COMP_POINT=0 \
       bpan --complete -- "${words[@]}" \
@@ -49,17 +51,17 @@ elif type compdef &>/dev/null; then
 
 elif type compctl &>/dev/null; then
   _bpan_completion() {
-    local cword line point words si
-    read -rAc words
-    read -rcn cword
-    let cword-=1
-    read -rl line
-    read -rln point
+    # shellcheck disable=2034
     reply=($(
+      read -rAc words
+      read -rcn cword
+      cword=$((cword - 1))
+      read -rl line
+      read -rln point
       IFS=
-      COMP_CWORD="$cword" \
-      COMP_LINE="$line" \
-      COMP_POINT="$point" \
+      COMP_CWORD=$cword \
+      COMP_LINE=$line \
+      COMP_POINT=$point \
       bpan --complete -- "${words[@]}" \
         2>/dev/null
     )) || return
