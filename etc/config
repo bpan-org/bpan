@@ -12,12 +12,14 @@ api-version = 1
 [install]
 prefix = $BPAN_ROOT/local
 
+[index]
+cache-minutes = 5
+
 [index "bpan"]
 repo-url = https://github.com/bpan-org/bpan-index
-repo-dir = src/github/bpan-org/bpan-index
+repo-dir = github/bpan-org/bpan-index
 repo-branch = main
 publish-url = https://api.github.com/repos/bpan-org/bpan-index/issues/1/comments
-cache-time = 5
 
 
 # vim: ft=gitconfig:

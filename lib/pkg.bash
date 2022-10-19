@@ -44,7 +44,7 @@ pkg:parse-id() {
 
 pkg:index-update() (
   bpan_index_repo_url=$(ini:get index.bpan.repo-url)
-  bpan_index_repo_dir=$(ini:get index.bpan.repo-dir)
+  bpan_index_repo_dir=src/$(ini:get index.bpan.repo-dir)
 
   if [[ ! -h $bpan_index_file ]]; then
     rm -f "$bpan_index_file"
@@ -89,7 +89,7 @@ pkg:index-too-old() (
   [[ -f $head ]] || return 0
   curr_time=$(+time)
   pull_time=$(+mtime "$head")
-  minutes=$(ini:get index.bpan.cache-time || echo 5)
+  minutes=$(ini:get index.cache-minutes || echo 5)
   (( curr_time - (minutes * 60) > pull_time ))
 )
 
