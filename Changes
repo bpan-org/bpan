@@ -1,3 +1,11 @@
+[version "0.1.61"]
+date = Thu Oct 20 02:06:33 PM PDT 2022
+done = Change all '$BPAN_ROOT' usage to '$root'
+done = Set up ini:get to subst $BPAN_ROOT in values
+done = Rename share/file/ to share/add/
+done = Test shellcheck can check 'sh' as well as 'bash'
+done = Rename a couple config keys
+
 [version "0.1.60"]
 date = Tue Oct 18 03:07:29 PM PDT 2022
 done = Fix self-locating bug in bpan.bash
