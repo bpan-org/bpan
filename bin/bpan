@@ -113,9 +113,9 @@ set-env() {
   fi
 
   ini:init "${files[@]}"
+  ini:vars BPAN_ROOT BPAN_SHELL
 
   BPAN_INSTALL=${BPAN_INSTALL:-$(ini:get install.prefix)}
-  BPAN_INSTALL=${BPAN_INSTALL/\$BPAN_ROOT/$BPAN_ROOT}
   export BPAN_INSTALL
   if [[ ! -d $BPAN_INSTALL ]]; then
     if [[ $BPAN_INSTALL == $root/local ]]; then

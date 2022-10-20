@@ -1,12 +1,19 @@
+ini:version() ( echo "0.1.2" )
+
 ini:init() {
   __ini_files=("$@")
   __ini_from=''
   __ini_data=''
+  __ini_vars=()
   ini:data
 }
 
 ini:files() {
   ini:init "$@"
+}
+
+ini:vars() {
+  __ini_vars=("$@")
 }
 
 ini:get() (
@@ -17,10 +24,17 @@ ini:get() (
   for key in "${args[@]}"; do
     if value=$(git config -f- "$key" <<<"$__ini_data"); then
       i=0
-      while [[ $value =~ \$([.a-z0-9]+) ]]; do
-        repl=$(git config -f- "${BASH_REMATCH[1]}" <<<"$__ini_data") ||
-          ini:die "Can't expand ini value '$key'"
-        value=${value//\$${BASH_REMATCH[1]}/$repl}
+      while [[ $value =~ \$([-_.a-zA-Z0-9]+) ]]; do
+        var=${BASH_REMATCH[1]}
+        val=$(git config -f- "$var" <<<"$__ini_data" 2>/dev/null || true)
+        if [[ ! $val &&
+              " ${__ini_vars[*]} " == *" $var "*
+        ]]; then
+          val=${!var-}
+        fi
+        [[ $val ]] ||
+          ini:die "Can't expand ini value '$key=$value'"
+        value=${value//\$$var/$val}
         [[ $((i++)) -lt 10 ]] ||
           ini:die "Possible infinite recursion in ini value '$key'"
       done

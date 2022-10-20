@@ -21,5 +21,8 @@ repo-dir = github/bpan-org/bpan-index
 repo-branch = main
 publish-url = https://api.github.com/repos/bpan-org/bpan-index/issues/1/comments
 
+[template]
+add = $BPAN_ROOT/share/add
+
 
 # vim: ft=gitconfig:
