@@ -1,6 +1,7 @@
 register:main() (
   source-once pkg
   pkg:index-update --force
+  pkg:config-vars
 
   say -y "Check Package is Ready to Register"
   register:preflight
@@ -132,8 +133,8 @@ register:update-bpan-index() (
   do
     mkdir -p "$index_dir"
     if ! $forked; then
-      +post https://api.github.com/repos/bpan-org/bpan-index/forks >/dev/null
-      o "Forked https://github.com/bpan-org/bpan-index"
+      +post "$bpan_index_api_url/forks" >/dev/null
+      o "Forked $bpan_index_repo_url"
       forked=true
     fi
     say -y "  * Waiting for fork to be ready to clone..."
@@ -145,7 +146,6 @@ register:update-bpan-index() (
   fi
   o "Cloned '$fork_repo_url'"
 
-  bpan_index_repo_url=$(ini:get index.bpan.repo-url)
   fork_branch=$package_owner/$package_name
 
   git -C "$index_dir" checkout --quiet -b "$fork_branch"
@@ -187,7 +187,6 @@ register:update-bpan-index() (
 )
 
 register:post-pull-request() (
-  bpan_index_repo_url=$(ini:get index.bpan.repo-url)
   fork_branch=$package_owner/$package_name
   head=$github_id:$fork_branch
   base=main
@@ -218,7 +217,7 @@ Please add this new package to the \
 
   response=$(
     +post \
-      https://api.github.com/repos/bpan-org/bpan-index/pulls \
+      "$bpan_index_api_url/pulls" \
       "$json"
   )
 

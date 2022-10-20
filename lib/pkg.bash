@@ -42,9 +42,20 @@ pkg:parse-id() {
   src=$BPAN_INSTALL/src/$domain/$owner/$name/$ver
 }
 
-pkg:index-update() (
+pkg:config-vars() {
   bpan_index_repo_url=$(ini:get index.bpan.repo-url)
-  bpan_index_repo_dir=src/$(ini:get index.bpan.repo-dir)
+  [[ $bpan_index_repo_url =~
+     ^https://github.com/([-a-zA-Z0-9]+/[-a-zA-Z0-9]+)$ ]] ||
+    error "Invalid config value 'index.bpan.repo-url'='$bpan_index_repo_url'"
+  local repo=${BASH_REMATCH[1]}
+  bpan_index_repo_dir=src/github/$repo
+  bpan_index_api_url=https://api.github.com/repos/$repo
+  local n=$(ini:get index.bpan.publish-issue-num)
+  bpan_index_publish_url=https://api.github.com/repos/$repo/issues/$n/comments
+}
+
+pkg:index-update() (
+  pkg:config-vars
 
   if [[ ! -h $bpan_index_file ]]; then
     rm -f "$bpan_index_file"

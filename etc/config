@@ -17,9 +17,8 @@ cache-minutes = 5
 
 [index "bpan"]
 repo-url = https://github.com/bpan-org/bpan-index
-repo-dir = github/bpan-org/bpan-index
 repo-branch = main
-publish-url = https://api.github.com/repos/bpan-org/bpan-index/issues/1/comments
+publish-issue-num = 1
 
 [template]
 add = $BPAN_ROOT/share/add
