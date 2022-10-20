@@ -28,7 +28,7 @@ update:main() (
 )
 
 update:list() (
-  cd "$BPAN_ROOT/share/add" || exit
+  cd "$root/share/add" || exit
   find . -type l |
     +sort |
     cut -c3-
@@ -45,7 +45,7 @@ update:files() (
     if [[ $file == *\ * ]]; then
       IFS=' ' read -r to from <<<"$file"
     else
-      from=$BPAN_ROOT/share/add/$file
+      from=$root/share/add/$file
       to=$file
     fi
 

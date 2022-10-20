@@ -28,7 +28,7 @@ publish:get-env() {
 
   token=$(ini:get github.token) || true
   if [[ -z $token || $token == ___ ]]; then
-    error "Missing or invalid github.token in $BPAN_ROOT/config"
+    error "Missing or invalid github.token in $root/config"
   fi
 
   local url

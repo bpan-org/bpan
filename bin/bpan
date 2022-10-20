@@ -98,11 +98,11 @@ set-env() {
   [[ -f $root/bin/$app ]] ||
     error "BPAN_ROOT variable has bad value '$root'"
 
-  local files=("$BPAN_ROOT/etc/config")
+  local files=("$root/etc/config")
   local dir
 
-  if [[ -f $BPAN_ROOT/config ]]; then
-    files+=("$BPAN_ROOT/config")
+  if [[ -f $root/config ]]; then
+    files+=("$root/config")
   fi
 
   if git:in-repo . &&

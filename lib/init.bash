@@ -131,7 +131,7 @@ init:main() (
     add:config
 
   ini:init \
-    "$BPAN_ROOT/config" \
+    "$root/config" \
     "$(pwd)/.bpan/config"
 
   while read -r file; do

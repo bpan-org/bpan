@@ -1,8 +1,8 @@
 upgrade:main() (
-  cd "$BPAN_ROOT" || exit
+  cd "$root" || exit
 
   if git:is-dirty; then
-    error "Can't upgrade, '$BPAN_ROOT' git repo has uncommitted changes"
+    error "Can't upgrade, '$root' git repo has uncommitted changes"
   fi
 
   repo=$(git config remote.origin.url) ||
@@ -12,17 +12,17 @@ upgrade:main() (
   branch=$(git rev-parse --abbrev-ref HEAD) ||
     die "Can't determine bpan branch"
   [[ $branch == main ]] ||
-    error "'$BPAN_ROOT' must be on branch 'main' to 'bpan upgrade'"
+    error "'$root' must be on branch 'main' to 'bpan upgrade'"
 
-  say -y "Pulling '$repo' in '$BPAN_ROOT'..."
+  say -y "Pulling '$repo' in '$root'..."
 
   git pull --quiet --ff-only origin "$branch" ||
-    error "Could not git pull '$BPAN_ROOT'"
+    error "Could not git pull '$root'"
 
   if [[ $(git rev-parse HEAD) == "$commit" ]]; then
     say -y "No upstream changes found"
   else
-    say -y "Pulled new changes to '$BPAN_ROOT'"
+    say -y "Pulled new changes to '$root'"
   fi
 
   say-y "Updating BPAN index file..."

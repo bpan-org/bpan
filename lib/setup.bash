@@ -1,9 +1,9 @@
 setup:main() (
-  config=$BPAN_ROOT/config
-  local_dir=$BPAN_ROOT/local
+  config=$root/config
+  local_dir=$root/local
 
   (
-    ini:init "$BPAN_ROOT/.bpan/config"
+    ini:init "$root/.bpan/config"
     bpan:require-commands ||
       warn "Please install missing BPAN requirements above"
   )
@@ -20,7 +20,7 @@ setup:main() (
 )
 
 setup:new-config-file() (
-  conf_file=$BPAN_ROOT/config
+  conf_file=$root/config
 
   if [[ -f $conf_file ]] &&
      ! $option_force
@@ -30,9 +30,9 @@ setup:new-config-file() (
 
   source-once add
 
-  touch "$BPAN_ROOT/config"
+  touch "$root/config"
 
   option_quiet=true
 
-  add:file-copy "$BPAN_ROOT/share/setup/config" "$BPAN_ROOT/config"
+  add:file-copy "$root/share/setup/config" "$root/config"
 )

@@ -24,7 +24,7 @@ config:main() (
     opts+=(--file="$(git:top-dir)"/.bpan/config)
   elif $option_global; then
     git:assert-in-repo
-    opts+=(--file="$BPAN_ROOT"/config)
+    opts+=(--file="$root"/config)
   fi
 
   if $option_list; then

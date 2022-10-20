@@ -167,12 +167,12 @@ add:assert-config() {
     error "Config file '.bpan/config' not found. Try '--config'."
 
   ini:init \
-    "$BPAN_ROOT/config" \
+    "$root/config" \
     "$(pwd)/.bpan/config"
 }
 
 add:set-env() {
-  base=${option_from:-$BPAN_ROOT/share/add}
+  base=${option_from:-$root/share/add}
   [[ -d $base ]] || die "'$base' does not exist"
   [[ -f $base/bpan-file.ini ]] ||
     error "'$base' is an invalid BPAN template file directory"
