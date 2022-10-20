@@ -263,8 +263,8 @@ Please add this new package to the \
       "$url"
   )
 
-  if grep -q '^  "errors":' <<<"$response"; then
-    msg=$(grep '^      "message":' <<<"$response" || true)
+  if grep -q '^ \+"errors":' <<<"$response"; then
+    msg=$(grep '^ \+"message":' <<<"$response" || true)
     if [[ $msg ]]; then
       msg=$(
         echo "$msg" |
@@ -272,7 +272,7 @@ Please add this new package to the \
           cut -d'"' -f4
       )
     fi
-    error "${msg:-"Unknown error for 'curl $url'"}"
+    error "${msg:-"Unknown error for 'curl $url'"}" "$response"
   fi
 
   echo "$response"
