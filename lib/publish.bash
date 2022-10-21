@@ -291,7 +291,7 @@ publish:gha-update-index() (
   git config user.email "update-index@bpan.org"
   git config user.name "BPAN Update Index"
 
-  git commit -a -m "Update $package=$version"
+  git commit -a -m "Publish $package=$version"
 
   git diff HEAD^
 

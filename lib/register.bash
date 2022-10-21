@@ -180,7 +180,7 @@ register:update-bpan-index() (
   )
 
   git -C "$index_dir" commit --quiet --all \
-    --message="Add github:$fork_branch=$package_version"
+    --message="Register github:$fork_branch=$package_version"
   o "Committed the new index entry to the bpan-index fork"
 
   git -C "$index_dir" push --quiet --force origin "$fork_branch" &>/dev/null
