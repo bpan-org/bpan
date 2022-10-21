@@ -25,9 +25,9 @@ register:main() (
 
 register:preflight() {
   token=$(ini:get github.token) || true
-  [[ $token =~ ^ghp_[a-zA-Z0-9]{36}$ ]] ||
+  [[ $token =~ [a-zA-Z0-9]{36} ]] ||
     error "Your configured 'github.token' does not seem valid"
-  o "GitHub token tooks ok"
+  o "GitHub token looks ok"
 
   git:in-repo ||
     error "Not in a git repo directory"
