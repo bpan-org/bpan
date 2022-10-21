@@ -10,6 +10,9 @@ publish:main() (
     return
   fi
 
+  source-once pkg
+  pkg:config-vars
+
   publish:get-env
 
   publish:check-publish
@@ -74,6 +77,11 @@ publish:check-publish() (
     error "Can't publish '$package'. Not a package."
   fi
 
+  [[ $( ini:list --file=$bpan_index_file | grep "^package\.$package\.") ]] ||
+    error \
+      "Can't publish '$package'." \
+      "Not yet registered. Try 'bpan register'."
+
   say -y "Running tests"
   bpan test
   echo
@@ -135,8 +143,6 @@ publish:post-request() (
     fi
   fi
 
-  bpan_publish_url=$(ini:get index.bpan.publish-url)
-
   body=$1
   body=${body//$'"'/\\'"'}
   body=${body//$'\n'/\\n}
@@ -160,7 +166,7 @@ publish:post-request() (
       --header "Accept: application/vnd.github+json" \
       --header "Authorization: Bearer $token" \
       --data "$data" \
-      "$bpan_publish_url" |
+      "$bpan_index_publish_url" |
     grep '"html_url"' |
     head -n1 |
     cut -d'"' -f4
