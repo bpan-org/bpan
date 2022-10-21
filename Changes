@@ -1,3 +1,16 @@
+[version "0.1.62"]
+date = Fri Oct 21 11:15:41 AM PDT 2022
+done = Change index commit messages to Register... and Publish...
+done = Make github token validity check more lenient
+done = Refactor bump and publish
+done = Add default version lines in bin and lib templates
+done = Fix version bug in register index entry
+done = Check if package already published before publishing
+done = Check if package is registered before publishing
+done = Get url info from configs
+done = Get index urls from config file
+done = Fix error reporting in lib/register.bash
+
 [version "0.1.61"]
 date = Thu Oct 20 02:06:33 PM PDT 2022
 done = Change all '$BPAN_ROOT' usage to '$root'
