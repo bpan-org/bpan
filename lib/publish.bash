@@ -11,6 +11,7 @@ publish:main() (
   fi
 
   source-once pkg
+  pkg:index-update
   pkg:config-vars
 
   publish:get-env
@@ -77,10 +78,15 @@ publish:check-publish() (
     error "Can't publish '$package'. Not a package."
   fi
 
-  [[ $( ini:list --file=$bpan_index_file | grep "^package\.$package\.") ]] ||
-    error \
-      "Can't publish '$package'." \
-      "Not yet registered. Try 'bpan register'."
+  ini:list --file="$bpan_index_file" |
+    grep -q "^package\.$package\." ||
+      error \
+        "Can't publish '$package'." \
+        "Not yet registered. Try 'bpan register'."
+
+  ini:get --file="$bpan_index_file" \
+    package."$package".v"${version//./-}" >/dev/null &&
+      error "$package version '$version' already published"
 
   say -y "Running tests"
   bpan test
