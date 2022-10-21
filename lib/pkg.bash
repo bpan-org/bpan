@@ -66,7 +66,7 @@ pkg:index-update() (
       "$bpan_index_file"
   fi
 
-  if [[ ! -f $bpan_index_file ]]; then
+  if [[ ! -f $bpan_index_repo_dir/index.ini ]]; then
     git clone --quiet \
       "$bpan_index_repo_url" \
       "$BPAN_INSTALL/$bpan_index_repo_dir"
