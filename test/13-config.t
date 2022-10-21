@@ -2,8 +2,7 @@
 
 source test/init
 
-is "$(bpan config index.bpan.repo-url)" \
-  https://github.com/bpan-org/bpan-index \
+is "$(bpan config bpan.api-version)" 1 \
   "Can read a value from bpan system config"
 
 try 'bpan config --list | wc -l'

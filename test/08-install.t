@@ -56,8 +56,8 @@ test-install-teardown() (
           find . \
             -mindepth 1 \
             -type f \
-            -not -path './src/github/bpan-org/bpan-index/*' \
-            -not -path './src/github/bpan-org/getopt-bash/.git/*'
+            -not -path './src/github/*/bpan-index/*' \
+            -not -path './src/github/*/getopt-bash/.git/*'
       )" \
     "" \
     "Install directory is empty"
