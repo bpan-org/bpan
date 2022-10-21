@@ -20,47 +20,57 @@ bump:main() (
   old_version=$(bump:old-version)
   new_version=$(bump:new-version)
 
-  bump:check-sanity
+  change_list=$(bump:change-list)
 
-  say -y "Bumping to version '$new_version'"
-  bump:update-config-file
-  bump:update-changes-file
-  bump:update-version-vars
+  if [[ ! $change_list ]]; then
+    if $option_push; then
+      say -y "No changes. Not bumping version."
+    else
+      error "No changes commited since version '$old_version'"
+    fi
 
-  say -y "Running 'bpan update'"
-  $bpan update
+  else
+    bump:check-sanity || return 0
 
-  say -y "Running 'bpan test'"
-  $bpan test
+    say -y "Bumping to version '$new_version'"
+    bump:update-config-file
+    bump:update-changes-file
+    bump:update-version-vars
 
-  if $option_dryrun; then
+    say -y "Running 'bpan update'"
+    $bpan update
+
+    say -y "Running 'bpan test'"
+    $bpan test
+
+    if $option_dryrun; then
+      echo
+      say -y "*** DRYRUN BUMP COMPLETE ***"
+      return
+    fi
+
+    git commit -q -a -m "Version $new_version"
+
+    commit=$(git:commit-sha)
+    say -y "Changes committed '${commit:0:8}'"
+
+    git tag "$new_version"
+    say -y "Commit tagged as '$new_version'"
+
+    say -g "Version bump complete"
     echo
-    say -y "*** DRYRUN BUMP COMPLETE ***"
-    return
+
+    [[ $old_version == 0.0.0 ]] \
+      && rev_list="..$new_version" \
+      || rev_list="$old_version^..$new_version"
+
+    say -y Commits:
+    git log --pretty=oneline "$rev_list"
   fi
-
-  git commit -q -a -m "Version $new_version"
-
-  commit=$(git:commit-sha)
-  say -y "Changes committed '${commit:0:8}'"
-
-  git tag "$new_version"
-  say -y "Commit tagged as '$new_version'"
 
   if $option_push; then
     bump:push
   fi
-
-  say -g "Version bump complete"
-
-  echo
-
-  [[ $old_version == 0.0.0 ]] \
-    && rev_list="..$new_version" \
-    || rev_list="$old_version^..$new_version"
-
-  say -y Commits:
-  git log --pretty=oneline "$rev_list"
 
   name=$(ini:get --file=.bpan/config package.name)
   if $option_publish && [[ $name != bpan ]]; then
@@ -70,6 +80,7 @@ bump:main() (
 )
 
 bump:check-sanity() (
+  pushed=false
   git:in-top-dir ||
     error "'$app $cmd' must be at repo toplevel"
   git:is-clean ||
@@ -87,9 +98,7 @@ bump:check-sanity() (
   git:tag-exists "$new_version" &&
     error "Can't bump. Tag '$new_version' already exists."
 
-  list=$(bump:change-list)
-
-  grep -q -i '^done = wip\>' <<<"$list" &&
+  grep -q -i '^done = wip\>' <<<"$change_list" &&
     error "Can't '$app $cmd' with WIP commits"
 
   if $option_push; then
@@ -99,14 +108,6 @@ bump:check-sanity() (
     publish_branch=$(ini:get --file=.bpan/config package.branch || echo main)
     [[ $branch == "$publish_branch" ]] ||
       error "Can't push. Current branch is not '$publish_branch'"
-  fi
-
-  if ! [[ $list ]]; then
-    if $option_push; then
-      bump:push
-      return
-    fi
-    error "No changes commited since version '$old_version'"
   fi
 )
 

@@ -52,7 +52,8 @@ git:is-repo() (
 )
 
 git:sha1() (
-  git rev-parse "${1?}" 2>/dev/null || die
+  git rev-parse "${1?}" 2>/dev/null ||
+    die "Can't get commit sha1 for git ref '$1'"
 )
 
 git:subject-lines() (

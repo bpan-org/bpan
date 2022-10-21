@@ -11,7 +11,7 @@ publish:main() (
   fi
 
   source-once pkg
-  pkg:index-update
+  pkg:index-update --force
   pkg:config-vars
 
   publish:get-env
@@ -37,7 +37,8 @@ publish:get-env() {
 
   local url
   url=$(git config remote.origin.url) ||
-    error "Can't find 'remote.origin.url' in .git/config"
+    error "Can't find 'remote.origin.url' in .git/config" \
+          "Did you forget to make an upstream repo for this package?"
 
   local regex='^git@github.com:(.+)/(.+)$'
   [[ $url =~ $regex ]] ||
@@ -51,6 +52,10 @@ publish:get-env() {
 
   version=$(ini:get package.version) ||
     error "Can't find 'package.version' in .bpan/config"
+
+  [[ $version != 0.0.0 ]] ||
+    error "Can't publish version '0.0.0'." \
+          "Try 'bpan bump'."
 
   commit=$(git:sha1 "$version")
 
