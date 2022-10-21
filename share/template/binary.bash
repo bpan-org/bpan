@@ -2,6 +2,8 @@
 
 # This is a template Bash/BPAN bin script to get you started.
 
+VERSION='0.0.0'
+
 # Locating our project root directory is the first step to bootstrap.
 root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)
 
@@ -38,7 +40,7 @@ main() (
   # getopt "$@"
   # set -- "${args[@]}"
 
-  (% name %):run "$@"
+  (% name %):main "$@"
 )
 
 main "$@"
