@@ -88,7 +88,8 @@ register:preflight() {
   [[ $package_version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] ||
     error "Config package.version '$package_version' does not match '#.#.#'"
   [[ $package_version != 0.0.0 ]] ||
-    error "Can't register package with version '0.0.0'"
+    error "Can't register package with version '0.0.0'." \
+          "Try 'bpan bump'."
   o "Package version '$package_version' looks ok"
 
   git:tag-exists "$package_version" ||
@@ -286,6 +287,7 @@ register:config() (
 )
 
 register:new-index-entry() (
+  package_version_key=${package_version//./-}
   entry=$(< "$root/share/template/index-entry.ini")
   while [[ $entry =~ \(%\ ([^%]*)\ %\) ]]; do
     prev=$entry
