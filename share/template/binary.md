@@ -3,6 +3,7 @@
   You'll need to edit it to refelect your desired content.
   You can safely remove these HTML comments.
 -->
+
 (% markdown-title %)
 
 Your tagline for '(% pkg %)'
@@ -23,10 +24,11 @@ Your tagline for '(% pkg %)'
   bpan install (% pkg %)
   ```
 
-<!-- Note to author:
-  This section only applies if you have a `.rc` file,
-  otherwise remove this section.
--->
+  <!-- Note to author:
+    This section only applies if you have a `.rc` file,
+    otherwise remove this section.
+  -->
+
 * From source:
   ```
   git clone (% config:package.repo %) /path/to/(% pkg %)
