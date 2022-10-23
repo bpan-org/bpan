@@ -1,3 +1,14 @@
+[version "0.1.63"]
+date = Sun Oct 23 01:02:11 PM PDT 2022
+done = Small change to getopt spec usage line
+done = Fix bug in register from refactoring
+done = Refactor pkg.bash parse var names
+done = Remove vim config lines from config files
+done = Fix a bug with index updating
+done = Move non-command libs under lib/bpan/
+done = Remove use of non-portable 'manpath' command
+done = Fix bug with 'bpan config --global'
+
 [version "0.1.62"]
 date = Fri Oct 21 11:15:41 AM PDT 2022
 done = Change index commit messages to Register... and Publish...
