@@ -48,5 +48,3 @@ file = ReadMe.md doc/bpan.md
 file = test/init
 file = test/00-shellcheck.t
 man1 = doc/bpan.md
-
-# vim: ft=gitconfig:
