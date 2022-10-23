@@ -27,6 +27,6 @@ upgrade:main() (
 
   say-y "Updating BPAN index file..."
   rm -f "$bpan_index_file"
-  source lib/pkg.bash
+  source-once bpan/pkg
   pkg:index-update
 )

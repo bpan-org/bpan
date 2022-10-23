@@ -108,7 +108,7 @@ add:main() (
   fi
 
   if [[ $option_count_pkg -gt 0 ]]; then
-    source-once pkg
+    source-once bpan/pkg
     add:assert-config
     for pkg in "${option_pkg[@]}"; do
       pkg:parse-id "$pkg"
@@ -317,7 +317,7 @@ add:file-copy() (
 )
 
 add:file-render() (
-  source-once env
+  source-once bpan/env
 
   text=$(< "$1")
 

@@ -167,7 +167,7 @@ $help
 }
 
 source-once() {
-  local var=_sourced_$1
+  local var=_sourced_${1//\//_}
   if [[ -z ${!var-} ]]; then
     source "$root/lib/$1.bash"
     printf -v "$var" 1

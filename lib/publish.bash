@@ -10,7 +10,7 @@ publish:main() (
     return
   fi
 
-  source-once pkg
+  source-once bpan/pkg
   pkg:index-update --force
   pkg:config-vars
 

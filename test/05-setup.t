@@ -7,11 +7,8 @@ root=$(pwd -P)/test/bpan
 rm -fr "$root"
 
 git clone -q .git "$root"
-cp \
-  lib/add.bash \
-  lib/env.bash \
-  lib/setup.bash \
-  "$root"/lib/
+find .bpan bin lib |
+  cpio -dump "$root" &>/dev/null
 
 try "set +eu; source '$root/.rc'"
 is "$got" "" \
