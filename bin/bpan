@@ -22,7 +22,7 @@ getopt_default=--help
 getopt_cmds_find=true
 getopt_cmds_spec=getopt-cmds-spec
 
-$app [<options>] <cmd> [<cmd-opts...>] [<cmd-args>]
+$app [<opt...>] <cmd> [<cmd-opt...>] [<cmd-arg...>]
 $app <cmd> --help
 
 System Commands:

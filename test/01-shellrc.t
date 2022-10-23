@@ -16,7 +16,7 @@ test() {
         "$@" \
         -c "$source ./.rc && bpan | head -n1"
     )" \
-      'usage: bpan [<options>] <cmd> [<cmd-opts...>] [<cmd-args>]' \
+      'usage: bpan [<opt...>] <cmd> [<cmd-opt...>] [<cmd-arg...>]' \
       "bpan works for $shell"
 
   else
