@@ -83,15 +83,15 @@ update:require() (
 
     pkg:parse-id+ "$pkg"
 
-    if ! [[ -d $src ]]; then
-      say -y "INSTALL $owner/$name $ver"
+    if ! [[ -d $pkg_src ]]; then
+      say -y "INSTALL $pkg_owner/$pkg_name $pkg_version"
       install:main "$pkg"
     fi
 
     option_index=false
     pkg:parse-id "$pkg"
-    if [[ ! $ver ]]; then
-      src+=$(pkg:get-version "$full")
+    if [[ ! $pkg_version ]]; then
+      pkg_src+=$(pkg:get-version "$pkg_id")
     fi
 
     while read -r file; do
@@ -119,7 +119,7 @@ update:require() (
         say-y "CURRENT '$to'"
       fi
     done < <(
-      cd "$src" || exit
+      cd "$pkg_src" || exit
       find bin lib share -type f 2>/dev/null || true
     )
 

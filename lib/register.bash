@@ -53,17 +53,17 @@ register:preflight() {
   else
     error "'$remote_url' is not in a recognized format"
   fi
-  package_full_name=github:$remote_owner_repo
-  o "BPAN package full name is '$package_full_name'"
+  package_id=github:$remote_owner_repo
+  o "BPAN package full name is '$package_id'"
   package_owner=${remote_owner_repo%%/*}
   o "BPAN package owner is '$package_owner'"
   package_repo=${remote_owner_repo#*/}
   o "BPAN package repo is '$package_repo'"
 
-  if grep -q '^\[package "'"$package_full_name"'"\]' "$bpan_index_file"; then
-    error "Package '$package_full_name' is already registered"
+  if grep -q '^\[package "'"$package_id"'"\]' "$bpan_index_file"; then
+    error "Package '$package_id' is already registered"
   fi
-  o "Package '$package_full_name' is not already registered"
+  o "Package '$package_id' is not already registered"
 
   github_id=$(register:config owner.github) ||
     error "Config has no owner.github id field"
@@ -191,7 +191,7 @@ register:post-pull-request() (
   fork_branch=$package_owner/$package_name
   head=$github_id:$fork_branch
   base=main
-  title="Register BPAN Package $package_full_name"
+  title="Register BPAN Package $package_id"
   body=$(+json-escape "\
 Please add this new package to the \
 [BPAN Index]($bpan_index_repo_url/blob/main/index.ini):

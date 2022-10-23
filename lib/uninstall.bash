@@ -23,8 +23,8 @@ uninstall:main() (
 
   for target do
     pkg:parse-id "$target"
-    path=$domain/$owner/$name/$ver
-    name=$full=$ver
+    path=$pkg_host/$pkg_owner/$pkg_name/$pkg_version
+    name=$pkg_id=$pkg_version
     if [[ -d $BPAN_INSTALL/src/$path ]]; then
       say-y "Uninstalling '$name':"
       uninstall:package "$path" "$name"

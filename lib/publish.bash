@@ -241,7 +241,9 @@ publish:gha-check-publish() {
     die "Package '$package' has no '.bpan/config' file"
 
   : "Check new version is greater than indexed one"
-  indexed_version=$(git config -f "$bpan_index_file" "package.$package.version")
+  indexed_version=$(
+    git config -f "$bpan_index_file" "package.$package.version"
+  )
   if [[ ${BPAN_INDEX_UPDATE_TESTING-} ]]; then
     +version-gt "$test_version" "$indexed_version" ||
       die "'$package' version '$version' not greater than '$indexed_version'"

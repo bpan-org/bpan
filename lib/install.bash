@@ -32,9 +32,9 @@ install:main() (
   for id do
     pkg:parse-id+ "$id"
 
-    base=${src%/*}
+    base=${pkg_src%/*}
     if [[ -d $base ]]; then
-      if [[ ! -d $src ]]; then
+      if [[ ! -d $pkg_src ]]; then
         (
           say -y "Fetch $base"
           $option_verbose && set -x
@@ -47,22 +47,22 @@ install:main() (
     else
       mkdir -p "$(dirname "$base")"
       (
-        say -y "Clone $repo -> $base"
+        say -y "Clone $pkg_repo -> $base"
         $option_verbose && set -x
 
         GIT_TERMINAL_PROMPT=0 git clone \
           --quiet \
           --no-checkout \
-          "$repo" "$base" 2>/dev/null
-      ) || error "Can't 'git clone $repo'"
+          "$pkg_repo" "$base" 2>/dev/null
+      ) || error "Can't 'git clone $pkg_repo'"
     fi
 
-    if [[ ! -d $src ]]; then
-      git -C "$base" worktree add --force --quiet "$src" "$ver" ||
-        error "Can't add git worktree for '$full=$var'"
-      if [[ $(git -C "$src" rev-parse HEAD) != "$commit" ]]; then
-        rm -fr "$src"
-        error "Bad commit: package '$full' version '$ver' commit '$commit'"
+    if [[ ! -d $pkg_src ]]; then
+      git -C "$base" worktree add --force --quiet "$pkg_src" "$pkg_version" ||
+        error "Can't add git worktree for '$pkg_id=$var'"
+      if [[ $(git -C "$pkg_src" rev-parse HEAD) != "$pkg_commit" ]]; then
+        rm -fr "$pkg_src"
+        error "Bad commit: package '$pkg_id' version '$pkg_version' commit '$pkg_commit'"
       fi
     fi
 
@@ -75,8 +75,7 @@ install:main() (
         for (( i = 1; i < n; i++ )); do prefix+=/..; done
 
         link=$BPAN_INSTALL/$file
-        target=src/$owner/$name/$ver/$file
-        target=src/$domain/$owner/$name/$ver/$file
+        target=src/$pkg_host/$pkg_owner/$pkg_name/$pkg_version/$file
         if [[ ! -f $link ]] ||
            [[ $(readlink "$link") != $prefix/$target ]]
         then
@@ -88,7 +87,7 @@ install:main() (
           )
         fi
       done < <(
-        cd "$src" || exit
+        cd "$pkg_src" || exit
         find bin lib man share -type f 2>/dev/null || true
       )
     )

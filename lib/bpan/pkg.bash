@@ -1,21 +1,27 @@
 pkg:parse-id+() {
-  commit=''
+  pkg_commit=''
 
   local id=$1
 
   pkg:parse-id "$id"
 
-  if [[ ! $ver ]]; then
-    ver=$(pkg:get-version "$full")
+  if [[ ! $pkg_version ]]; then
+    pkg_version=$(pkg:get-version "$pkg_id")
   fi
 
-  commit=$(pkg:get-commit "$full" "$ver")
+  pkg_commit=$(pkg:get-commit "$pkg_id" "$pkg_version")
 
-  src=$BPAN_INSTALL/src/$domain/$owner/$name/$ver
+  pkg_src=$BPAN_INSTALL/src/$pkg_host/$pkg_owner/$pkg_name/$pkg_version
 }
 
 pkg:parse-id() {
-  name='' owner='' domain='' ver='' full='' src='' repo=''
+  pkg_name=''
+  pkg_owner=''
+  pkg_domain=''
+  pkg_version=''
+  pkg_id=''
+  pkg_src=''
+  pkg_repo=''
 
   local id=$1
   local w='[-a-zA-Z0-9_]'
@@ -24,22 +30,22 @@ pkg:parse-id() {
   [[ $id =~ ^($w+:)?($w+/)?($w+)(=$v+)?$ ]] ||
     error "Invalid package id '$id'"
 
-  domain=${BASH_REMATCH[1]:-github}
-  domain=${domain%:}
-  owner=${BASH_REMATCH[2]:-bpan-org}
-  owner=${owner%/}
-  name=${BASH_REMATCH[3]}
-  ver=${BASH_REMATCH[4]:-''}
-  ver=${ver#=}
-  full=$domain:$owner/$name
+  pkg_host=${BASH_REMATCH[1]:-github}
+  pkg_host=${pkg_host%:}
+  pkg_owner=${BASH_REMATCH[2]:-bpan-org}
+  pkg_owner=${pkg_owner%/}
+  pkg_name=${BASH_REMATCH[3]}
+  pkg_version=${BASH_REMATCH[4]:-''}
+  pkg_version=${pkg_version#=}
+  pkg_id=$pkg_host:$pkg_owner/$pkg_name
 
-  if [[ $domain == github ]]; then
-    repo=https://github.com/$owner/$name
+  if [[ $pkg_host == github ]]; then
+    pkg_repo=https://github.com/$pkg_owner/$pkg_name
   else
-    error "Invalid package domain '$domain'"
+    error "Invalid package host '$pkg_host'"
   fi
 
-  src=$BPAN_INSTALL/src/$domain/$owner/$name/$ver
+  pkg_src=$BPAN_INSTALL/src/$pkg_host/$pkg_owner/$pkg_name/$pkg_version
 }
 
 pkg:config-vars() {
@@ -81,13 +87,18 @@ pkg:index-update() (
   then
     [[ ${BPAN_TESTING-} ]] ||
       say+y "Updating BPAN package index..."
-    git -C "$BPAN_INSTALL/$bpan_index_repo_dir" pull --quiet --ff-only origin main
+    git -C "$BPAN_INSTALL/$bpan_index_repo_dir" pull \
+      --quiet \
+      --ff-only \
+      origin main
   fi
 
   [[ -f $bpan_index_file ]] ||
     die "BPAN package index file not available"
 
-  index_api_version=$(git config -f "$bpan_index_file" bpan.api-version || echo 0)
+  index_api_version=$(
+    git config -f "$bpan_index_file" bpan.api-version || echo 0
+  )
 
   if [[ $index_api_version -lt $BPAN_INDEX_API_VERSION ]]; then
     error "BPAN Index API Version mismatch. Try again later."
@@ -112,20 +123,15 @@ pkg:api-mismatch() {
 }
 
 pkg:get-version() (
-  full=$1
-  git config -f "$bpan_index_file" "package.$full.version" ||
-    error "No package '$full' found"
+  pkg_id=$1
+  git config -f "$bpan_index_file" "package.$pkg_id.version" ||
+    error "No package '$pkg_id' found"
 )
 
 pkg:get-commit() (
-  full=$1 version=$2
-  git config -f "$bpan_index_file" "package.$full.v${version//./-}" ||
-    error "Can't find commit for package '$full' version '$version'"
-)
-
-pkg:check-commit() (
-  git config -f "$bpan_index_file" "package.$full.v${version//./-}" ||
-    error "Can't find commit for package '$full' version '$version'"
+  pkg_id=$1 version=$2
+  git config -f "$bpan_index_file" "package.$pkg_id.v${version//./-}" ||
+    error "Can't find commit for package '$pkg_id' version '$version'"
 )
 
 pkg:installed() (
@@ -143,5 +149,5 @@ pkg:is-primary() (
   pkg:parse-id "$id"
   find "$BPAN_INSTALL"/{lib,bin,share} -type l -print0 2>/dev/null |
     xargs -r -0 ls -l |
-    grep -q "$owner/$name/$ver"
+    grep -q "$pkg_owner/$pkg_name/$pkg_version"
 )

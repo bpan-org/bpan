@@ -112,7 +112,7 @@ add:main() (
     add:assert-config
     for pkg in "${option_pkg[@]}"; do
       pkg:parse-id "$pkg"
-      grep -q '\[package "'"$full"'"\]' "$bpan_index_file" ||
+      grep -q '\[package "'"$pkg_id"'"\]' "$bpan_index_file" ||
         error "No such BPAN package '$pkg'"
       grep -q "^$pkg$" <(ini:all --file=.bpan/config update.package) &&
         error "Package '$pkg' already added"
