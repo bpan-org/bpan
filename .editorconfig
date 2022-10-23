@@ -1,0 +1,12 @@
+# Use https://editorconfig.org/ to automatically configure your editor to
+# adhere to this repo's code style standards.
+
+[*]
+charset = utf-8
+indent_size = 2
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[Makefile]
+indent_style = tab
