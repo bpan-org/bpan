@@ -118,7 +118,7 @@ register:preflight() {
 register:update-bpan-index() (
   local entry head line
 
-  fork_repo_url=git@github.com:$github_id/bpan-index
+  fork_repo_url=git@github.com:$github_id/${bpan_index_api_url##*/}
 
   forked=false
   o "Cloning fork: '$fork_repo_url'"

@@ -59,18 +59,11 @@ pkg:config-vars() {
   local n
   n=$(ini:get index.bpan.publish-issue-num)
   bpan_index_publish_url=https://api.github.com/repos/$repo/issues/$n/comments
+  bpan_index_file=$BPAN_INSTALL/$bpan_index_repo_dir/index.ini
 }
 
 pkg:index-update() (
   pkg:config-vars
-
-  if [[ ! -h $bpan_index_file ]]; then
-    rm -f "$bpan_index_file"
-    mkdir -p "$(dirname "$bpan_index_file")"
-    ln -s \
-      "$bpan_index_repo_dir/index.ini" \
-      "$bpan_index_file"
-  fi
 
   if [[ ! -f $bpan_index_file ]]; then
     git clone --quiet \

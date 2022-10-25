@@ -128,7 +128,8 @@ set-env() {
   # TODO Check ini files bpan.api-version.
   BPAN_INDEX_API_VERSION=1
 
-  bpan_index_file=$BPAN_INSTALL/index.ini
+  source-once bpan/pkg
+  pkg:config-vars
 }
 
 getopt-cmds-spec() {
