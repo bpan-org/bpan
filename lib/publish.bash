@@ -20,7 +20,10 @@ publish:main() (
 
   $option_check && return
 
+  source-once hook
+  hook:run pre-publish
   publish:trigger-publish
+  hook:run post-publish
 )
 
 publish:get-env() {
