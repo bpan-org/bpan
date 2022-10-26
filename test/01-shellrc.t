@@ -11,7 +11,7 @@ test() {
       env -i \
         HOME="$HOME" \
         TERM="$TERM" \
-        PATH="$bash_bin":/bin:/usr/bin:/sbin \
+        PATH="$bash_bin":"$(dirname "$(command -v "$shell")")":/bin:/usr/bin:/sbin \
         $shell \
         "$@" \
         -c "$source ./.rc && bpan | head -n1"
