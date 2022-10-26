@@ -1,3 +1,8 @@
+[version "0.1.64"]
+date = Wed Oct 26 07:37:18 AM PDT 2022
+done = Add --bash= support to 'bpan test'; works with 3.2+
+done = Support register and publish to non-default index repo
+
 [version "0.1.63"]
 date = Sun Oct 23 01:02:11 PM PDT 2022
 done = Small change to getopt spec usage line

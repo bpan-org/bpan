@@ -3,7 +3,7 @@ api-version = 1
 
 [package]
 name = bpan
-version = 0.1.63
+version = 0.1.64
 title = Bash Package Manager
 license = MIT
 copyright = 2014-2022
