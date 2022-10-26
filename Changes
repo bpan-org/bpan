@@ -1,3 +1,9 @@
+[version "0.1.65"]
+date = Wed Oct 26 12:34:48 PDT 2022
+done = Add a test that shows test env info
+done = Fix test/01-shellrc.t on macos
+done = Indent markdown comment in list
+
 [version "0.1.64"]
 date = Wed Oct 26 07:37:18 AM PDT 2022
 done = Add --bash= support to 'bpan test'; works with 3.2+
