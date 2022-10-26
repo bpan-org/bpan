@@ -41,6 +41,7 @@ Project Commands:
   bump          Prepare next version
   publish       Publish the project to $APP index
   register      Register a new $APP package
+  hook          Run a project hook
 
 Information Commands:
   help          Get help for a '$app' command
