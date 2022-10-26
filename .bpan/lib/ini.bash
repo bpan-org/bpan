@@ -1,4 +1,4 @@
-ini:version() ( echo "0.1.2" )
+ini:version() ( echo "0.1.3" )
 
 ini:init() {
   __ini_files=("$@")
@@ -50,7 +50,8 @@ ini:set() (
   ini:data "$@"
   [[ ${#args[*]} -eq 2 ]] ||
     ini:die "ini:set requires 2 arguments: key/value"
-  file=${__ini_files[-1]?}
+  i=${#__ini_files[*]}
+  file=${__ini_files[i-1]?}
   git config --file "$file" "${args[@]}"
   ini:untab "$file"
   __ini_data=''
@@ -61,7 +62,8 @@ ini:add() (
   ini:data "$@"
   [[ ${#args[*]} -eq 2 ]] ||
     ini:die "ini:add requires 2 arguments: key/value"
-  file=${__ini_files[-1]?}
+  i=${#__ini_files[*]}
+  file=${__ini_files[i-1]?}
   git config --file "$file" --add "${args[@]}"
   ini:untab "$file"
   __ini_data=''

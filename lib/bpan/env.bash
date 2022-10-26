@@ -12,7 +12,7 @@ env:NAME() (
   [[ $name =~ ^[a-z][-a-z0-9]*$ ]] ||
     die "Bad package name '$name'"
   NAME=${name%-bash}
-  NAME=${NAME^^}
+  NAME=$(tr '[:lower:]' '[:upper:]' <<<"$NAME")
   NAME=${NAME//-/_}
   echo "$NAME"
 )
@@ -30,7 +30,7 @@ env:PKG() (
     die "'\$name' not defined"
   [[ $name =~ ^[a-z][-a-z0-9]*$ ]] ||
     die "Bad package name '$name'"
-  PKG=${name^^}
+  PKG=$(tr '[:lower:]' '[:upper:]' <<<"$name")
   PKG=${PKG//-/_}
   echo "$PKG"
 )

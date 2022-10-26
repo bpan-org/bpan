@@ -5,6 +5,7 @@ test:usage() (
 
 test:options() (
   echo "v,verbose   Use 'prove' option '-v'"
+  echo "b,bash=     Bash version to test with"
   echo "renumber    Renumber the test/*.t files"
 )
 
@@ -12,9 +13,12 @@ test:main() (
   if $option_renumber; then
     test:renumber
     return
+  elif [[ $option_bash ]]; then
+    test:test-in-docker "$@"
+    return
   fi
 
-  if [[ $# -eq 0 ]]; then
+  if [[ ! $* ]]; then
     [[ -d test ]] ||
       error "Can't test. No 'test/' directory"
     set -- test/*.t
@@ -75,4 +79,46 @@ test:renumber() (
       fi
     fi
   done
+)
+
+bash_versions=(
+  3.2
+  4.0
+  4.1
+  4.2
+  4.3
+  4.4
+  5.0
+  5.1
+  5.2
+)
+
+test:test-in-docker() (
+  [[ " ${bash_versions[*]} " == *" $option_bash "* ]] ||
+    error "--option_bash must be one of ${bash_versions[*]}"
+
+  if [[ ! $* ]]; then
+    set -- test
+  fi
+
+  if $option_verbose; then
+    set -- -v "$@"
+  fi
+  if $option_quiet; then
+    set -- -q "$@"
+  fi
+
+  docker_image=$(ini:get test.docker-image)
+
+  set -x
+  docker run --rm -it \
+    -v "$BPAN_ROOT":/bpan \
+    -v "$PWD":/host \
+    -v "$SSH_AUTH_SOCK":"$SSH_AUTH_SOCK" \
+    -v "$HOME/.ssh/known_hosts":/root/.ssh/known_hosts \
+    -w /host \
+    -e SSH_AUTH_SOCK="$SSH_AUTH_SOCK" \
+    -e BPAN_TEST_BASH_VERSION="$option_bash" \
+    "$docker_image" \
+      /bpan/share/test-in-docker "$@"
 )

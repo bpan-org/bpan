@@ -20,6 +20,8 @@ bpan:main() {
     set -o pipefail
     shopt -s inherit_errexit
   } 2>/dev/null || true
+  # -u works poorly with arrays until Bash 4.4
+  ( shopt -s compat43 2>/dev/null ) || set +o nounset
 
   # 'source bpan.bash ...' can take arguments:
   local arg
@@ -32,7 +34,7 @@ bpan:main() {
       # Set the 'app', 'App', and 'APP' variables:
       --app)
         app=$(basename "$0")
-        if ( shopt -s compat31 2>/dev/null ); then  # bash 4.0+
+        if ( shopt -s compat32 2>/dev/null ); then  # bash 4.0+
           App=${app^}
           APP=${app^^}
         else

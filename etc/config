@@ -12,9 +12,12 @@ api-version = 1
 [install]
 prefix = $BPAN_ROOT/local
 
+# Index related settings:
 [index]
+main = bpan
 cache-minutes = 5
 
+# The main default BPAN package index:
 [index "bpan"]
 repo-url = https://github.com/bpan-org/bpan-index
 repo-branch = main
@@ -22,3 +25,6 @@ publish-issue-num = 1
 
 [template]
 add = $BPAN_ROOT/share/add
+
+[test]
+docker-image = ingy/bpan-testing:0.1.0
