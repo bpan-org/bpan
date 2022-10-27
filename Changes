@@ -1,3 +1,8 @@
+[version "0.1.66"]
+date = Thu Oct 27 08:17:36 AM PDT 2022
+done = Fix 'bpan upgrade' and added test for it
+done = Remove leftover file lib/env.bash
+
 [version "0.1.65"]
 date = Wed Oct 26 12:34:48 PDT 2022
 done = Add a test that shows test env info
