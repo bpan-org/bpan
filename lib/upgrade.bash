@@ -1,3 +1,8 @@
+upgrade:options() (cat <<'...'
+rebase    Upgrade using 'git pull --rebase'
+...
+)
+
 upgrade:main() (
   cd "$root" || exit
 
@@ -16,8 +21,15 @@ upgrade:main() (
 
   say -y "Pulling '$repo' in '$root'..."
 
-  git pull --quiet --ff-only origin "$branch" ||
-    error "Could not git pull '$root'"
+  opts=(--ff-only)
+  $option_rebase && opts=(--rebase)
+
+  (
+    $option_verbose && set -x
+    git pull --quiet "${opts[@]}" origin "$branch" ||
+      error "Could not git pull '$root'." \
+            "Try again with --rebase if you have local commits."
+  )
 
   if [[ $(git rev-parse HEAD) == "$commit" ]]; then
     say -y "No upstream changes found"
@@ -26,7 +38,6 @@ upgrade:main() (
   fi
 
   say-y "Updating BPAN index file..."
-  rm -f "$bpan_index_file"
   source-once bpan/pkg
   pkg:index-update
 )

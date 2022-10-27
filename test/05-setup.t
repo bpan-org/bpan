@@ -2,21 +2,11 @@
 
 source test/init
 
-root=$(pwd -P)/test/bpan
-
-rm -fr "$root"
-
-git clone -q .git "$root"
-find .bpan bin lib |
-  cpio -dump "$root" &>/dev/null
+install-test-bpan
 
 try "set +eu; source '$root/.rc'"
 is "$got" "" \
   "'source .rc' is quiet"
-
-set +eu
-source "$root/.rc" || die
-set -eu
 
 ok-d "$root"
 

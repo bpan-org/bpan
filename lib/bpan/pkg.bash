@@ -65,6 +65,10 @@ pkg:config-vars() {
 pkg:index-update() (
   pkg:config-vars
 
+  if [[ ${BPAN_TEST_INDEX_REPO-} ]]; then
+    bpan_index_repo_url=$BPAN_TEST_INDEX_REPO
+  fi
+
   if [[ ! -f $bpan_index_file ]]; then
     git clone --quiet \
       "$bpan_index_repo_url" \

@@ -62,6 +62,13 @@ env:date-time() (
 )
 
 env:github-user-id() (
+  if [[ ${BPAN_TEST_GITHUB_USER_ID-} ]]; then
+    echo "$BPAN_TEST_GITHUB_USER_ID"
+    return
+  fi
+
+  unset id
+
   if [[ -f $root/config ]]; then
     id=$(ini:get --file="$root/config" github.user) || true
   fi

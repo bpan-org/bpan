@@ -35,3 +35,6 @@ test-docker-build:
 
 test-docker-push: test-docker-build
 	docker push $(DOCKER_IMAGE)
+
+clean:
+	rm -fr test/bpan-* test/local

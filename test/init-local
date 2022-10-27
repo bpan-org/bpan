@@ -1,9 +1,29 @@
 #!/bash
 
-BPAN_INSTALL=$PWD/test/local
+bpan:source git-utils --
+
+export BPAN_INSTALL=$PWD/test/local
 mkdir -p "$BPAN_INSTALL"
 
-bpan:source git-utils --
+export BPAN_TEST_INDEX_REPO=$BPAN_ROOT/local/src/github/bpan-org/bpan-index/.git
+export BPAN_TEST_GITHUB_USER_ID=octocat
+
+install-test-bpan() {
+  root=$(basename "$(caller | cut -d ' ' -f2)")
+  root=$PWD/test/bpan-${root%.t}
+
+  rm -fr "$root"
+
+  git clone -q .git "$root"
+  find .bpan bin lib |
+    cpio -dump "$root" &>/dev/null
+
+  git -C "$root" commit -am wip >/dev/null || true
+
+  set +eu
+  source "$root/.rc" || die
+  set -eu
+}
 
 test-errors() {
   while read -r cmd && read -r msg; do

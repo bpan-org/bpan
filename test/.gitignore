@@ -1,6 +1,6 @@
 /bin-pkg-bash/
 /lib-pkg/
 
-/bpan/
+/bpan*
 /local/
 /dir/
