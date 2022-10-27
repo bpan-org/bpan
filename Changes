@@ -1,3 +1,8 @@
+[version "0.1.67"]
+date = Thu Oct 27 10:02:12 AM PDT 2022
+done = Use $(RM) in Makefiles
+done = Shared Makefile refactoring
+
 [version "0.1.66"]
 date = Thu Oct 27 08:17:36 AM PDT 2022
 done = Fix 'bpan upgrade' and added test for it
