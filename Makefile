@@ -2,16 +2,14 @@
 
 SHELL := bash
 
-ifndef BPAN_ROOT
-$(info BPAN_ROOT variable not set)
-$(info Makefile requires BPAN to be installed)
-$(info See: https://github.com/bpan-org/bpan)
-$(error ERROR)
+ifdef BPAN_ROOT
+    BPAN_CMDS := $(shell bpan -q cmds)
+    BPAN_CMDS := $(filter-out add bump config init install new search test uninstall,$(BPAN_CMDS))
 endif
 
-BPAN_CMDS := $(shell bpan -q cmds | grep -v 'bump\|test')
-
+b ?=
 o ?=
+v ?=
 test ?= test/
 
 .SECONDEXPANSION:
@@ -19,17 +17,32 @@ test ?= test/
 
 default::
 
+
+
+ifdef BPAN_CMDS
+
 $(BPAN_CMDS)::
-	bpan $@ $o
+	bpan$(if $b, $b) $@$(if $o, $o)
 
 .PHONY: test
 test::
-	prove -v $(test)
+	prove$(if $v, -v) $(test)
 
 bump::
 	bpan $@ --push
 
+endif
+
+
+
 # Add custom Makefile rules to a '.bpan/local.mk' file.
 ifneq (,$(wildcard .bpan/local.mk))
 include .bpan/local.mk
+endif
+
+ifndef BPAN_ROOT
+    $(info BPAN_ROOT variable not set)
+    $(info Makefile requires BPAN to be installed)
+    $(info See: https://github.com/bpan-org/bpan)
+    $(error ERROR)
 endif
