@@ -22,7 +22,7 @@ default::
 ifdef BPAN_CMDS
 
 $(BPAN_CMDS)::
-	bpan$(if $b, $b) $@$(if $o,$o)
+	bpan$(if $b, $b) $@$(if $o, $o)
 
 .PHONY: test
 test::

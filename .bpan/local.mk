@@ -1,9 +1,6 @@
-distclean::
-	rm -f config
-	rm -fr local/
-	rm -fr test/bpan/
-	rm -fr test/bin-pkg-bash/
-	rm -fr test/lib-pkg/
+distclean:: clean
+	$(RM) config
+	$(RM) -r local/
 
 gh-pages::
 	git worktree add --force $@ $@
@@ -37,4 +34,7 @@ test-docker-push: test-docker-build
 	docker push $(DOCKER_IMAGE)
 
 clean:
-	rm -fr test/bpan-* test/local
+	$(RM) -r test/bpan-*/
+	$(RM) -r test/local/
+	$(RM) -r test/bin-pkg-bash/
+	$(RM) -r test/lib-pkg/
