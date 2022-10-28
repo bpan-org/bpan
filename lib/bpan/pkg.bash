@@ -49,16 +49,22 @@ pkg:parse-id() {
 }
 
 pkg:config-vars() {
-  bpan_index_repo_url=$(ini:get index.bpan.repo-url)
-  [[ $bpan_index_repo_url =~ \
-     ^https://github.com/([-a-zA-Z0-9]+/[-a-zA-Z0-9]+)$ ]] ||
-    error "Invalid config value 'index.bpan.repo-url'='$bpan_index_repo_url'"
-  local repo=${BASH_REMATCH[1]}
-  bpan_index_repo_dir=src/github/$repo
-  bpan_index_api_url=https://api.github.com/repos/$repo
-  local n
-  n=$(ini:get index.bpan.publish-issue-num)
-  bpan_index_publish_url=https://api.github.com/repos/$repo/issues/$n/comments
+  local index repo num
+  index=$(ini:get main.index)
+  bpan_index_repo_url=$(ini:get "index.$index.repo-url")
+
+  local github_re='^https://github.com/([-a-zA-Z0-9]+/[-a-zA-Z0-9]+)$'
+  # TODO Support hosting other than github
+  if [[ $bpan_index_repo_url =~ $github_re ]]; then
+    repo=${BASH_REMATCH[1]}
+    bpan_index_repo_dir=src/github/$repo
+    bpan_index_api_url=https://api.github.com/repos/$repo
+    num=$(ini:get "index.$index.publish-issue-num")
+    bpan_index_publish_url=https://api.github.com/repos/$repo/issues/$num/comments
+  else
+    error "Invalid config value 'index.$index.repo-url'='$bpan_index_repo_url'"
+  fi
+
   bpan_index_file=$BPAN_INSTALL/$bpan_index_repo_dir/index.ini
 }
 

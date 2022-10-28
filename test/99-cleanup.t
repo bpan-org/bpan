@@ -2,20 +2,13 @@
 
 source test/init
 
-B=test/bin-pkg-bash
-D=test/dir
-L=test/lib-pkg
-I=test/local
+make clean
 
-rm -fr test/bpan-*
-rm -fr "$B"
-rm -fr "$D"
-rm -fr "$L"
-rm -fr "$I"
-
-ok-not-e "$B"
-ok-not-e "$D"
-ok-not-e "$L"
-ok-not-e "$I"
+ok-not-e test/bin-pkg-bash/
+ok-not-e test/bpan-05-setup/
+ok-not-e test/bpan-14-upgrade/
+ok-not-e test/dir/
+ok-not-e test/lib-pkg/
+ok-not-e test/local/
 
 done-testing

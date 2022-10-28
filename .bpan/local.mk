@@ -1,3 +1,5 @@
+v := 1
+
 distclean:: clean
 	$(RM) config
 	$(RM) -r local/
@@ -34,7 +36,8 @@ test-docker-push: test-docker-build
 	docker push $(DOCKER_IMAGE)
 
 clean:
-	$(RM) -r test/bpan-*/
-	$(RM) -r test/local/
 	$(RM) -r test/bin-pkg-bash/
+	$(RM) -r test/bpan-*/
+	$(RM) -r test/dir/
 	$(RM) -r test/lib-pkg/
+	$(RM) -r test/local/
