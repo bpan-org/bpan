@@ -120,5 +120,5 @@ test:test-in-docker() (
     -e SSH_AUTH_SOCK="$SSH_AUTH_SOCK" \
     -e BPAN_TEST_BASH_VERSION="$option_bash" \
     "$docker_image" \
-      /bpan/share/test-in-docker "$@"
+      /bpan/test/bin/test-in-docker "$@"
 )
