@@ -38,7 +38,7 @@ PATH=$BPAN_ROOT/bin:$BPAN_ROOT/local/bin:$PATH
 MANPATH=$BPAN_ROOT/man:$BPAN_ROOT/local/man:$MANPATH
 export BPAN_SHELL BPAN_ROOT PATH MANPATH
 bpan --setup
-source "$BPAN_ROOT/share/complete.sh"
+source "$BPAN_ROOT/share/lib/complete.sh"
 return
 '
 
@@ -50,7 +50,7 @@ PATH=$BPAN_ROOT/bin:$BPAN_ROOT/local/bin:$PATH
 MANPATH=$BPAN_ROOT/man:$BPAN_ROOT/local/man:$MANPATH
 export BPAN_SHELL BPAN_ROOT PATH MANPATH
 bpan --setup
-source "$BPAN_ROOT/share/complete.sh"
+source "$BPAN_ROOT/share/lib/complete.sh"
 return
 '
 
@@ -62,7 +62,7 @@ set PATH $BPAN_ROOT/bin:$BPAN_ROOT/local/bin:$PATH
 set MANPATH $BPAN_ROOT/man:$BPAN_ROOT/local/man:$MANPATH
 export BPAN_SHELL BPAN_ROOT PATH MANPATH
 bpan --setup
-grep -B999 "#/FISH" share/complete.sh | string split0 | source
+grep -B999 "#/FISH" share/lib/complete.sh | string split0 | source
 exit
 '
 
