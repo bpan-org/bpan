@@ -30,9 +30,9 @@ pkg:parse-id() {
   [[ $id =~ ^($w+:)?($w+/)?($w+)(=$v+)?$ ]] ||
     error "Invalid package id '$id'"
 
-  pkg_host=${BASH_REMATCH[1]:-github}
+  pkg_host=${BASH_REMATCH[1]:-$(ini:get main.host)} || true
   pkg_host=${pkg_host%:}
-  pkg_owner=${BASH_REMATCH[2]:-bpan-org}
+  pkg_owner=${BASH_REMATCH[2]:-$(ini:get "host.$pkg_host.owner")} || true
   pkg_owner=${pkg_owner%/}
   pkg_name=${BASH_REMATCH[3]}
   pkg_version=${BASH_REMATCH[4]:-''}
@@ -54,7 +54,6 @@ pkg:config-vars() {
   bpan_index_repo_url=$(ini:get "index.$index.repo-url")
 
   local github_re='^https://github.com/([-a-zA-Z0-9]+/[-a-zA-Z0-9]+)$'
-  # TODO Support hosting other than github
   if [[ $bpan_index_repo_url =~ $github_re ]]; then
     repo=${BASH_REMATCH[1]}
     bpan_index_repo_dir=src/github/$repo

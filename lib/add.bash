@@ -167,6 +167,7 @@ add:assert-config() {
     error "Config file '.bpan/config' not found. Try '--config'."
 
   ini:init \
+    "$root/etc/config" \
     "$root/config" \
     "$(pwd)/.bpan/config"
 }
