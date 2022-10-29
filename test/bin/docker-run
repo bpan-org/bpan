@@ -7,7 +7,7 @@ main() (
   if [[ ${BPAN_TEST_BASH_VERSION-} ]]; then
     export PATH=/bash-$BPAN_TEST_BASH_VERSION/bin:$PATH
   fi
-  bpan test "$@"
+  "$@"
 )
 
 main "$@"

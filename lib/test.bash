@@ -1,20 +1,30 @@
-test:usage() (
-  echo "$app [<$app-opts>] $cmd [<$cmd-opts>] [<test-file...>]"
-  echo "$app [<$app-opts>] $cmd --renumber"
+test:usage() (cat <<...
+$app [<$app-opts>] $cmd [<$cmd-opts>] [<test-file...>]
+$app [<$app-opts>] $cmd --bash=3.2
+$app [<$app-opts>] $cmd --bash=3.2 --shell
+$app [<$app-opts>] $cmd --renumber
+...
 )
 
-test:options() (
-  echo "v,verbose   Use 'prove' option '-v'"
-  echo "b,bash=     Bash version to test with"
-  echo "renumber    Renumber the test/*.t files"
+test:options() (cat <<...
+v,verbose   Use 'prove' option '-v'
+
+b,bash=     Bash version to test with
+s,shell     Start a BPAN test Docker shell
+
+renumber    Renumber the test/*.t files
+...
 )
 
 test:main() (
   if $option_renumber; then
     test:renumber
     return
+  elif $option_shell; then
+    test:docker-shell "$@"
+    return
   elif [[ $option_bash ]]; then
-    test:test-in-docker "$@"
+    test:docker-test "$@"
     return
   fi
 
@@ -93,7 +103,7 @@ bash_versions=(
   5.2
 )
 
-test:test-in-docker() (
+test:docker-test() (
   [[ " ${bash_versions[*]} " == *" $option_bash "* ]] ||
     error "--option_bash must be one of ${bash_versions[*]}"
 
@@ -108,6 +118,14 @@ test:test-in-docker() (
     set -- -q "$@"
   fi
 
+  docker-run bpan test "$@"
+)
+
+test:docker-shell() (
+  docker-run bash
+)
+
+docker-run() (
   docker_image=$(ini:get test.docker-image)
 
   set -x
@@ -120,5 +138,5 @@ test:test-in-docker() (
     -e SSH_AUTH_SOCK="$SSH_AUTH_SOCK" \
     -e BPAN_TEST_BASH_VERSION="$option_bash" \
     "$docker_image" \
-      /bpan/test/bin/test-in-docker "$@"
+      /bpan/test/bin/docker-run "$@"
 )
