@@ -127,6 +127,8 @@ test:docker-shell() (
 
 docker-run() (
   docker_image=$(ini:get test.docker-image)
+  bash_history=/tmp/bpan-bash-history
+  touch "$bash_history"
 
   set -x
   docker run --rm -it \
@@ -134,6 +136,7 @@ docker-run() (
     -v "$PWD":/host \
     -v "$SSH_AUTH_SOCK":"$SSH_AUTH_SOCK" \
     -v "$HOME/.ssh/known_hosts":/root/.ssh/known_hosts \
+    -v "$bash_history":/root/.bash_history \
     -w /host \
     -e SSH_AUTH_SOCK="$SSH_AUTH_SOCK" \
     -e BPAN_TEST_BASH_VERSION="$option_bash" \
