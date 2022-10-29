@@ -68,6 +68,8 @@ complete*     Shell tab completion for $app
 "
 
 main() (
+  [[ ${BPAN_DEBUG_TIMER-} ]] && set-timers
+
   set-env
 
   getopt "$@"
@@ -165,6 +167,22 @@ ${options+$options$'\n'}
 $help
 "
   fi
+}
+
+set-timers() {
+  local regex=$BPAN_DEBUG_TIMER
+  [[ $regex == 1 ]] && regex=':'
+
+  local functions=($(
+    compgen -A function |
+      grep -E "$regex" || true
+  ))
+
+  while read -r library; do
+    source "$library"
+  done < <(find "$BPAN_ROOT"/lib -name '*.bash')
+
+  +timer-wrap "${functions[@]}"
 }
 
 source-once() {

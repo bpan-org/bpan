@@ -4,7 +4,7 @@
 # * Many are improved versions of existing builtins/commands.
 
 
-bashplus:version() ( echo '0.1.33' )
+bashplus:version() ( echo '0.1.35' )
 
 
 # Define these first for use within:
@@ -137,7 +137,8 @@ bashplus:version() ( echo '0.1.33' )
     func_code=$(type "$func_name")
     func_code=$anon_name${func_code#$func_name is a function$'\n'$func_name}
     anon_code=$func_name${wrap_code#$wrap_name is a function$'\n'$wrap_name}
-    eval "${anon_code/::function::/$func_code$'\n'$anon_name' "$@"'}"
+    anon_call=$func_code$'\n'$anon_name' "$@"'
+    eval "${anon_code/::function::/$anon_call}"
   done
 }
 
@@ -336,11 +337,11 @@ if [[ ${EPOCHREALTIME-} != "${EPOCHREALTIME-}" ]]; then
     for fun; do
       label=${timer_label:-"$(printf '%-20s' "$fun") -> %ss"}
       eval "
-        +timer-wrapper() (
+        +timer-wrapper() {
           +timer-reset
           ::function::
           +timer-printf '$label'
-        )
+        }
       "
       +fun-wrap +timer-wrapper "$fun"
     done
