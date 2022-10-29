@@ -171,11 +171,12 @@ $help
 
 set-timers() {
   local regex=$BPAN_DEBUG_TIMER
-  [[ $regex == 1 ]] && regex=':'
+  [[ $regex == 1 ]] && regex='.'
 
   local functions=($(
     compgen -A function |
-      grep -E "$regex" || true
+      ( grep -E "$regex" || true ) |
+      grep -Ev '^\+'
   ))
 
   while read -r library; do
