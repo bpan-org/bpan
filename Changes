@@ -1,3 +1,10 @@
+[version "0.1.69"]
+date = Sun Oct 30 01:29:56 PM PDT 2022
+done = Integrate the bashplus refactoring into bpan
+done = Make work with bashplus/git
+done = Add .bpan/* to .gitignore
+done = Move lib/bpan/ to lib/util/
+
 [version "0.1.68"]
 date = Sat Oct 29 05:00:17 PM PDT 2022
 done = Exclude bashplus functions from BPAN_DEBUG_TIMER
