@@ -19,7 +19,7 @@ uninstall:main() (
   [[ $# -gt 0 ]] ||
     error "'$app $cmd' requires one or more packages"
 
-  source-once bpan/pkg
+  source-once util/pkg
 
   for target do
     pkg:parse-id "$target"

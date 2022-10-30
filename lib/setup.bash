@@ -10,7 +10,7 @@ setup:main() (
 
   if ! [[ -d $local_dir ]]; then
     mkdir "$local_dir"
-    source-once bpan/pkg
+    source-once util/pkg
     option_quiet=true
     pkg:index-update
   fi

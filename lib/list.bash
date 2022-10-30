@@ -1,5 +1,5 @@
 list:main() (
-  source-once bpan/pkg
+  source-once util/pkg
 
   if [[ ! -d $BPAN_INSTALL/src ]]; then
     say -r "No BPAN packages currently installed"

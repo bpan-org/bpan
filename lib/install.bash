@@ -25,7 +25,7 @@ install:main() (
   [[ $# -gt 0 ]] ||
     error "'$app $cmd' requires one or more packages"
 
-  source-once bpan/pkg
+  source-once util/pkg
 
   force_update=true pkg:index-update
 

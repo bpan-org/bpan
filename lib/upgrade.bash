@@ -38,6 +38,6 @@ upgrade:main() (
   fi
 
   say-y "Updating BPAN index file..."
-  source-once bpan/pkg
+  source-once util/pkg
   pkg:index-update
 )

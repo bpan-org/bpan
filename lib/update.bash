@@ -13,7 +13,7 @@ update:main() (
 
   else
     source-once install
-    source-once bpan/pkg
+    source-once util/pkg
 
     config=.bpan/config
     [[ -f $config ]] ||

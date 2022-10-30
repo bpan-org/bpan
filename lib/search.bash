@@ -11,7 +11,7 @@ search:main() (
   pattern="=.*($term)"
 
   if [[ ! -f $bpan_index_file ]]; then
-    source-once bpan/pkg
+    source-once util/pkg
     pkg:index-update
   fi
 
