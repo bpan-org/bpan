@@ -1,3 +1,15 @@
+[version "0.1.68"]
+date = Sat Oct 29 05:00:17 PM PDT 2022
+done = Exclude bashplus functions from BPAN_DEBUG_TIMER
+done = Add BPAN_DEBUG_TIMER support to time functions
+done = Update bashplus
+done = Add history to 'bpan test --shell'
+done = Add --shell to 'bpan test'
+done = Get default package host and owner from config
+done = Move complete.sh to share/lib/
+done = Move share/test-in-docker -> test/bin/test-in-docker
+done = Make index and host platform configurable
+
 [version "0.1.67"]
 date = Thu Oct 27 10:02:12 AM PDT 2022
 done = Use $(RM) in Makefiles
