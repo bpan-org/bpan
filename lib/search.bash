@@ -21,7 +21,7 @@ search:main() (
       grep -i -E "$pattern" |
       grep '^package\.' |
       cut -d. -f2 |
-      +sort |
+      +l:sort |
       uniq || true
   ))
 

@@ -8,7 +8,7 @@ L=test/lib-pkg
 rm -fr "$B"
 rm -fr "$L"
 
-if ! +is-cmd pandoc; then
+if ! +sys:is-cmd pandoc; then
   export PATH=$PWD/test/fake-bin:$PATH
 fi
 

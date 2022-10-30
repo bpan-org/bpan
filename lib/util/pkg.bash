@@ -110,10 +110,11 @@ pkg:index-update() (
 )
 
 pkg:index-too-old() (
+  +source bashplus/time
   head=$BPAN_INSTALL/$bpan_index_repo_dir/.git/FETCH_HEAD
   [[ -f $head ]] || return 0
-  curr_time=$(+time)
-  pull_time=$(+mtime "$head")
+  curr_time=$(+time:epoch)
+  pull_time=$(+fs:mtime "$head")
   minutes=$(ini:get index.cache-minutes || echo 5)
   (( curr_time - (minutes * 60) > pull_time ))
 )
@@ -140,7 +141,7 @@ pkg:installed() (
   shopt -s nullglob
   cd "$BPAN_INSTALL/src/" || exit 0
   printf '%s\n' */*/* |
-    +sort |
+    +l:sort |
     while IFS=/ read -r owner name ver; do
       echo "github:$owner/$name=$ver"
     done

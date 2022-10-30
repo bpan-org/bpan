@@ -295,7 +295,7 @@ add:file-copy() (
 
   [[ $dir == . ]] || mkdir -p "$dir"
 
-  temp=$(+mktemp)
+  +fs:mktemp
 
   if grep -q -E '\(%.*%\)' "$from"; then
     add:file-render "$from" > "$temp"
@@ -304,7 +304,7 @@ add:file-copy() (
   fi
 
   if [[ -e $to ]]; then
-    if +is-file-same "$to" "$temp"; then
+    if +fs:file-same "$to" "$temp"; then
       action=CURRENT
     else
       mv "$temp" "$to"

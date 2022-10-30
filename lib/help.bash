@@ -11,8 +11,8 @@ help:main() (
     error "'$cmd' is not a valid $app command"
   fi
 
-  if +is-func "$cmd:help"; then
-    if +is-cmd md2man && +is-cmd man; then
+  if +sys:is-fun "$cmd:help"; then
+    if +sys:is-cmd md2man && +sys:is-cmd man; then
       export MD2MAN_NAME='bpan help'
       export MD2MAN_DESC="bpan $cmd"
       man=/tmp/"$cmd.1"
@@ -28,7 +28,7 @@ help:main() (
       ) | less -FRX
     fi
   else
-    if +is-func "$cmd:getopt"; then
+    if +sys:is-fun "$cmd:getopt"; then
       say -r "No help page is yet available for '$app $cmd'"
       echo
       echo "Showing 'bpan $cmd --help' instead:"
@@ -48,7 +48,7 @@ help:get-markdown() (
   echo "$line"
   echo
   "$cmd:help"
-  if +is-func "$cmd:getopt"; then
+  if +sys:is-fun "$cmd:getopt"; then
     echo
     echo "See also: 'bpan $cmd --help'"
   fi

@@ -5,7 +5,7 @@ publish:options() (
 )
 
 publish:main() (
-  if +in-gha; then
+  if [[ ${GITHUB_ACTIONS-} == true ]]; then
     publish:gha-main "$@"
     return
   fi
@@ -140,7 +140,7 @@ $(
 )
 
 publish:post-request() (
-  if +is-cmd jq; then
+  if +sys:is-cmd jq; then
     api_status=$(
       curl -s https://www.githubstatus.com/api/v2/summary.json |
         jq -r '.components | .[] | select(.name == "Actions") | .status'
@@ -244,11 +244,12 @@ publish:gha-check-publish() {
   indexed_version=$(
     git config -f "$bpan_index_file" "package.$package.version"
   )
+  +source bashplus/version
   if [[ ${BPAN_INDEX_UPDATE_TESTING-} ]]; then
-    +version-gt "$test_version" "$indexed_version" ||
+    +version:gt "$test_version" "$indexed_version" ||
       die "'$package' version '$version' not greater than '$indexed_version'"
   else
-    +version-gt "$version" "$indexed_version" ||
+    +version:gt "$version" "$indexed_version" ||
       die "'$package' version '$version' not greater than '$indexed_version'"
   fi
 

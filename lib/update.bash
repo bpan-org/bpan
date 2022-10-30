@@ -30,7 +30,7 @@ update:main() (
 update:list() (
   cd "$root/share/add" || exit
   find . -type l |
-    +sort |
+    +l:sort |
     cut -c3-
 )
 
@@ -66,7 +66,7 @@ update:require() (
     then
       from=$root/$file
       to=.bpan/$file
-      if +is-file-same "$to" "$from"; then
+      if +fs:file-same "$to" "$from"; then
         say-y "CURRENT '$to'"
       else
         (
@@ -107,7 +107,7 @@ update:require() (
       from=$BPAN_INSTALL/$file
       to=.bpan/$file
       if [[ -h $to ]] ||
-          +is-file-diff "$to" "$from"
+          +fs:file-diff "$to" "$from"
       then
         (
           $option_verbose && set -x
@@ -132,12 +132,12 @@ update:require() (
 update:man() (
   [[ -d doc ]] || return 0
 
-  if ! +is-cmd pandoc; then
+  if ! +sys:is-cmd pandoc; then
     say -r "Can't update man pages. Need 'pandoc'." >&2
     return
   fi
 
-  if ! +is-cmd md2man; then
+  if ! +sys:is-cmd md2man; then
     install:main md2man
   fi
 
@@ -159,9 +159,9 @@ update:man() (
     MD2MAN_PROG="md2man v0.1.0"
     export MD2MAN_NUM MD2MAN_NAME MD2MAN_DESC MD2MAN_PROG
 
-    temp=$(+mktemp)
+    +fs:mktemp
     md2man < "$md" > "$temp"
-    if +is-file-same "$man" "$temp"; then
+    if +fs:file-same "$man" "$temp"; then
       say -y "CURRENT '$man'"
     else
       mv "$temp" "$man"

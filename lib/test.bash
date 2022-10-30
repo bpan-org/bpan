@@ -61,7 +61,7 @@ test:renumber() (
   tests=($(
     shopt -s nullglob
     printf '%s\n' *.t |
-      +sort
+      +l:sort
   ))
 
   [[ ${#tests[*]} -gt 0 ]] ||

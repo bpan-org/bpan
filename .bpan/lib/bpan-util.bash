@@ -7,14 +7,14 @@ bpan:require-commands() (
     version=${version%+}
     command=${command%%=*}
     if [[ $version == '0' ]]; then
-      +is-cmd "$command" || {
+      +cmd:ok "$command" || {
         ok=false
         if ! ${option_quiet:-false}; then
           echo "warning: command '$command' is required"
         fi
       }
     else
-      +is-cmd-ver "$command" "$version" || {
+      +cmd:ok-ver "$command" "$version" || {
         ok=false
         if ! ${option_quiet:-false}; then
           echo "warning: command '$command' v$version or higher is required"

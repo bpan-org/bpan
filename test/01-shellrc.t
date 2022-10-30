@@ -37,7 +37,7 @@ test yash
 source="BPAN_ROOT=$PWD ."
 test ash
 test dash
-+os-macos ||  # XXX
++sys:is-macos ||  # XXX
   test posh
 test ksh
 test mksh

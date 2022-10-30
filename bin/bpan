@@ -2,7 +2,7 @@
 
 VERSION=0.1.68
 
-die() { printf '%s\n' "$@">&2;exit 1;}
+die() { printf '%s\n' "$@" >&2; exit 1; }
 
 ( shopt -s compat31 2>/dev/null ) ||
   die "'bpan' requires 'bash' version 3.2 or higher."
@@ -12,7 +12,7 @@ die() { printf '%s\n' "$@">&2;exit 1;}
       "Try: 'source /path/to/bpan/.rc'."
 
 source "$BPAN_ROOT/lib/bpan.bash" --app
-bpan:source bashplus
+bpan:source bashplus --cmd --data --err --fs --sym --sys
 bpan:source bashplus/git
 bpan:source ini
 bpan:source say
@@ -138,24 +138,24 @@ getopt-cmds-spec() {
   source-once "$cmd"
   local help="h,help  Get help for '$app $cmd'"
 
-  if +is-func "$cmd:getopt"; then
+  if +sys:is-fun "$cmd:getopt"; then
     "$cmd:getopt"
 
   else
     local usage='' options=''
-    if +is-func "$cmd:default"; then
+    if +sys:is-fun "$cmd:default"; then
       usage+="getopt_default=($("$cmd:default"))"$'\n\n'
     fi
-    if +is-func "$cmd:usage"; then
+    if +sys:is-fun "$cmd:usage"; then
       usage+=$("$cmd:usage")
     else
       usage+="$app [<$app-opts>] $cmd [<$cmd-opts>]"
-      if +is-func "$cmd:help"; then
+      if +sys:is-fun "$cmd:help"; then
         usage+=$'\n\n'
         usage+="Use '$app help $cmd' for detailed help."
       fi
     fi
-    if +is-func "$cmd:options"; then
+    if +sys:is-fun "$cmd:options"; then
       options=$("$cmd:options")
     fi
     echo "\
@@ -183,7 +183,9 @@ set-timers() {
     source "$library"
   done < <(find "$BPAN_ROOT"/lib -name '*.bash')
 
-  +timer-wrap "${functions[@]}"
+  +source bashplus/timer
+
+  +timer:wrap "${functions[@]}"
 }
 
 source-once() {
@@ -196,11 +198,6 @@ source-once() {
 
 todo() {
   error "'$app $cmd' not yet implemented\n"
-}
-
-error() {
-  local line1=${1:-unknown reason}; shift
-  die --red --level=1 "[$app] Error: $line1" "$@"
 }
 
 main "$@"
