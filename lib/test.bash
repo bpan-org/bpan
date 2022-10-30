@@ -46,10 +46,10 @@ test:main() (
 )
 
 test:renumber() (
-  git:in-repo ||
+  +git:in-repo ||
     error "Can't --renumber, not in a package repo"
 
-  top=$(git:top-dir)
+  top=$(+git:top-dir)
 
   cd "$top" || die
 

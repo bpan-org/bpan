@@ -33,7 +33,7 @@ test-tap:label() (
   label=${label//\%G/$G}
   label=${label//\%W/$W}
 
-  echo "$label"
+  echo -e "$label"
 )
 
 test-tap:end() {
@@ -167,7 +167,7 @@ try() {
 
 pass() {
   test-tap:_check-pid
-  echo "ok $((++_test_tap__run))${1:+" - $1"}"
+  echo -e "ok $((++_test_tap__run))${1:+" - $1"}"
 }
 
 fail() {
@@ -177,7 +177,7 @@ fail() {
   local file=${c[2]-}
   local line=${c[0]-}
   local label=${1-} callback=${2-}
-  echo "not ok $_test_tap__run${label:+" - $label"}"
+  echo -e "not ok $_test_tap__run${label:+" - $label"}"
   label=${label:+"'$label'\n#   at $file line $line."}
   label=${label:-"at $file line $line."}
   echo -e "#   Failed test $label" >&2
@@ -299,14 +299,14 @@ diag() {
   test-tap:_check-pid
   local msg=$*
   msg="# ${msg//$'\n'/$'\n'\# }"
-  echo "$msg" >&2
+  echo -e "$msg" >&2
 }
 
 note() {
   test-tap:_check-pid
   local msg=$*
   msg="# ${msg//$'\n'/$'\n'\# }"
-  echo "$msg"
+  echo -e "$msg"
 }
 
 bail-out() {

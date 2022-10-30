@@ -84,7 +84,7 @@ new:main() (
 
   bpan "${opts1[@]}" init "${opts2[@]}"
 
-  if git:has-untracked; then
+  if +git:has-untracked; then
     git add .
     git commit --message='Initial commit'
   fi

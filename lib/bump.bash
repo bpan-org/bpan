@@ -51,7 +51,7 @@ bump:main() (
 
     git commit -q -a -m "Version $new_version"
 
-    commit=$(git:commit-sha)
+    commit=$(+git:commit-sha)
     say -y "Changes committed '${commit:0:8}'"
 
     git tag "$new_version"
@@ -81,12 +81,12 @@ bump:main() (
 
 bump:check-sanity() (
   pushed=false
-  git:in-top-dir ||
+  +git:in-top-dir ||
     error "'$app $cmd' must be at repo toplevel"
-  git:is-clean ||
+  +git:is-clean ||
     error "Can't '$app $cmd' with uncommited changes"
   if [[ $old_version != 0.0.0 ]]; then
-    git:tag-exists "$old_version" ||
+    +git:tag-exists "$old_version" ||
       error "No tag for current version '$old_version'"
   fi
 
@@ -95,14 +95,14 @@ bump:check-sanity() (
   [[ -f .bpan/config ]] ||
     error "'$app $cmd' require '.bpan/config' file"
 
-  git:tag-exists "$new_version" &&
+  +git:tag-exists "$new_version" &&
     error "Can't bump. Tag '$new_version' already exists."
 
   grep -q -i '^done = wip\>' <<<"$change_list" &&
     error "Can't '$app $cmd' with WIP commits"
 
   if $option_push; then
-    branch=$(git:branch-name)
+    branch=$(+git:branch-name)
     [[ $branch ]] ||
       error "Can't push. Not checked out to a branch."
     publish_branch=$(ini:get --file=.bpan/config package.branch || echo main)
@@ -114,9 +114,9 @@ bump:check-sanity() (
 bump:change-list() (
   (
     if [[ $old_version == 0.0.0 ]]; then
-      git:subject-lines
+      +git:subject-lines
     else
-      git:subject-lines "$old_version.."
+      +git:subject-lines "$old_version.."
     fi
   ) |
     while read -r line; do
@@ -207,7 +207,7 @@ bump:new-version() (
 )
 
 bump:push() (
-  branch=$(git:branch-name)
+  branch=$(+git:branch-name)
   git push -q --tag origin "$branch"
   say -y "Pushed to origin '$branch'"
 )

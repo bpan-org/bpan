@@ -29,11 +29,11 @@ register:preflight() {
     error "Your configured 'github.token' does not seem valid"
   o "GitHub token looks ok"
 
-  git:in-repo ||
+  +git:in-repo ||
     error "Not in a git repo directory"
   o "Inside a git repo directory"
 
-  git:is-clean ||
+  +git:is-clean ||
     error "Git repo has uncommitted changes"
   o "Git repo is in a clean state"
 
@@ -92,16 +92,16 @@ register:preflight() {
           "Try 'bpan bump'."
   o "Package version '$package_version' looks ok"
 
-  git:tag-exists "$package_version" ||
+  +git:tag-exists "$package_version" ||
     error "No tag '$package_version' found"
   o "Git tag '$package_version' exists"
 
-  commit=$(git:commit-sha "$package_version")
-  [[ $commit == "$(git:commit-sha HEAD)" ]] ||
+  commit=$(+git:commit-sha "$package_version")
+  [[ $commit == "$(+git:commit-sha HEAD)" ]] ||
     error "Git tag '$package_version' commit is not HEAD commit"
   o "Git commit for tag '$package_version' is HEAD commit"
 
-  git:tag-pushed "$package_version" ||
+  +git:tag-pushed "$package_version" ||
     error "Git tag '$package_version' not pushed"
   o "Git commit for tag '$package_version' is pushed to origin"
 

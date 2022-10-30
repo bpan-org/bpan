@@ -13,10 +13,10 @@ die() { printf '%s\n' "$@">&2;exit 1;}
 
 source "$BPAN_ROOT/lib/bpan.bash" --app
 bpan:source bashplus
+bpan:source bashplus/git
 bpan:source ini
 bpan:source say
 bpan:source bpan-util
-bpan:source git-utils
 bpan:source getopt "\
 getopt_default=--help
 getopt_cmds_find=true
@@ -107,8 +107,8 @@ set-env() {
     files+=("$root/config")
   fi
 
-  if git:in-repo . &&
-     dir=$(git:top-dir) &&
+  if +git:in-repo . &&
+     dir=$(+git:top-dir) &&
      [[ -f $dir/.bpan/config ]]
   then
     files+=( "$dir/.bpan/config" )

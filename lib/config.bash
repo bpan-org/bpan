@@ -20,9 +20,9 @@ config:main() (
   if [[ ${option_file-} ]]; then
     opts+=(--file="$option_file")
   elif $option_local; then
-    git:in-repo || error \
+    +git:in-repo || error \
       "'bpan config --local' can only be used inside a BPAN package repo"
-    opts+=(--file="$(git:top-dir)"/.bpan/config)
+    opts+=(--file="$(+git:top-dir)"/.bpan/config)
   elif $option_global; then
     opts+=(--file="$root"/config)
   fi

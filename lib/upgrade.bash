@@ -6,7 +6,7 @@ rebase    Upgrade using 'git pull --rebase'
 upgrade:main() (
   cd "$root" || exit
 
-  if git:is-dirty; then
+  if +git:is-dirty; then
     error "Can't upgrade, '$root' git repo has uncommitted changes"
   fi
 

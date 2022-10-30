@@ -24,7 +24,7 @@ publish:main() (
 )
 
 publish:get-env() {
-  git:in-repo ||
+  +git:in-repo ||
     error "Not in a git repo"
 
   [[ -f .bpan/config ]] ||
@@ -57,7 +57,7 @@ publish:get-env() {
     error "Can't publish version '0.0.0'." \
           "Try 'bpan bump'."
 
-  commit=$(git:sha1 "$version")
+  commit=$(+git:sha1 "$version")
 
   publish_html_package_url=https://github.com/$user/$repo/tree/$version
 }
@@ -66,17 +66,17 @@ publish:check-publish() (
   publish_branch=$(ini:get package.branch) || true
   publish_branch=${publish_branch:-main}
 
-  [[ $(git:branch-name) == "$publish_branch" ]] ||
+  [[ $(+git:branch-name) == "$publish_branch" ]] ||
     error "Not on publish branch '$publish_branch'"
 
   tag=$version
-  git:tag-exists "$tag" ||
+  +git:tag-exists "$tag" ||
     error "Version '$version' is not a git tag"
 
-  git:tag-pushed "$tag" ||
+  +git:tag-pushed "$tag" ||
     error "Tag '$tag' is not pushed to origin"
 
-  [[ $(git:sha1 "$tag") == $(git:sha1 HEAD) ]] ||
+  [[ $(+git:sha1 "$tag") == $(+git:sha1 HEAD) ]] ||
     error "Tag '$tag' is not HEAD commit"
 
   if [[ $package == github:bpan-org/bpan ]]; then
