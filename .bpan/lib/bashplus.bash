@@ -4,7 +4,7 @@
 # * Many are improved versions of existing builtins/commands.
 
 
-bashplus:version() ( echo '0.1.43' )
+bashplus:version() ( echo '0.1.44' )
 
 bashplus:main() {
   bashplus_lib=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)

@@ -1,3 +1,15 @@
+[version "0.1.70"]
+date = Wed Nov  2 11:10:21 AM PDT 2022
+done = Various refactoring and updates
+done = Support BPAN_BASH_DEBUG=1 for set -x
+done = Make commit quiet for --new
+done = Don't init/update man pages when pandoc 2 not installed
+done = Make tests pass when pandoc 2+ not available
+done = Make upgrade test work when not on main branch
+done = Pass on -x -v and -q when calling bpan from code
+done = Fix a failing test
+done = Make error message more clear
+
 [version "0.1.69"]
 date = Sun Oct 30 01:29:56 PM PDT 2022
 done = Integrate the bashplus refactoring into bpan
