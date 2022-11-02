@@ -14,7 +14,7 @@ install-test-bpan() {
 
   rm -fr "$root"
 
-  git clone -q .git "$root"
+  git clone --quiet --branch=main .git "$root"
   find .bpan bin etc lib share |
     cpio -dump "$root" &>/dev/null
 
