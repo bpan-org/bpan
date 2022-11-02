@@ -27,18 +27,18 @@ search:main() (
 
   num=${#found[*]}
   if [[ $num -eq 0 ]]; then
-    $tty && say-r "No matches found for search term '$term'"
+    $tty && say -r "No matches found for search term '$term'"
     return
   elif [[ $num -eq 1 ]]; then
-    $tty && say-g "Found 1 matching package:"
+    $tty && say -g "Found 1 matching package:"
   else
-    $tty && say-g "Found $num matching packages:"
+    $tty && say -g "Found $num matching packages:"
   fi
   echo
 
   for package in "${found[@]}"; do
     if $tty; then
-      say-y "* $package"
+      say -y "* $package"
     else
       echo "$package"
     fi

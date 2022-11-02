@@ -12,10 +12,8 @@ die() { printf '%s\n' "$@" >&2; exit 1; }
       "Try: 'source /path/to/bpan/.rc'."
 
 source "$BPAN_ROOT/lib/bpan.bash" --app
-bpan:source bashplus --cmd --data --err --fs --sym --sys
-bpan:source bashplus/git
+bpan:source bashplus --cmd --data --err --fs --git --say --sym --sys
 bpan:source ini
-bpan:source say
 bpan:source bpan-util
 bpan:source getopt "\
 getopt_default=--help

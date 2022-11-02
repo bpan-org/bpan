@@ -88,7 +88,7 @@ pkg:index-update() (
      pkg:api-mismatch
   then
     [[ ${BPAN_TESTING-} ]] ||
-      say+y "Updating BPAN package index..."
+      say -Y "Updating BPAN package index..."
     git -C "$BPAN_INSTALL/$bpan_index_repo_dir" pull \
       --quiet \
       --ff-only \

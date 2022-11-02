@@ -2,7 +2,7 @@
 
 source test/init
 
-make clean
+make --no-print-directory clean
 
 ok-not-e test/bin-pkg-bash/
 ok-not-e test/bpan-05-setup/

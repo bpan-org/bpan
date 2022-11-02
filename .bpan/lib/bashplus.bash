@@ -9,14 +9,21 @@ bashplus:version() ( echo '0.1.43' )
 bashplus:main() {
   bashplus_lib=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
 
+  bashplus_path=("$bashplus_lib")
+  if [[ ${BPAN_INSTALL-} ]]; then
+    bashplus_path+=("$BPAN_INSTALL/lib" "$BPAN_INSTALL/src")
+  elif [[ $BPAN_ROOT ]]; then
+    bashplus_path+=("$BPAN_ROOT/local/lib" "$BPAN_ROOT/local/src")
+  fi
+
   local arg
   for arg; do
     if [[ $arg =~ ^--([a-z]+)$ ]]; then
-      source "$bashplus_lib/bashplus/${BASH_REMATCH[1]}.bash" --
+      +source bashplus/"${arg#--}"
 
     elif [[ $arg =~ ^--bash=([345])\.([0-4])\+?$ ]]; then
       local n1=${BASH_REMATCH[1]} n2=${BASH_REMATCH[2]}
-      source "$bashplus_lib/sys.bash"
+      +source bashplus/sys
       "+sys:bash$n1$n2" ||
         error "Requires Bash version $n1.$n2 or higher"
 
@@ -35,40 +42,37 @@ bashplus:main() {
   set +x
   local lib=${1?}; shift
 
-  if [[ -f $bashplus_lib/$lib.bash ]]; then
-    source "$bashplus_lib/$lib.bash" "$@"
-    return
-  fi
-
   local path
-  while read -r path; do
+  for path in "${bashplus_path[@]}" $(IFS=:; echo ${BASHPLUS_PATH-}); do
     if [[ -f $path/$lib.bash ]]; then
       source "$path/$lib.bash" "$@"
-      break
+      return
     fi
-  done < <(IFS=':'; printf '%s\n' $PATH)
+  done
+
+  die "Unable to '+source $lib'"
 }
 
 # A simple 'die' function. Full featured version is in lib/bashplus/err.bash
 die() {
   set +x
   [[ $# -gt 0 ]] || set -- Died
-  warn "$@"
+  printf '%s\n' "$@" >&2
   exit 1
 }
 
 # A simple 'error' function. Full featured version is in lib/bashplus/err.bash
 error() {
   set +x
-  local msg="Error: $1"; shift
+  local msg="Error: ${1:-unknown}"; shift
   die "$msg" "$@"
 }
 
 # Print lines to stderr
-warn() {
+warn() (
   set +x
   printf '%s\n' "$@" >&2
-}
+)
 
 # Check if name is a callable function or command.
 +can() {

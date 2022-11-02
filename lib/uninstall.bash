@@ -26,10 +26,10 @@ uninstall:main() (
     path=$pkg_host/$pkg_owner/$pkg_name/$pkg_version
     name=$pkg_id=$pkg_version
     if [[ -d $BPAN_INSTALL/src/$path ]]; then
-      say-y "Uninstalling '$name':"
+      say -y "Uninstalling '$name':"
       uninstall:package "$path" "$name"
     else
-      say-r "'$name' is not installed"
+      say -r "'$name' is not installed"
     fi
   done
 )

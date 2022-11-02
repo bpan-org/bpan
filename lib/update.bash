@@ -67,13 +67,13 @@ update:require() (
       from=$root/$file
       to=.bpan/$file
       if +fs:file-same "$to" "$from"; then
-        say-y "CURRENT '$to'"
+        say -y "CURRENT '$to'"
       else
         (
           $option_verbose && set -x
           cp -Lp "$from" "$to"
         )
-        say-y "UPDATED '$to'"
+        say -y "UPDATED '$to'"
       fi
     fi
   )
@@ -114,9 +114,9 @@ update:require() (
           rm -f "$to"
           cp -Lp "$from" "$to"
         )
-        say-y "UPDATED '$to' from '$from'"
+        say -y "UPDATED '$to' from '$from'"
       else
-        say-y "CURRENT '$to'"
+        say -y "CURRENT '$to'"
       fi
     done < <(
       cd "$pkg_src" || exit

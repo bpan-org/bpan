@@ -1,7 +1,5 @@
 #!/bash
 
-bpan:source git-utils --
-
 export BPAN_INSTALL=$PWD/test/local
 mkdir -p "$BPAN_INSTALL"
 

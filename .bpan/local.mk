@@ -1,5 +1,17 @@
 v := 1
 
+IMPORTS := $(shell find .bpan/lib -type f)
+
+dev-import: $(IMPORTS)
+.bpan/%: ../bashplus/%
+	cp -p $< $@
+.bpan/%: ../getopt-bash/%
+	cp -p $< $@
+.bpan/%: ../ini-bash/%
+	cp -p $< $@
+.bpan/%: ../test-tap-bash/%
+	cp -p $< $@
+
 distclean:: clean
 	$(RM) config
 	$(RM) -r local/

@@ -310,7 +310,7 @@ add:file-copy() (
     mv "$temp" "$to"
   fi
 
-  say-y "$action '$to'"
+  say -y "$action '$to'"
 )
 
 add:file-render() (

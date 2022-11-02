@@ -37,7 +37,7 @@ upgrade:main() (
     say -y "Pulled new changes to '$root'"
   fi
 
-  say-y "Updating BPAN index file..."
+  say -y "Updating BPAN index file..."
   source-once util/pkg
   pkg:index-update
 )
