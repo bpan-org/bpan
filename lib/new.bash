@@ -80,7 +80,8 @@ new:main() (
 
   if +git:has-untracked; then
     git add .
-    git commit --message='Initial commit'
+    say -y "Making initial 'git commit'"
+    git commit --quiet --message='Initial commit'
   fi
 
   say -g "Created new BPAN project in '$path'"
