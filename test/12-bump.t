@@ -2,6 +2,10 @@
 
 source test/init
 
+if ! +cmd:ok-ver pandoc 2.0.0; then
+  export PATH=$PWD/test/fake-bin:$PATH
+fi
+
 P=test/bin-pkg-bash
 rm -fr "$P"
 

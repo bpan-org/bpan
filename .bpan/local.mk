@@ -36,6 +36,7 @@ test-docker-push: test-docker-build
 	docker push $(DOCKER_IMAGE)
 
 clean:
+	$(RM) core.*
 	$(RM) -r test/bin-pkg-bash/
 	$(RM) -r test/bpan-*/
 	$(RM) -r test/dir/

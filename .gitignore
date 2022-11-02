@@ -5,3 +5,4 @@
 /out
 /share/new/.gitignore
 /gh-pages/
+/core.*
