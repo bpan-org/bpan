@@ -111,12 +111,9 @@ test:docker-test() (
     set -- test
   fi
 
-  if $option_verbose; then
-    set -- -v "$@"
-  fi
-  if $option_quiet; then
-    set -- -q "$@"
-  fi
+  $option_quiet && set -- -q "$@"
+  $option_verbose && set -- -v "$@"
+  $option_debug && set -- -x "$@"
 
   docker-run bpan test "$@"
 )

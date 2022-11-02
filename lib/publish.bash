@@ -94,7 +94,7 @@ publish:check-publish() (
       error "$package version '$version' already published"
 
   say -y "Running tests"
-  bpan test
+  bpan-run test
   echo
 )
 
@@ -265,7 +265,7 @@ publish:gha-check-publish() {
     die "'$commit' is not the actual commit for '$package' tag '$version'"
 
   : "Run the package's test suite"
-  (cd package && bpan test -v) ||
+  (cd package && bpan-run test -v) ||
     die "$package v$version failed tests"
 }
 

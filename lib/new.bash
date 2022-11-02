@@ -65,24 +65,18 @@ new:main() (
     error "Directory '$dir' already exists and is not empty"
   fi
 
-  opts1=()
-  opts2=()
-
-  $option_quiet && opts1+=(--quiet)
-  $option_verbose && opts1+=(--verbose)
-  $option_debug && opts1+=(--debug)
-
-  $option_bin && opts2+=(--bin)
-  $option_lib && opts2+=(--lib)
-  $option_name && opts2+=(--name "$option_name")
-  $option_config && opts2+=(--config "$option_config")
-  $option_from && opts2+=(--from "$option_from")
+  opts=()
+  $option_bin && opts+=(--bin)
+  $option_lib && opts+=(--lib)
+  $option_name && opts+=(--name "$option_name")
+  $option_config && opts+=(--config "$option_config")
+  $option_from && opts+=(--from "$option_from")
 
   mkdir -p "$dir"
   path=$(cd "$dir" && pwd -P)
   cd "$dir" || exit
 
-  bpan "${opts1[@]}" init "${opts2[@]}"
+  bpan-run init "${opts[@]}"
 
   if +git:has-untracked; then
     git add .

@@ -1,5 +1,5 @@
 search:default() ( echo '--help' )
-search:usage() ( echo 'bpan [<bpan-opts>] search <search-term-regexp>' )
+search:usage() ( echo "$app [<$app-opts>] $cmd <$cmd-term-regexp>" )
 
 search:main() (
   [[ -t 1 ]] && tty=true || tty=false

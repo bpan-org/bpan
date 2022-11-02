@@ -196,6 +196,14 @@ source-once() {
   fi
 }
 
+bpan-run() (
+  opts=()
+  $option_quiet && opts+=(--quiet)
+  $option_verbose && opts+=(--verbose)
+  $option_debug && opts+=(--debug)
+  bpan "${opts[@]}" "$@"
+)
+
 todo() {
   error "'$app $cmd' not yet implemented\n"
 }

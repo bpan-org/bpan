@@ -111,7 +111,7 @@ register:preflight() {
   # Tests pass
 
   o "Running the test suite:"
-  bpan test ||
+  bpan-run test ||
     error "Test suite failed"
 }
 

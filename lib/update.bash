@@ -155,7 +155,7 @@ update:man() (
 
     MD2MAN_NUM=$num
     MD2MAN_NAME=$name
-    MD2MAN_DESC=$(bpan config package.title)
+    MD2MAN_DESC=$(ini:get package.title)
     MD2MAN_PROG="md2man v0.1.0"
     export MD2MAN_NUM MD2MAN_NAME MD2MAN_DESC MD2MAN_PROG
 

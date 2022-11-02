@@ -11,12 +11,6 @@ bump:main() (
     option_push=true
   fi
 
-  if $option_quiet; then
-    bpan='bpan --quiet'
-  else
-    bpan=bpan
-  fi
-
   old_version=$(bump:old-version)
   new_version=$(bump:new-version)
 
@@ -38,10 +32,10 @@ bump:main() (
     bump:update-version-vars
 
     say -y "Running 'bpan update'"
-    $bpan update
+    bpan-run update
 
     say -y "Running 'bpan test'"
-    $bpan test
+    bpan-run test
 
     if $option_dryrun; then
       echo
@@ -75,7 +69,7 @@ bump:main() (
   name=$(ini:get --file=.bpan/config package.name)
   if $option_publish && [[ $name != bpan ]]; then
     say -y "Running 'bpan publish'"
-    $bpan publish
+    bpan-run publish
   fi
 )
 
@@ -148,7 +142,7 @@ $(bump:change-list)"
 )
 
 bump:update-config-file() (
-  $bpan config --local package.version "$new_version"
+  ini:set --file=.bpan/config package.version "$new_version"
 
   say -y "Updated '.bpan/config' file to '$new_version'"
 )
@@ -178,7 +172,7 @@ bump:old-version() (
   [[ -f .bpan/config ]] ||
     error "Config file '.bpan/config' not found"
 
-  version=$($bpan config --local package.version)
+  version=$(ini:get package.version)
 
   [[ $version ]] ||
     error "No 'package.version' found in BPAN config file"
@@ -194,7 +188,7 @@ bump:new-version() (
     echo "$option_version"
 
   else
-    version=$($bpan config --local package.version) ||
+    version=$(ini:get package.version) ||
       error "Can't get 'package.version' from '.bpan/confg'"
 
     if [[ $version == 0.0.0 ]]; then

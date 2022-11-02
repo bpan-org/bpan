@@ -194,9 +194,5 @@ init:main() (
   fi
 
   say -y "RUNNING 'bpan update'"
-  if $option_quiet; then
-    bpan --quiet update
-  else
-    bpan update
-  fi
+  bpan-run update
 )
