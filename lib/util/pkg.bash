@@ -42,7 +42,7 @@ pkg:parse-id() {
   if [[ $pkg_host == github ]]; then
     pkg_repo=https://github.com/$pkg_owner/$pkg_name
   else
-    error "Invalid package host '$pkg_host'"
+    error "Invalid host '$pkg_host' for package '$pkg_id'"
   fi
 
   pkg_src=$BPAN_INSTALL/src/$pkg_host/$pkg_owner/$pkg_name/$pkg_version
