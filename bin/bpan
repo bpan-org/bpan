@@ -74,6 +74,8 @@ main() (
 
   getopt "$@"
 
+  $option_debug && export BPAN_BASH_DEBUG=true
+
   if [[ $option_version == true ]]; then
     echo "$app $VERSION"
 
