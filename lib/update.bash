@@ -132,8 +132,8 @@ update:require() (
 update:man() (
   [[ -d doc ]] || return 0
 
-  if ! +sys:is-cmd pandoc; then
-    say -r "Can't update man pages. Need 'pandoc'." >&2
+  if ! +cmd:ok-ver pandoc 2.0.0; then
+    say -r "Warning: Can't update man pages. Need 'pandoc'." >&2
     return
   fi
 
