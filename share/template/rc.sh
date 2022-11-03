@@ -19,12 +19,13 @@
 
 # tcsh
 test -n "$tcsh" && eval '\
+setenv (% NAME %)_SHELL tcsh \
 set s = ($_) \
 @ i = $#s - 1 \
 set d = `dirname $s[$i]` \
 setenv (% NAME %)_ROOT `cd $d && pwd -P` \
-setenv PATH "$(% NAME %)_ROOT/bin:$(% NAME %)_ROOT/local/bin:$PATH" \
-setenv MANPATH "$(% NAME %)_ROOT/man:$(% NAME %)_ROOT/local/man:`manpath -q`" \
+setenv PATH $(% NAME %)_ROOT/bin\:$(% NAME %)_ROOT/local/bin\:/usr/local/bin\:/usr/bin\:/bin \
+setenv MANPATH $(% NAME %)_ROOT/man\:$(% NAME %)_ROOT/local/man\:`manpath` \
 exit 0 \
 '
 
@@ -32,7 +33,7 @@ exit 0 \
 test -n "$BASH_VERSION" && eval '
 (% NAME %)_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
 PATH=$(% NAME %)_ROOT/bin:$(% NAME %)_ROOT/local/bin:$PATH
-MANPATH=$(% NAME %)_ROOT/man:$(% NAME %)_ROOT/local/man:$(manpath -q)
+MANPATH=$(% NAME %)_ROOT/man:$(% NAME %)_ROOT/local/man:$(manpath 2>/dev/null)
 export (% NAME %)_ROOT PATH MANPATH
 return
 '
@@ -41,7 +42,7 @@ return
 test -n "$ZSH_VERSION" && eval '
 (% NAME %)_ROOT=$(cd "$(dirname "$0")" && pwd -P)
 PATH=$(% NAME %)_ROOT/bin:$(% NAME %)_ROOT/local/bin:$PATH
-MANPATH=$(% NAME %)_ROOT/man:$(% NAME %)_ROOT/local/man:$(manpath -q)
+MANPATH=$(% NAME %)_ROOT/man:$(% NAME %)_ROOT/local/man:$(manpath 2>/dev/null)
 export (% NAME %)_ROOT PATH MANPATH
 return
 '
@@ -50,7 +51,7 @@ return
 test -n "$FISH_VERSION" && eval '
 set (% NAME %)_ROOT (cd (dirname (status filename)) && pwd -P)
 set PATH $(% NAME %)_ROOT/bin:$(% NAME %)_ROOT/local/bin:$PATH
-set MANPATH $(% NAME %)_ROOT/man:$(% NAME %)_ROOT/local/man:(manpath -q)
+set MANPATH $(% NAME %)_ROOT/man:$(% NAME %)_ROOT/local/man:(manpath 2>/dev/null)
 export (% NAME %)_ROOT PATH MANPATH
 exit
 '
@@ -59,7 +60,7 @@ exit
 test -n "$YASH_VERSION" && eval '
 (% NAME %)_ROOT=$(cd "$(dirname "$0")" && pwd -P)
 PATH=$(% NAME %)_ROOT/bin:$(% NAME %)_ROOT/local/bin:$PATH
-MANPATH=$(% NAME %)_ROOT/man:$(% NAME %)_ROOT/local/man:$(manpath -q)
+MANPATH=$(% NAME %)_ROOT/man:$(% NAME %)_ROOT/local/man:$(manpath 2>/dev/null)
 export (% NAME %)_SHELL (% NAME %)_ROOT PATH MANPATH
 return
 '
@@ -68,7 +69,7 @@ return
 # ash, dash, ksh, mksh, mrsh, posh, sh
 test -d "$(% NAME %)_ROOT" && eval '
 PATH=$(% NAME %)_ROOT/bin:$(% NAME %)_ROOT/local/bin:$PATH
-MANPATH=$(% NAME %)_ROOT/man:$(% NAME %)_ROOT/local/man:$(manpath -q)
+MANPATH=$(% NAME %)_ROOT/man:$(% NAME %)_ROOT/local/man:$(manpath 2>/dev/null)
 export (% NAME %)_ROOT PATH MANPATH
 return
 '

@@ -24,9 +24,10 @@ set s = ($_) \
 @ i = $#s - 1 \
 set d = `dirname $s[$i]` \
 setenv BPAN_ROOT `cd $d && pwd -P` \
-setenv PATH "$BPAN_ROOT/bin:$BPAN_ROOT/local/bin:$PATH" \
-setenv MANPATH "$BPAN_ROOT/man:$BPAN_ROOT/local/man:`manpath -q`" \
-bpan setup \
+setenv PATH $BPAN_ROOT/bin\:$BPAN_ROOT/local/bin\:/usr/local/bin\:/usr/bin\:/bin \
+setenv MANPATH $BPAN_ROOT/man\:$BPAN_ROOT/local/man\:`manpath` \
+setenv TERM xterm \
+bpan --setup \
 exit 0 \
 '
 
@@ -35,7 +36,7 @@ test -n "$BASH_VERSION" && eval '
 BPAN_SHELL=bash
 BPAN_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
 PATH=$BPAN_ROOT/bin:$BPAN_ROOT/local/bin:$PATH
-MANPATH=$BPAN_ROOT/man:$BPAN_ROOT/local/man:$(manpath -q)
+MANPATH=$BPAN_ROOT/man:$BPAN_ROOT/local/man:$(manpath 2>/dev/null)
 export BPAN_SHELL BPAN_ROOT PATH MANPATH
 bpan --setup
 source "$BPAN_ROOT/share/lib/complete.sh"
@@ -47,7 +48,7 @@ test -n "$ZSH_VERSION" && eval '
 BPAN_SHELL=zsh
 BPAN_ROOT=$(cd "$(dirname "$0")" && pwd -P)
 PATH=$BPAN_ROOT/bin:$BPAN_ROOT/local/bin:$PATH
-MANPATH=$BPAN_ROOT/man:$BPAN_ROOT/local/man:$(manpath -q)
+MANPATH=$BPAN_ROOT/man:$BPAN_ROOT/local/man:$(manpath 2>/dev/null)
 export BPAN_SHELL BPAN_ROOT PATH MANPATH
 bpan --setup
 source "$BPAN_ROOT/share/lib/complete.sh"
@@ -59,7 +60,7 @@ test -n "$FISH_VERSION" && eval '
 set BPAN_SHELL fish
 set BPAN_ROOT (cd (dirname (status filename)) && pwd -P)
 set PATH $BPAN_ROOT/bin:$BPAN_ROOT/local/bin:$PATH
-set MANPATH $BPAN_ROOT/man:$BPAN_ROOT/local/man:(manpath -q)
+set MANPATH $BPAN_ROOT/man:$BPAN_ROOT/local/man:(manpath 2>/dev/null)
 export BPAN_SHELL BPAN_ROOT PATH MANPATH
 bpan --setup
 grep -B999 "#/FISH" share/lib/complete.sh | string split0 | source
@@ -71,7 +72,7 @@ test -n "$YASH_VERSION" && eval '
 BPAN_SHELL=yash
 BPAN_ROOT=$(cd "$(dirname "$0")" && pwd -P)
 PATH=$BPAN_ROOT/bin:$BPAN_ROOT/local/bin:$PATH
-MANPATH=$BPAN_ROOT/man:$BPAN_ROOT/local/man:$(manpath -q)
+MANPATH=$BPAN_ROOT/man:$BPAN_ROOT/local/man:$(manpath 2>/dev/null)
 export BPAN_SHELL BPAN_ROOT PATH MANPATH
 bpan --setup
 return
@@ -82,7 +83,7 @@ return
 test -d "$BPAN_ROOT" && eval '
 BPAN_SHELL=$0
 PATH=$BPAN_ROOT/bin:$BPAN_ROOT/local/bin:$PATH
-MANPATH=$BPAN_ROOT/man:$BPAN_ROOT/local/man:$(manpath -q)
+MANPATH=$BPAN_ROOT/man:$BPAN_ROOT/local/man:$(manpath 2>/dev/null)
 export BPAN_SHELL BPAN_ROOT PATH MANPATH
 bpan --setup
 return
