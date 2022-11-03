@@ -8,7 +8,7 @@ update:options() (
 )
 
 update:main() (
-  if $option_list; then
+  if ${option_list:-false}; then
     update:list
 
   else

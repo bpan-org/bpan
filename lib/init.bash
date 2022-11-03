@@ -131,6 +131,7 @@ init:main() (
     add:config
 
   ini:init \
+    "$root/etc/config" \
     "$root/config" \
     "$(pwd)/.bpan/config"
 
@@ -193,6 +194,9 @@ init:main() (
     say -y "RUNNING 'git init'"
   fi
 
+  source-once update
+
   say -y "RUNNING 'bpan update'"
-  bpan-run update
+
+  update:main
 )

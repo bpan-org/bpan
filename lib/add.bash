@@ -154,7 +154,9 @@ add:main() (
 
   if $additions; then
     say -y "RUNNING 'bpan update'"
-    bpan-run update
+
+    source-once update
+    update:main
   fi
 )
 
