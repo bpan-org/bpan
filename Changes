@@ -1,3 +1,9 @@
+[version "0.1.71"]
+date = Thu Nov  3 07:59:56 AM PDT 2022
+done = Renumber tests
+done = Don't make unnecessary external bpan calls
+done = Update bashplus with stack-trace support
+
 [version "0.1.70"]
 date = Wed Nov  2 11:10:21 AM PDT 2022
 done = Various refactoring and updates
