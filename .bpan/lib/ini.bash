@@ -1,7 +1,11 @@
-ini:version() ( echo "0.1.3" )
+ini:version() ( echo "0.1.4" )
 
 ini:init() {
-  __ini_files=("$@")
+  if [[ $# -gt 0 ]]; then
+    __ini_files=("$@")
+  elif [[ ${#__ini_files[*]} -eq 0 ]]; then
+    ini:die "ini:init called without ini files"
+  fi
   __ini_from=''
   __ini_data=''
   __ini_vars=()

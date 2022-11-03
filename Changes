@@ -1,3 +1,9 @@
+[version "0.1.72"]
+date = Thu Nov  3 01:21:40 PM PDT 2022
+done = Fixes for .rc file and MANPATH
+done = Revert "Remove use of non-portable 'manpath' command"
+done = Make sure update is using correct config
+
 [version "0.1.71"]
 date = Thu Nov  3 07:59:56 AM PDT 2022
 done = Renumber tests
