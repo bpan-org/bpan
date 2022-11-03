@@ -8,6 +8,11 @@ update:options() (
 )
 
 update:main() (
+  ini:init \
+    "$root/etc/config" \
+    "$root/config" \
+    "$(pwd)/.bpan/config"
+
   if ${option_list:-false}; then
     update:list
 
