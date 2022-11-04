@@ -70,7 +70,7 @@ pkg:config-vars() {
 pkg:index-update() (
   pkg:config-vars
 
-  if [[ ${BPAN_TEST_INDEX_REPO-} ]]; then
+  if [[ -f ${BPAN_TEST_INDEX_REPO-} ]]; then
     bpan_index_repo_url=$BPAN_TEST_INDEX_REPO
   fi
 

@@ -1,5 +1,7 @@
 #!/bash
 
++can md2man || bpan -q install github:bpan-org/md2man
+
 export BPAN_INSTALL=$PWD/test/local
 mkdir -p "$BPAN_INSTALL"
 
@@ -12,7 +14,10 @@ install-test-bpan() {
 
   rm -fr "$root"
 
-  git clone --quiet --branch=main .git "$root"
+  local branch
+  branch=$(git config --file=Meta package.branch)
+
+  git clone --quiet --branch="$branch" .git "$root"
   find .bpan bin etc lib share |
     cpio -dump "$root" &>/dev/null
 
