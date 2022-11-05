@@ -1,3 +1,7 @@
+[version "0.1.73"]
+date = Sat Nov  5 09:05:30 AM PDT 2022
+done = Changes to make testing more reliable
+
 [version "0.1.72"]
 date = Thu Nov  3 01:21:40 PM PDT 2022
 done = Fixes for .rc file and MANPATH
