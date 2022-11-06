@@ -17,7 +17,7 @@ pkg:parse-id+() {
 pkg:parse-id() {
   pkg_name=''
   pkg_owner=''
-  pkg_domain=''
+  pkg_host=''
   pkg_version=''
   pkg_id=''
   pkg_src=''
@@ -78,21 +78,18 @@ pkg:index-update() (
     git clone --quiet \
       "$bpan_index_repo_url" \
       "$BPAN_INSTALL/$bpan_index_repo_dir"
-  fi
 
-  if ${force_update:-false} ||
-     [[ ${1-} == --force ]] ||
-     [[ ! -f $bpan_index_file ]] ||
-     [[ ! -h $bpan_index_file ]] ||
-     pkg:index-too-old ||
-     pkg:api-mismatch
-  then
-    [[ ${BPAN_TESTING-} ]] ||
+  elif ! [[ ${BPAN_TEST_RUNNING-} ]]; then
+    if ${force_update:-false} ||
+      pkg:index-too-old ||
+      pkg:api-mismatch
+    then
       say -Y "Updating BPAN package index..."
-    git -C "$BPAN_INSTALL/$bpan_index_repo_dir" pull \
-      --quiet \
-      --ff-only \
-      origin main
+      git -C "$BPAN_INSTALL/$bpan_index_repo_dir" pull \
+        --quiet \
+        --ff-only \
+        origin main
+    fi
   fi
 
   [[ -f $bpan_index_file ]] ||
@@ -115,8 +112,7 @@ pkg:index-too-old() (
   [[ -f $head ]] || return 0
   curr_time=$(+time:epoch)
   pull_time=$(+fs:mtime "$head")
-  minutes=$(ini:get index.cache-minutes || echo 5)
-  (( curr_time - (minutes * 60) > pull_time ))
+  (( curr_time - (3 * 60) > pull_time ))
 )
 
 pkg:api-mismatch() {

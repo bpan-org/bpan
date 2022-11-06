@@ -26,11 +26,6 @@ domain = github.com
 owner = bpan-org
 
 
-# Index related settings:
-[index]
-cache-minutes = 5
-
-
 # The main default BPAN package index:
 [index "bpan"]
 repo-url = https://github.com/bpan-org/bpan-index

@@ -31,7 +31,7 @@ install-test-bpan() {
 test-errors() {
   while read -r cmd && read -r msg; do
     cmd=${cmd#> }
-    has "$(BPAN_TESTING=1 $cmd 2>&1)" "$msg" \
+    has "$($cmd 2>&1)" "$msg" \
       "'$cmd' fails with: $msg"
   done
 }
