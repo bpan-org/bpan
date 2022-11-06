@@ -1,5 +1,5 @@
 [bpan]
-api-version = 1
+version = 0.1.73
 
 [package]
 name = bpan
@@ -25,11 +25,6 @@ site = http://ingy.net
 
 [owner]
 github = ingydotnet
-
-[require "package"]
-bashplus = 0.1.0+
-getopt-bash = 0.1.1+
-test-tap-bash = 0.1.0+
 
 [require "command"]
 bash = 3.2

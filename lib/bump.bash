@@ -14,6 +14,10 @@ bump:main() (
   old_version=$(bump:old-version)
   new_version=$(bump:new-version)
 
+  if [[ ${app-} == bpan ]]; then
+    VERSION=$new_version
+  fi
+
   change_list=$(bump:change-list)
 
   if [[ ! $change_list ]]; then
@@ -142,6 +146,9 @@ $(bump:change-list)"
 )
 
 bump:update-config-file() (
+  ini:set --file=.bpan/config bpan.version "$VERSION"
+  git config --file=.bpan/config --unset bpan.api-version || true
+
   ini:set --file=.bpan/config package.version "$new_version"
 
   say -y "Updated '.bpan/config' file to '$new_version'"

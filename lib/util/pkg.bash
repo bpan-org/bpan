@@ -24,15 +24,17 @@ pkg:parse-id() {
   pkg_repo=''
 
   local id=$1
+  local index=bpan    # TODO pass in value for multi index
+
   local w='[-a-zA-Z0-9_]'
   local v='[-a-zA-Z0-9_.]'
 
   [[ $id =~ ^($w+:)?($w+/)?($w+)(=$v+)?$ ]] ||
     error "Invalid package id '$id'"
 
-  pkg_host=${BASH_REMATCH[1]:-$(ini:get main.host)} || true
+  pkg_host=${BASH_REMATCH[1]:-$(ini:get "index.$index.host")} || true
   pkg_host=${pkg_host%:}
-  pkg_owner=${BASH_REMATCH[2]:-$(ini:get "host.$pkg_host.owner")} || true
+  pkg_owner=${BASH_REMATCH[2]:-$(ini:get "index.$index.owner")} || true
   pkg_owner=${pkg_owner%/}
   pkg_name=${BASH_REMATCH[3]}
   pkg_version=${BASH_REMATCH[4]:-''}
@@ -49,19 +51,20 @@ pkg:parse-id() {
 }
 
 pkg:config-vars() {
-  local index repo num
-  index=$(ini:get main.index)
-  bpan_index_repo_url=$(ini:get "index.$index.repo-url")
+  local index=bpan    # TODO pass in value for multi index
+  local repo
+
+  bpan_index_clone_url=$(ini:get "index.$index.clone")
+  bpan_index_branch=$(ini:get "index.$index.branch")
 
   local github_re='^https://github.com/([-a-zA-Z0-9]+/[-a-zA-Z0-9]+)$'
-  if [[ $bpan_index_repo_url =~ $github_re ]]; then
+  if [[ $bpan_index_clone_url =~ $github_re ]]; then
     repo=${BASH_REMATCH[1]}
     bpan_index_repo_dir=src/github/$repo
-    bpan_index_api_url=https://api.github.com/repos/$repo
-    num=$(ini:get "index.$index.publish-issue-num")
-    bpan_index_publish_url=https://api.github.com/repos/$repo/issues/$num/comments
+    bpan_index_api_url=$(ini:get index.$index.api)
+    bpan_index_publish_url=$(ini:get index.$index.publish)
   else
-    error "Invalid config value 'index.$index.repo-url'='$bpan_index_repo_url'"
+    error "Invalid config value 'index.$index.clone'='$bpan_index_clone_url'"
   fi
 
   bpan_index_file=$BPAN_INSTALL/$bpan_index_repo_dir/index.ini
@@ -71,12 +74,15 @@ pkg:index-update() (
   pkg:config-vars
 
   if [[ -f ${BPAN_TEST_INDEX_REPO-} ]]; then
-    bpan_index_repo_url=$BPAN_TEST_INDEX_REPO
+    bpan_index_clone_url=$BPAN_TEST_INDEX_REPO
+    bpan_index_branch=main
   fi
 
   if [[ ! -f $bpan_index_file ]]; then
-    git clone --quiet \
-      "$bpan_index_repo_url" \
+    git clone \
+      --quiet \
+      --branch "$bpan_index_branch" \
+      "$bpan_index_clone_url" \
       "$BPAN_INSTALL/$bpan_index_repo_dir"
 
   elif ! [[ ${BPAN_TEST_RUNNING-} ]]; then
