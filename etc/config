@@ -39,8 +39,7 @@ publish-issue-num = 1
 
 
 # Default template directory:
-# [template "bpan"]
-[template]
+[template "bpan"]
 add = $BPAN_ROOT/share/add
 
 

@@ -171,8 +171,21 @@ add:assert-config() {
 }
 
 add:set-env() {
-  base=${option_from:-$root/share/add}
-  [[ -d $base ]] || die "'$base' does not exist"
+  if [[ $option_from ]]; then
+    if [[ $option_from =~ ^[-a-z0-9]+$ ]]; then
+      base=$(ini:get "template.$option_from.add") ||
+        error "No config entry 'template.$option_from.add' found"
+    elif [[ -d $option_from ]]; then
+      base=$option_from
+    else
+      error "Invalid value for '--from=$option_from'"
+    fi
+  else
+    base=$(ini:get template.bpan.add) ||
+      error "No config entry 'template.bpan.add' found"
+  fi
+
+  [[ -d $base ]] || die "No sush directory '$base'"
   [[ -f $base/bpan-file.ini ]] ||
     error "'$base' is an invalid BPAN template file directory"
 
