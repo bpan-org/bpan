@@ -13,7 +13,7 @@ die() { printf '%s\n' "$@" >&2; exit 1; }
 
 # Put startup code in a function:
 bpan:main() {
-  [[ ${BPAN_BASH_DEBUG-} ]] && set -x
+  [[ ${BPAN_DEBUG_BASH-} ]] && set -x
 
   # Settings to make Bash as strict as possible:
   {

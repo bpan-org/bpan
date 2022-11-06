@@ -4,7 +4,7 @@
 # * Many are improved versions of existing builtins/commands.
 
 
-bashplus:version() ( echo '0.1.45' )
+bashplus:version() ( echo '0.1.46' )
 
 bashplus:main() {
   bashplus_lib=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
@@ -39,7 +39,7 @@ bashplus:main() {
 # Source a name like 'foo' or 'foo/bar':
 # shellcheck disable=2086
 +source() {
-  set +x
+  set "${BASHPLUS_DEBUG_BASH_X:-+x}"
   local lib=${1?}; shift
 
   local path
@@ -55,7 +55,7 @@ bashplus:main() {
 
 # A simple 'die' function. Full featured version is in lib/bashplus/err.bash
 die() {
-  set +x
+  set "${BASHPLUS_DEBUG_BASH_X:-+x}"
   [[ $# -gt 0 ]] || set -- Died
   printf '%s\n' "$@" >&2
   exit 1
@@ -63,14 +63,14 @@ die() {
 
 # A simple 'error' function. Full featured version is in lib/bashplus/err.bash
 error() {
-  set +x
+  set "${BASHPLUS_DEBUG_BASH_X:-+x}"
   local msg="Error: ${1:-unknown}"; shift
   die "$msg" "$@"
 }
 
 # Print lines to stderr
 warn() (
-  set +x
+  set "${BASHPLUS_DEBUG_BASH_X:-+x}"
   printf '%s\n' "$@" >&2
 )
 

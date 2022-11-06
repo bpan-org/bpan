@@ -221,7 +221,7 @@ publish:gha-get-env() {
       <<<"$gha_event_comment_body"
   )
 
-  set +x
+  set "${BPAN_DEBUG_BASH_X:-+x}"
   comment_body+="
 
 1. [Review Publish and Update Index]($gha_job_html_url)
@@ -331,7 +331,7 @@ publish:gha-update-comment-body() (
 publish:gha-post-status() (
   [[ ${gha_event_comment_reactions_url} ]] || return
 
-  set +x
+  set "${BPAN_DEBUG_BASH_X:-+x}"
   if $ok; then
     thumb='+1'
 

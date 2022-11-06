@@ -1,4 +1,4 @@
-ini:version() ( echo "0.1.4" )
+ini:version() ( echo "0.1.5" )
 
 ini:init() {
   if [[ $# -gt 0 ]]; then
@@ -21,7 +21,7 @@ ini:vars() {
 }
 
 ini:get() (
-  set +x
+  set "${INI_DEBUG_BASH_X:-+x}"
   ini:data "$@"
   [[ ${#args[*]} -gt 0 ]] ||
     ini:die "ini:get requires 1 or more keys"
@@ -50,7 +50,7 @@ ini:get() (
 )
 
 ini:set() (
-  set +x
+  set "${INI_DEBUG_BASH_X:-+x}"
   ini:data "$@"
   [[ ${#args[*]} -eq 2 ]] ||
     ini:die "ini:set requires 2 arguments: key/value"
@@ -62,7 +62,7 @@ ini:set() (
 )
 
 ini:add() (
-  set +x
+  set "${INI_DEBUG_BASH_X:-+x}"
   ini:data "$@"
   [[ ${#args[*]} -eq 2 ]] ||
     ini:die "ini:add requires 2 arguments: key/value"
@@ -74,7 +74,7 @@ ini:add() (
 )
 
 ini:all() (
-  set +x
+  set "${INI_DEBUG_BASH_X:-+x}"
   ini:data "$@"
   [[ ${#args[*]} -eq 1 ]] ||
     ini:die "ini:all requires 1 key"
@@ -82,7 +82,7 @@ ini:all() (
 )
 
 ini:list() (
-  set +x
+  set "${INI_DEBUG_BASH_X:-+x}"
   ini:data "$@"
   git config --file <(cat "${__ini_files[@]?}") --list |
     LC_ALL=C sort
@@ -130,7 +130,7 @@ ini:untab() (
 )
 
 ini:die() {
-  set +x
+  set "${INI_DEBUG_BASH_X:-+x}"
   printf '%s\n' "$@" >&2
   exit 1
 }

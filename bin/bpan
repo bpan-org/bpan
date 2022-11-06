@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+[[ ${BPAN_DEBUG-} == -x ]] && BPAN_DEBUG_BASH_X='-x'
+set "${BPAN_DEBUG_BASH_X:-+x}"
+
 VERSION=0.1.73
 
 die() { printf '%s\n' "$@" >&2; exit 1; }
@@ -72,7 +75,7 @@ main() (
 
   getopt "$@"
 
-  $option_debug && export BPAN_BASH_DEBUG=true
+  $option_debug && export BPAN_DEBUG_BASH=true
 
   if [[ $option_version == true ]]; then
     echo "$app $VERSION"
@@ -132,6 +135,11 @@ set-env() {
 
   source-once util/pkg
   pkg:config-vars
+
+  if [[ ${BPAN_DEBUG_BASH_X-} ]]; then
+    BASHPLUS_DEBUG_BASH_X=$BPAN_DEBUG_BASH_X
+    INI_DEBUG_BASH_X=$BPAN_DEBUG_BASH_X
+  fi
 }
 
 getopt-cmds-spec() {

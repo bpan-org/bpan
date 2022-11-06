@@ -11,7 +11,7 @@
 # starting with a '+' character.
 
 die() {
-  set +x
+  set "${BASHPLUS_DEBUG_BASH_X:-+x}"
   local arg args=() level=1 R='' Z=''
   local line=false plain=false stack=false
 
@@ -53,7 +53,7 @@ die() {
 }
 
 function +stack-trace() (
-  set +x
+  set "${BASHPLUS_DEBUG_BASH_X:-+x}"
 
   max=15
   if [[ ${BASHPLUS_DEBUG_STACK-} =~ ^[0-9]+$ ]] &&
@@ -94,7 +94,7 @@ function +stack-trace() (
 
 # Red die with 'Error: ' prefix
 error() {
-  set +x
+  set "${BASHPLUS_DEBUG_BASH_X:-+x}"
 
   local msg
 
@@ -110,7 +110,7 @@ error() {
 
 # Allow multiple traps to be performed.
 +trap() {
-  set +x
+  set "${BASHPLUS_DEBUG_BASH_X:-+x}"
   +can +sym || +source sym
   code=$1
   sig=${2:-exit}
