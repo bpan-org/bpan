@@ -11,7 +11,7 @@ test-errors <<'...'
 > bpan install x+y
 [bpan] Error: Invalid package id 'x+y'
 > bpan install gitbub:foo
-[bpan] Error: Invalid host 'gitbub' for package
+[bpan] Error: Can't find config value for 'host.gitbub.clone'
 > bpan install
 usage: bpan [<bpan-opts>] install [<cmd-opts>] <pkg-id...>
 > bpan install getopt-bash=9.9.9

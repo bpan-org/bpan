@@ -135,7 +135,7 @@ register:update-bpan-index() (
     mkdir -p "$index_dir"
     if ! $forked; then
       +post "$bpan_index_api_url/forks" >/dev/null
-      o "Forked $bpan_index_repo_url"
+      o "Forked $bpan_indec_clone_url"
       forked=true
     fi
     say -y "  * Waiting for fork to be ready to clone..."
@@ -151,10 +151,10 @@ register:update-bpan-index() (
 
   git -C "$index_dir" checkout --quiet -b "$fork_branch"
   o "Created branch '$fork_branch'"
-  git -C "$index_dir" fetch --quiet "$bpan_index_repo_url" main
-  o "Fetched main branch of '$bpan_index_repo_url'"
+  git -C "$index_dir" fetch --quiet "$bpan_indec_clone_url" main
+  o "Fetched main branch of '$bpan_indec_clone_url'"
   git -C "$index_dir" reset --quiet --hard FETCH_HEAD
-  o "Hard reset HEAD to '$bpan_index_repo_url' HEAD"
+  o "Hard reset HEAD to '$bpan_indec_clone_url' HEAD"
 
   entry=$(register:new-index-entry)
   head=$(head -n1 <<<"$entry")
@@ -171,12 +171,12 @@ register:update-bpan-index() (
           updated=true
         fi
         echo "$line"
-      done < index.ini
+      done < "$bpan_index_file"
       if ! $updated; then
         echo "$entry"
       fi
     ) > index
-    mv index index.ini
+    mv index "$bpan_index_file"
   )
 
   git -C "$index_dir" commit --quiet --all \
@@ -194,7 +194,7 @@ register:post-pull-request() (
   title="Register BPAN Package $package_id"
   body=$(+json-escape "\
 Please add this new package to the \
-[BPAN Index]($bpan_index_repo_url/blob/main/index.ini):
+[BPAN Index]($bpan_indec_clone_url/blob/$bpan_index_branch/$bpan_index_file):
 
     name:    $package_name
     version: $package_version

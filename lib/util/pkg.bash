@@ -53,11 +53,14 @@ pkg:parse-id() {
   fi
   pkg_id=$pkg_host:$pkg_owner/$pkg_name
 
-  if [[ $pkg_host == github ]]; then
-    pkg_repo=https://github.com/$pkg_owner/$pkg_name
-  else
-    error "Invalid host '$pkg_host' for package '$pkg_id'"
-  fi
+  pkg_repo=$(
+    owner=$pkg_owner
+    name=$pkg_name
+    ini:vars owner name
+    key=host.$pkg_host.clone
+    ini:get "$key" ||
+      error "Can't find config value for '$key'"
+  )
 
   pkg_src=$BPAN_INSTALL/src/$pkg_host/$pkg_owner/$pkg_name/$pkg_version
 }
@@ -69,17 +72,13 @@ pkg:config-vars() {
   bpan_index_clone_url=$(ini:get "index.$index.clone")
   bpan_index_branch=$(ini:get "index.$index.branch")
 
-  local github_re='^https://github.com/([-a-zA-Z0-9]+/[-a-zA-Z0-9]+)$'
-  if [[ $bpan_index_clone_url =~ $github_re ]]; then
-    repo=${BASH_REMATCH[1]}
-    bpan_index_repo_dir=src/github/$repo
-    bpan_index_api_url=$(ini:get index.$index.api)
-    bpan_index_publish_url=$(ini:get index.$index.publish)
-  else
-    error "Invalid config value 'index.$index.clone'='$bpan_index_clone_url'"
-  fi
+  repo=$(ini:get index.$index.repo)
+  bpan_index_repo_dir=src/github/$repo
+  bpan_index_api_url=$(ini:get index.$index.api)
+  bpan_index_publish_url=$(ini:get index.$index.publish)
+  bpan_index_file=$(ini:get index.$index.file)
 
-  bpan_index_file=$BPAN_INSTALL/$bpan_index_repo_dir/index.ini
+  bpan_index_file=$BPAN_INSTALL/$bpan_index_repo_dir/$bpan_index_file
 }
 
 pkg:index-update() (

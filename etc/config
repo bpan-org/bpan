@@ -5,7 +5,8 @@
 # up a custom system.
 
 [bpan]
-version = 0.1.73
+version = 0.1.74
+
 
 # Directory where bpan installs packages.
 # This can be overridden with BPAN_INSTALL variable.
@@ -13,13 +14,21 @@ version = 0.1.73
 prefix = $BPAN_ROOT/local
 
 
+# Main Git hosting entry:
+[host "github"]
+clone = https://github.com/$owner/$name
+api = https://api.github.com/repos
+
+
 # The main default BPAN package index:
 [index "bpan"]
-clone = https://github.com/bpan-org/bpan-index
+repo = bpan-org/bpan-index
+clone = https://github.com/$index.bpan.repo
 branch = main
+file = index.ini
 host = github
 owner = bpan-org
-api = https://api.github.com/repos/bpan-org/bpan-index
+api = $host.github.api/$index.bpan.repo
 publish = $index.bpan.api/issues/1/comments
 
 

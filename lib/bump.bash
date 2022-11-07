@@ -11,12 +11,12 @@ bump:main() (
     option_push=true
   fi
 
+  package_name=$(ini:get --file=.bpan/config package.name)
+
   old_version=$(bump:old-version)
   new_version=$(bump:new-version)
 
-  if [[ ${app-} == bpan ]]; then
-    VERSION=$new_version
-  fi
+  VERSION=$new_version
 
   change_list=$(bump:change-list)
 
@@ -70,8 +70,7 @@ bump:main() (
     bump:push
   fi
 
-  name=$(ini:get --file=.bpan/config package.name)
-  if $option_publish && [[ $name != bpan ]]; then
+  if $option_publish && [[ $package_name != bpan ]]; then
     say -y "Running 'bpan publish'"
     bpan-run publish
   fi
@@ -146,6 +145,10 @@ $(bump:change-list)"
 )
 
 bump:update-config-file() (
+  if [[ $package_name == bpan && -f etc/config ]]; then
+    ini:set --file=etc/config bpan.version "$new_version"
+  fi
+
   ini:set --file=.bpan/config bpan.version "$VERSION"
   git config --file=.bpan/config --unset bpan.api-version || true
 
