@@ -1,3 +1,11 @@
+[version "0.1.74"]
+date = Sun Nov  6 08:29:26 PM PST 2022
+done = Support 'update.package = name:@/part'
+done = Configuration file refactoring
+done = Speed up testing
+done = Fixes for 'bpan add --from=...'
+done = Support BPAN_DEBUG_BASH_X
+
 [version "0.1.73"]
 date = Sat Nov  5 09:05:30 AM PDT 2022
 done = Changes to make testing more reliable
