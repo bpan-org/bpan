@@ -27,9 +27,10 @@ pkg:parse-id() {
   local index=bpan    # TODO pass in value for multi index
 
   local w='[-a-zA-Z0-9_]'
-  local v='[-a-zA-Z0-9_.]'
+  local v='[.0-9]'
+  local ns='[^[:space:]]'
 
-  [[ $id =~ ^($w+:)?($w+/)?($w+)(=$v+)?$ ]] ||
+  [[ $id =~ ^($w+:)?($w+/)?($w+)(=$v+)?(:$ns+)?$ ]] ||
     error "Invalid package id '$id'"
 
   pkg_host=${BASH_REMATCH[1]:-$(ini:get "index.$index.host")} || true
@@ -37,8 +38,19 @@ pkg:parse-id() {
   pkg_owner=${BASH_REMATCH[2]:-$(ini:get "index.$index.owner")} || true
   pkg_owner=${pkg_owner%/}
   pkg_name=${BASH_REMATCH[3]}
-  pkg_version=${BASH_REMATCH[4]:-''}
+  pkg_version=${BASH_REMATCH[4]}
   pkg_version=${pkg_version#=}
+  pkg_file=${BASH_REMATCH[5]}
+  if [[ $pkg_file ]]; then
+    pkg_file=${pkg_file#:}
+    pkg_file=${pkg_file/@/$pkg_name}
+    if ! [[ $pkg_file =~ ^(bin|lib)/ ]]; then
+      pkg_file=lib/$pkg_file
+    fi
+    if [[ $pkg_file == lib/* && $pkg_file != *.bash ]]; then
+      pkg_file=$pkg_file.bash
+    fi
+  fi
   pkg_id=$pkg_host:$pkg_owner/$pkg_name
 
   if [[ $pkg_host == github ]]; then

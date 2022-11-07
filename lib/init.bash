@@ -179,8 +179,15 @@ init:main() (
       grep -v '^\.bpan/config$'
   )
 
+  pkgs=(
+    bashplus:@
+    bashplus:@/err
+    bashplus:@/sys
+    getopt-bash
+  )
+
   if $option_bin; then
-    for pkg in bashplus getopt-bash; do
+    for pkg in "${pkgs[@]}"; do
       add:package-added "$pkg" ||
         add:package "$pkg"
     done

@@ -26,9 +26,9 @@ update:main() (
 
     pkg:index-update
 
-    update:files
-    update:require
-    update:man
+    update:packages
+    update:templates
+    update:manpages
   fi
 )
 
@@ -39,31 +39,27 @@ update:list() (
     cut -c3-
 )
 
-update:files() (
-  source-once add
-  name=$(ini:get package.name)
-  while read -r line; do
-    line=${line#file.bpan.}
-    action=${line%%=*}
-    file=${line#*=}
+update:copy-file() (
+  from=$1
+  to=$2
 
-    if [[ $file == *\ * ]]; then
-      IFS=' ' read -r to from <<<"$file"
-    else
-      from=$root/share/add/$file
-      to=$file
-    fi
+  mkdir -p "$(dirname "$to")"
 
-    if [[ -e $to ]]; then
-      add:file-copy "$from" "$to"
-    fi
-  done < <(
-    ini:list --file=.bpan/config |
-      grep '^update\.file'
-  )
+  if [[ -h $to ]] ||
+     +fs:file-diff "$to" "$from"
+  then
+    (
+      $option_verbose && set -x
+      rm -f "$to"
+      cp -Lp "$from" "$to"
+    )
+    say -y "UPDATED '$to' from '$from'"
+  else
+    say -y "CURRENT '$to'"
+  fi
 )
 
-update:require() (
+update:packages() (
   (
     file=lib/bpan.bash
     if [[ -f .bpan/$file ]] &&
@@ -93,6 +89,14 @@ update:require() (
       install:main "$pkg"
     fi
 
+    if [[ $pkg_file ]]; then
+      from=$BPAN_INSTALL/$pkg_file
+      to=.bpan/$pkg_file
+
+      update:copy-file "$from" "$to"
+      continue
+    fi
+
     option_index=false
     pkg:parse-id "$pkg"
     if [[ ! $pkg_version ]]; then
@@ -100,8 +104,6 @@ update:require() (
     fi
 
     while read -r file; do
-      mkdir -p "$(dirname ".bpan/$file")"
-
       n=${file//[^\/]/}
       n=${#n}
       prefix=..
@@ -111,18 +113,7 @@ update:require() (
 
       from=$BPAN_INSTALL/$file
       to=.bpan/$file
-      if [[ -h $to ]] ||
-          +fs:file-diff "$to" "$from"
-      then
-        (
-          $option_verbose && set -x
-          rm -f "$to"
-          cp -Lp "$from" "$to"
-        )
-        say -y "UPDATED '$to' from '$from'"
-      else
-        say -y "CURRENT '$to'"
-      fi
+      update:copy-file "$from" "$to"
     done < <(
       cd "$pkg_src" || exit
       find bin lib share -type f 2>/dev/null || true
@@ -134,7 +125,31 @@ update:require() (
   )
 )
 
-update:man() (
+update:templates() (
+  source-once add
+  name=$(ini:get package.name)
+  while read -r line; do
+    line=${line#file.bpan.}
+    action=${line%%=*}
+    file=${line#*=}
+
+    if [[ $file == *\ * ]]; then
+      IFS=' ' read -r to from <<<"$file"
+    else
+      from=$root/share/add/$file
+      to=$file
+    fi
+
+    if [[ -e $to ]]; then
+      add:file-copy "$from" "$to"
+    fi
+  done < <(
+    ini:list --file=.bpan/config |
+      grep '^update\.file'
+  )
+)
+
+update:manpages() (
   [[ -d doc ]] || return 0
 
   if ! +cmd:ok-ver pandoc 2.0.0; then

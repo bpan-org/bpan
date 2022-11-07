@@ -283,7 +283,6 @@ add:package() (
   fi
 
   ini:add update.package "$package"
-  ini:set require.package."$package" '0.0.0+'
 
   say -y "${msg:-"ADDED PACKAGE '$package'"}"
 )

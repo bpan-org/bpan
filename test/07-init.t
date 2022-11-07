@@ -54,13 +54,6 @@ has "$(head -20 "$B/.rc")" \
   BIN_PKG_ROOT \
   "'$B/.rc has 'BIN_PKG_ROOT'"
 
-is "$(cd "$B" && bpan config require.package.bashplus)" \
-  '0.0.0+' \
-  "'[require.package]' has 'bashplus = 0.0.0+'"
-is "$(cd "$B" && bpan config require.package.getopt-bash)" \
-  '0.0.0+' \
-  "'[require.package]' has 'getopt-bash = 0.0.0+'"
-
 #------------------------------------------------------------------------------
 note "mkdir '$L'"
 note "cd '$L' && bpan --quiet init --lib"
