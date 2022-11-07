@@ -67,13 +67,15 @@ pkg:parse-id() {
 
 pkg:config-vars() {
   local index=bpan    # TODO pass in value for multi index
-  local repo
+  local repo host
 
   bpan_index_clone_url=$(ini:get "index.$index.clone")
   bpan_index_branch=$(ini:get "index.$index.branch")
 
+  host=$(ini:get "index.$index.host")
   repo=$(ini:get index.$index.repo)
-  bpan_index_repo_dir=src/github/$repo
+
+  bpan_index_repo_dir=src/$host/$repo
   bpan_index_api_url=$(ini:get index.$index.api)
   bpan_index_publish_url=$(ini:get index.$index.publish)
   bpan_index_file=$(ini:get index.$index.file)
