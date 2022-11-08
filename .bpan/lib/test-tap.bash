@@ -13,9 +13,13 @@ test-tap:main() {
   _test_tap__pid=${BASHPID:-0}
 
   if [[ $# -gt 0 ]]; then
-    [[ $# -eq 2 ]] ||
-      test-tap:die 'Usage: source test-tap.bash tests <number>'
-    plan "$@"
+    if ! [[ $# -eq 1 && $1 == -- ]]; then
+      if [[ $# -eq 2 && $1 == tests && $2 =~ ^[0-9]+$ ]]; then
+        plan "$@"
+      else
+        test-tap:die 'Usage: source test-tap.bash tests <number>'
+      fi
+    fi
   fi
 
   trap test-tap:end EXIT
