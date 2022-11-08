@@ -88,7 +88,7 @@ pkg:index-update() (
 
   if [[ -f ${BPAN_TEST_INDEX_REPO-} ]]; then
     bpan_index_clone_url=$BPAN_TEST_INDEX_REPO
-    bpan_index_branch=main
+    bpan_index_branch=${BPAN_TEST_INDEX_BRANCH:-main}
   fi
 
   if [[ ! -f $bpan_index_file ]]; then

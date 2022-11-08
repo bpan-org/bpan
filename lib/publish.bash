@@ -11,7 +11,7 @@ publish:main() (
   fi
 
   source-once util/pkg
-  pkg:index-update --force
+  force_update=true pkg:index-update
   pkg:config-vars
 
   publish:get-env

@@ -1,6 +1,6 @@
 register:main() (
   source-once util/pkg
-  pkg:index-update --force
+  force_update=true pkg:index-update
   pkg:config-vars
 
   say -y "Check Package is Ready to Register"
