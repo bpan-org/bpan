@@ -28,7 +28,10 @@ publish:get-env() {
     error "Not in a git repo"
 
   [[ -f .bpan/config ]] ||
-    error "Not in a BPAN package repo"
+    error "Not in a $APP package repo"
+
+  [[ $(ini:get package.name) != "$app" ]] ||
+    error "Can't use '$app publish' for '$app'."
 
   token=$(ini:get github.token) || true
   if [[ -z $token || $token == ___ ]]; then
@@ -55,7 +58,7 @@ publish:get-env() {
 
   [[ $version != 0.0.0 ]] ||
     error "Can't publish version '0.0.0'." \
-          "Try 'bpan bump'."
+          "Try '$app bump'."
 
   commit=$(+git:sha1 "$version")
 
@@ -79,15 +82,11 @@ publish:check-publish() (
   [[ $(+git:sha1 "$tag") == $(+git:sha1 HEAD) ]] ||
     error "Tag '$tag' is not HEAD commit"
 
-  if [[ $package == github:bpan-org/bpan ]]; then
-    error "Can't publish '$package'. Not a package."
-  fi
-
   ini:list --file="$bpan_index_file" |
     grep -q "^package\.$package\." ||
       error \
         "Can't publish '$package'." \
-        "Not yet registered. Try 'bpan register'."
+        "Not yet registered. Try '$app register'."
 
   ini:get --file="$bpan_index_file" \
     package."$package".v"${version//./-}" >/dev/null &&
@@ -108,7 +107,7 @@ publish:trigger-publish() (
   body="\
 <!-- $json -->
 
-#### Requesting BPAN Package Publish for [$package $version]\
+#### Requesting $APP Package Publish for [$package $version]\
 ($publish_html_package_url)
 <details><summary>Details</summary>
 
@@ -129,7 +128,7 @@ $(
 
 </details>
 
-**BPAN Index Updater triggered and will begin processing this request soon…**
+**$APP Index Updater triggered and will begin processing this request soon…**
 "
 
   url=$(publish:post-request "$body")
@@ -217,7 +216,7 @@ publish:gha-get-env() {
   version=$gha_request_version
   commit=$gha_request_commit
   comment_body=$(
-    grep -v '^\*\*BPAN Index Updater.*\*\*' \
+    grep -v '^\*\*'"$APP"' Index Updater.*\*\*' \
       <<<"$gha_event_comment_body"
   )
 
@@ -292,7 +291,7 @@ publish:gha-update-index() (
     "package.$package.date" "$(date -u)"
 
   git config user.email "update-index@bpan.org"
-  git config user.name "BPAN Update Index"
+  git config user.name "$APP Update Index"
 
   git commit -a -m "Publish $package=$version"
 
