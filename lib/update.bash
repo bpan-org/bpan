@@ -127,7 +127,7 @@ update:packages() (
 
 update:templates() (
   source-once add
-  name=$(ini:get package.name)
+  name=$(ini:get package.name || echo 'no-name')
   while read -r line; do
     line=${line#file.bpan.}
     action=${line%%=*}
@@ -140,9 +140,7 @@ update:templates() (
       to=$file
     fi
 
-    if [[ -e $to ]]; then
-      add:file-copy "$from" "$to"
-    fi
+    add:file-copy "$from" "$to"
   done < <(
     ini:list --file=.bpan/config |
       grep '^update\.file'
