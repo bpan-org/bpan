@@ -1,3 +1,8 @@
+[version "0.1.78"]
+date = Fri Nov 11 08:14:43 AM PST 2022
+done = Update index always for 'bpan update' command
+done = Update bpan dependencies
+
 [version "0.1.77"]
 date = Tue Nov  8 10:03:47 AM PST 2022
 done = Don't allow 'bpan publish' on bpan repo itself

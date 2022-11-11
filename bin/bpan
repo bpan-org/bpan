@@ -3,7 +3,7 @@
 [[ ${BPAN_DEBUG-} == -x ]] && BPAN_DEBUG_BASH_X='-x'
 set "${BPAN_DEBUG_BASH_X:-+x}"
 
-VERSION=0.1.77
+VERSION=0.1.78
 
 die() { printf '%s\n' "$@" >&2; exit 1; }
 
