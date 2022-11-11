@@ -1,3 +1,7 @@
+[version "0.1.79"]
+date = Fri Nov 11 09:56:03 AM PST 2022
+done = Switch to new bashplus +module syntax
+
 [version "0.1.78"]
 date = Fri Nov 11 08:14:43 AM PST 2022
 done = Update index always for 'bpan update' command

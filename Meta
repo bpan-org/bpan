@@ -1,9 +1,9 @@
 [bpan]
-version = 0.1.78
+version = 0.1.79
 
 [package]
 name = bpan
-version = 0.1.78
+version = 0.1.79
 title = Bash Package Manager
 license = MIT
 copyright = 2014-2022
