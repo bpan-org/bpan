@@ -7,19 +7,17 @@
 bashplus:version() ( echo '0.1.50' )
 
 bashplus:main() {
-  bashplus_lib=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
+  __bashplus_path=("$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)")
 
-  bashplus_path=("$bashplus_lib")
-  if [[ ${BPAN_INSTALL-} ]]; then
-    bashplus_path+=("$BPAN_INSTALL/lib" "$BPAN_INSTALL/src")
-  elif [[ $BPAN_ROOT ]]; then
-    bashplus_path+=("$BPAN_ROOT/local/lib" "$BPAN_ROOT/local/src")
+  local dir=${BPAN_INSTALL:-${BPAN_ROOT:+$BPAN_ROOT/local}}
+  if [[ -d $dir/lib ]]; then
+    __bashplus_path+=("$dir/lib")
   fi
 
   local arg
   for arg; do
-    if [[ $arg =~ ^--([a-z]+)$ ]]; then
-      +source bashplus/"${arg#--}"
+    if [[ $arg =~ ^\+([a-z]+)$ ]]; then
+      +source bashplus/"${arg#+}"
 
     elif [[ $arg =~ ^--bash=([345])\.([0-4])\+?$ ]]; then
       local n1=${BASH_REMATCH[1]} n2=${BASH_REMATCH[2]}
@@ -43,7 +41,10 @@ bashplus:main() {
   local lib=${1?}; shift
 
   local path
-  for path in "${bashplus_path[@]}" $(IFS=:; echo ${BASHPLUS_PATH-}); do
+  for path in \
+    "${__bashplus_path[@]}" \
+    $(IFS=:; echo ${BASHPLUS_PATH-})
+  do
     if [[ -f $path/$lib.bash ]]; then
       source "$path/$lib.bash" "$@"
       return

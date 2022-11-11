@@ -9,11 +9,20 @@ die() { printf '%s\n' "$@" >&2; exit 1; }
 
 # Assert that Bash in version 3.2 or higher:
 ( shopt -s compat31 2>/dev/null ) ||
-  die "bpan.bash requires bash version 3.2 or higher"
+  die "'bpan.bash' requires Bash version 3.2 or higher"
 
 # Put startup code in a function:
 bpan:main() {
   [[ ${BPAN_DEBUG_BASH-} ]] && set -x
+
+  # Add local .bpan/lib to BPAN_PATH
+  local dir
+  dir=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)
+  [[ ${BPAN_ROOT-} && $root == "${BPAN_ROOT%/}" ]] ||
+    dir=${dir%/.bpan}
+  dir+=/.bpan/lib
+  [[ -d $dir && ${BPAN_PATH-} != *"$dir"* ]] &&
+    BPAN_PATH=${BPAN_PATH:+$BPAN_PATH:}$dir
 
   # Settings to make Bash as strict as possible:
   {
@@ -28,6 +37,7 @@ bpan:main() {
   # 'source bpan.bash ...' can take arguments:
   local arg
   for arg do
+    # shellcheck disable=2018,2019
     case "$arg" in
       # No arguments intended.
       # This is needed to ignore global '$@'.
@@ -36,13 +46,9 @@ bpan:main() {
       # Set the 'app', 'App', and 'APP' variables:
       --app)
         app=$(basename "$0")
-        if ( shopt -s compat32 2>/dev/null ); then  # bash 4.0+
-          App=${app^}
-          APP=${app^^}
-        else
-          App=$(tr '[:lower:]' '[:upper:]' <<<"${app:0:1}")${app:1}
-          APP=$(tr '[:lower:]' '[:upper:]' <<<"$app")
-        fi
+        app=${app%.*}
+        App=$(tr a-z A-Z <<<"${app:0:1}")${app:1}
+        APP=$(tr a-z A-Z <<<"$app")
         ;;
 
       *) die "Unknown argument '$arg' for '${BASH_SOURCE[0]}'";;
@@ -50,17 +56,14 @@ bpan:main() {
   done
 }
 
-# Try to source a bash library from one of:
-# * A directory in BPAN_PATH
-# * Local .bpan/lib/
-# * BPAN_INSTALL/lib/
-# * BPAN_ROOT/local/lib/
+# Try to source a bash library in $BPAN_PATH:
 bpan:source() {
   [[ $# -gt 0 ]] ||
     die "Usage: bpan:source <bpan-library-name> [<arg>...]"
-  local name=$1; shift
-  local dir
 
+  local name=$1; shift
+
+  local dir
   # shellcheck disable=2086
   for dir in $(IFS=:; echo ${BPAN_PATH-}); do
     if [[ -f $dir/$name.bash ]]; then
@@ -68,24 +71,6 @@ bpan:source() {
       return
     fi
   done
-
-  dir=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)
-  [[ $dir == "${BPAN_ROOT%%/}" ]] ||
-    dir=${dir%/.bpan}
-  if [[ -f $dir/.bpan/lib/$name.bash ]]; then
-    source "$dir/.bpan/lib/$name.bash" "$@"
-    return
-  fi
-
-  if [[ ${BPAN_INSTALL-} ]] &&
-     [[ -d ${BPAN_INSTALL}/lib/$name.bash ]]; then
-    source "$dir/.bpan/lib/$name.bash" "$@"
-    return
-  elif [[ ${BPAN_ROOT-} ]] &&
-       [[ -d ${BPAN_ROOT}/local/lib/$name.bash ]]; then
-    source "${BPAN_ROOT}/local/lib/$name.bash" "$@"
-    return
-  fi
 
   die "Unable to 'bpan:source $name'"
 }

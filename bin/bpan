@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
 
-[[ ${BPAN_DEBUG-} == -x ]] && BPAN_DEBUG_BASH_X='-x'
-set "${BPAN_DEBUG_BASH_X:-+x}"
-
 VERSION=0.1.78
 
 die() { printf '%s\n' "$@" >&2; exit 1; }
 
 ( shopt -s compat31 2>/dev/null ) ||
-  die "'bpan' requires 'bash' version 3.2 or higher."
+  die "'bpan' requires Bash version 3.2 or higher."
+
+[[ ${BPAN_DEBUG-} == -x ]] && BPAN_DEBUG_BASH_X='-x'
+set "${BPAN_DEBUG_BASH_X:-+x}"
 
 [[ ${BPAN_ROOT:-} ]] ||
   die "BPAN_ROOT not set." \
       "Try: 'source /path/to/bpan/.rc'."
 
 source "$BPAN_ROOT/lib/bpan.bash" --app
-bpan:source bashplus --cmd --data --err --fs --git --say --sym --sys
+bpan:source bashplus +cmd +data +err +fs +git +say +sym +sys
 bpan:source ini
 bpan:source bpan-util
 bpan:source getopt "\

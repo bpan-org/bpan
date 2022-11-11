@@ -12,7 +12,7 @@
 
 source "$BPAN_ROOT/lib/bpan.bash" --
 
-bpan:source bashplus --cmd --sys
+bpan:source bashplus +cmd +sys
 bpan:source test-tap --
 
 export BPAN_TEST_RUNNING=1
