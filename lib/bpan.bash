@@ -80,10 +80,14 @@ bpan:source() {
   if [[ ${BPAN_INSTALL-} ]] &&
      [[ -d ${BPAN_INSTALL}/lib/$name.bash ]]; then
     source "$dir/.bpan/lib/$name.bash" "$@"
+    return
   elif [[ ${BPAN_ROOT-} ]] &&
        [[ -d ${BPAN_ROOT}/local/lib/$name.bash ]]; then
     source "${BPAN_ROOT}/local/lib/$name.bash" "$@"
+    return
   fi
+
+  die "Unable to 'bpan:source $name'"
 }
 
 bpan:main "$@"

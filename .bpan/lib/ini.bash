@@ -1,4 +1,4 @@
-ini:version() ( echo "0.1.5" )
+ini:version() ( echo "0.1.7" )
 
 ini:init() {
   if [[ $# -gt 0 ]]; then
@@ -20,8 +20,11 @@ ini:vars() {
   __ini_vars=("$@")
 }
 
-ini:get() (
+ini:get() {
+  local set=$-
   set "${INI_DEBUG_BASH_X:-+x}"
+  local __ini_files=("${__ini_files[@]}")
+  local args i key value var val
   ini:data "$@"
   [[ ${#args[*]} -gt 0 ]] ||
     ini:die "ini:get requires 1 or more keys"
@@ -43,14 +46,19 @@ ini:get() (
           ini:die "Possible infinite recursion in ini value '$key'"
       done
       echo "$value"
+      [[ $set != *x* ]] || set -x
       return
     fi
   done
+  [[ $set != *x* ]] || set -x
   return 1
-)
+}
 
-ini:set() (
+ini:set() {
+  local set=$-
   set "${INI_DEBUG_BASH_X:-+x}"
+  local __ini_files=("${__ini_files[@]}")
+  local args i file
   ini:data "$@"
   [[ ${#args[*]} -eq 2 ]] ||
     ini:die "ini:set requires 2 arguments: key/value"
@@ -59,10 +67,14 @@ ini:set() (
   git config --file "$file" "${args[@]}"
   ini:untab "$file"
   __ini_data=''
-)
+  [[ $set != *x* ]] || set -x
+}
 
-ini:add() (
+ini:add() {
+  local set=$-
   set "${INI_DEBUG_BASH_X:-+x}"
+  local __ini_files=("${__ini_files[@]}")
+  local args i file
   ini:data "$@"
   [[ ${#args[*]} -eq 2 ]] ||
     ini:die "ini:add requires 2 arguments: key/value"
@@ -71,7 +83,8 @@ ini:add() (
   git config --file "$file" --add "${args[@]}"
   ini:untab "$file"
   __ini_data=''
-)
+  [[ $set != *x* ]] || set -x
+}
 
 ini:all() (
   set "${INI_DEBUG_BASH_X:-+x}"
@@ -122,12 +135,13 @@ ini:data() {
   __ini_data=$(cat "${__ini_files[@]?}")
 }
 
-ini:untab() (
+ini:untab() {
+  local file text
   for file; do
     text=$(< "$file")
     echo "${text//$'\t'/}" > "$file"
   done
-)
+}
 
 ini:die() {
   set "${INI_DEBUG_BASH_X:-+x}"

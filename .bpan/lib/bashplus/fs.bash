@@ -1,6 +1,6 @@
 # Check if a file or directory is empty
-+fs:empty() (
-  path=${1?}
++fs:empty() {
+  local path=${1?}
   if [[ -f $path ]]; then
     ! [[ -s $path ]]
   elif [[ -d $path ]]; then
@@ -8,23 +8,23 @@
   else
     die "'$path' is not a file or directory"
   fi
-)
+}
 
 # Get the absolute path of a dirname
-+fs:dirname() (
++fs:dirname() {
   cd "$(dirname "$1")" || exit
   pwd -P
-)
+}
 
 # Get the absolute path of a directory
-+fs:dirpath() (
++fs:dirpath() {
   cd "$1" || exit
   pwd -P
-)
+}
 
 # Check if 2 files are the same or different.
-+fs:file-same() ( diff -q "$1" "$2" &>/dev/null )
-+fs:file-diff() ( ! +fs:file-same "$@" )
++fs:file-same() { diff -q "$1" "$2" &>/dev/null; }
++fs:file-diff() { ! +fs:file-same "$@"; }
 
 # mktemp files and dirs that automatically get deleted at end of scope.
 +fs:mktemp() {
@@ -39,7 +39,7 @@
 
 # Get file modification time in epoch seconds
 if [[ $OSTYPE == darwin* ]]; then
-  +fs:mtime() ( stat -f %m "$1" )
+  +fs:mtime() { stat -f %m "$1"; }
 else
-  +fs:mtime() ( stat -c %Y "$1" )
+  +fs:mtime() { stat -c %Y "$1"; }
 fi

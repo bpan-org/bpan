@@ -52,7 +52,7 @@ die() {
   exit 1
 }
 
-function +stack-trace() (
++stack-trace() (
   set "${BASHPLUS_DEBUG_BASH_X:-+x}"
 
   max=15

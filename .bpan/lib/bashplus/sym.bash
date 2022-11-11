@@ -14,34 +14,36 @@ if [[ ${EPOCHREALTIME-} != "${EPOCHREALTIME-}" ]]; then
   }
 # uuidgen is pretty standard and pretty fast
 elif +can uuidgen; then
-  +sym() (
+  +sym() {
+    local s
     s=$(uuidgen)
     echo "${1:-sym}_${s//-/_}"
-  )
+  }
 # BSD date (macOS) doesn't support nanoseconds
 elif date --version &>/dev/null; then
-  +sym() (
+  +sym() {
     echo "${1:-sym}_$(date '+%s_%N')"
-  )
+  }
 # `od` is super common but check for /dev/urandom
 elif +can od && [[ -e /dev/urandom ]]; then
-  +sym() (
+  +sym() {
+    local words
     read -ra words < <(od -A n -t x2 -N 16 /dev/urandom)
     echo "${1:-sym}_$(printf '%s' "${words[@]}")"
-  )
+  }
 # Bash's RANDOM is 3.2+ but can also be spoiled by unset.
 elif [[ ${RANDOM}_${RANDOM} != ${RANDOM}_${RANDOM} ]]; then
   readonly RANDOM
-  +sym() (
+  +sym() {
     echo "${1:-sym_}_${RANDOM}_${RANDOM}_${RANDOM}_${RANDOM}"
-  )
+  }
 # Try perl
 elif +can perl; then
-  +sym() (
+  +sym() {
     echo "${1:-sym_}_$(
       perl -MTime::HiRes -e 'print join "_", Time::HiRes::gettimeofday'
     )"
-  )
+  }
 else
   die "bashplus can't define '+sym'"
 fi

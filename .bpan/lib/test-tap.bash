@@ -25,7 +25,8 @@ test-tap:main() {
   trap test-tap:end EXIT
 }
 
-test-tap:label() (
+test-tap:label() {
+  local label G W
   label=$1
   G=${got-}
   W=${want-}
@@ -38,7 +39,7 @@ test-tap:label() (
   label=${label//\%W/$W}
 
   echo -e "$label"
-)
+}
 
 test-tap:end() {
   local rc=$?

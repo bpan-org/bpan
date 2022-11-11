@@ -146,24 +146,24 @@ getopt-cmds-spec() {
   source-once "$cmd"
   local help="h,help  Get help for '$app $cmd'"
 
-  if +sys:is-fun "$cmd:getopt"; then
+  if +sys:is-func "$cmd:getopt"; then
     "$cmd:getopt"
 
   else
     local usage='' options=''
-    if +sys:is-fun "$cmd:default"; then
+    if +sys:is-func "$cmd:default"; then
       usage+="getopt_default=($("$cmd:default"))"$'\n\n'
     fi
-    if +sys:is-fun "$cmd:usage"; then
+    if +sys:is-func "$cmd:usage"; then
       usage+=$("$cmd:usage")
     else
       usage+="$app [<$app-opts>] $cmd [<$cmd-opts>]"
-      if +sys:is-fun "$cmd:help"; then
+      if +sys:is-func "$cmd:help"; then
         usage+=$'\n\n'
         usage+="Use '$app help $cmd' for detailed help."
       fi
     fi
-    if +sys:is-fun "$cmd:options"; then
+    if +sys:is-func "$cmd:options"; then
       options=$("$cmd:options")
     fi
     echo "\

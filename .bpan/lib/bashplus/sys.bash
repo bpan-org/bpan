@@ -12,11 +12,11 @@
 +sys:is-cmd() [[ $(command -v "${1:?+sys:cmd? requires a command name}") ]]
 
 # Check if name is a function.
-+sys:is-fun() [[
-  $(type -t "${1:?+sys:fun requires a function name}") == function ]]
++sys:is-func() [[
+  $(type -t "${1:?+sys:func requires a function name}") == function ]]
 
 # Check if internet is reachable.
-+sys:online() ( ping -q -c1 8.8.8.8 &>/dev/null )
++sys:online() { ping -q -c1 8.8.8.8 &>/dev/null; }
 
 # OS type checks:
 +sys:is-linux() [[ $OSTYPE == linux* ]]

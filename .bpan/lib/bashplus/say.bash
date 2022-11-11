@@ -50,20 +50,20 @@ say() (
   fi
 )
 
-+say:d() ( +say:color "$D" "$@" )
-+say:r() ( +say:color "$R" "$@" )
-+say:g() ( +say:color "$G" "$@" )
-+say:y() ( +say:color "$Y" "$@" )
-+say:b() ( +say:color "$B" "$@" )
-+say:m() ( +say:color "$M" "$@" )
-+say:c() ( +say:color "$C" "$@" )
-+say:w() ( +say:color "$W" "$@" )
++say:d() { +say:color "$D" "$@"; }
++say:r() { +say:color "$R" "$@"; }
++say:g() { +say:color "$G" "$@"; }
++say:y() { +say:color "$Y" "$@"; }
++say:b() { +say:color "$B" "$@"; }
++say:m() { +say:color "$M" "$@"; }
++say:c() { +say:color "$C" "$@"; }
++say:w() { +say:color "$W" "$@"; }
 
-+say:D() ( +say:color "$DD" "$@" )
-+say:R() ( +say:color "$RR" "$@" )
-+say:G() ( +say:color "$GG" "$@" )
-+say:Y() ( +say:color "$YY" "$@" )
-+say:B() ( +say:color "$BB" "$@" )
-+say:M() ( +say:color "$MM" "$@" )
-+say:C() ( +say:color "$CC" "$@" )
-+say:W() ( +say:color "$WW" "$@" )
++say:D() { +say:color "$DD" "$@"; }
++say:R() { +say:color "$RR" "$@"; }
++say:G() { +say:color "$GG" "$@"; }
++say:Y() { +say:color "$YY" "$@"; }
++say:B() { +say:color "$BB" "$@"; }
++say:M() { +say:color "$MM" "$@"; }
++say:C() { +say:color "$CC" "$@"; }
++say:W() { +say:color "$WW" "$@"; }

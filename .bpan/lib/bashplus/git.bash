@@ -5,61 +5,62 @@
     die "Not in a git repo"
 }
 
-+git:branch-name() (
++git:branch-name() {
+  local name
   +git:assert-in-repo .
   name=$(git rev-parse --abbrev-ref HEAD)
   [[ $name ]] || die
   [[ $name == HEAD ]] && name=''
   echo "$name"
-)
+}
 
-+git:commit-sha() (
++git:commit-sha() {
   +git:assert-in-repo .
   git rev-parse "${1:-HEAD}"
-)
+}
 
-+git:has-ref() (
++git:has-ref() {
   +git:assert-in-repo .
   git rev-parse "$1" &>/dev/null
-)
+}
 
-+git:has-untracked() (
++git:has-untracked() {
   +git:in-repo &&
   git status |
     grep -q '^Untracked files:'
-)
+}
 
-+git:in-repo() (
++git:in-repo() {
   +git:is-repo .
-)
+}
 
 +git:in-top-dir() [[
   $(pwd -P) == $(+git:top-dir .)
 ]]
 
-+git:is-clean() (
++git:is-clean() {
   ! +git:is-dirty
-)
+}
 
-+git:is-dirty() (
++git:is-dirty() {
   +git:assert-in-repo .
   [[ $(git diff --stat) ]]
-)
+}
 
-+git:is-repo() (
++git:is-repo() {
   cd "${1:-.}" || die
   git rev-parse --is-inside-work-tree &>/dev/null
-)
+}
 
-+git:sha1() (
++git:sha1() {
   git rev-parse "${1?}" 2>/dev/null ||
     die "Can't get commit sha1 for git ref '$1'"
-)
+}
 
-+git:subject-lines() (
++git:subject-lines() {
   +git:assert-in-repo .
   git log --pretty --format='%s' "$@"
-)
+}
 
 +git:tag-exists() [[
   $(git tag --list "${1?}") == "$1"
@@ -69,7 +70,7 @@
   -n $(git ls-remote --tags origin "${1?}")
 ]]
 
-+git:top-dir() (
++git:top-dir() {
   +git:assert-in-repo .
   git rev-parse --show-toplevel
-)
+}

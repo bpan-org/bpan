@@ -2,18 +2,23 @@
 +cmd:ok() [[ $(command -v "${1:?+cmd:ok requires a command name}") ]]
 
 # Functions to assert that commands are available.
-+cmd:assert() ( +is-cmd "$@" ||
-  error "Command '$1' is required" )
-+cmd:assert-ver() ( +cmd:ok-ver "$@" ||
-  error "Command '$1' version '$2' or higher is required" )
++cmd:assert() {
+  +is-cmd "$@" ||
+    error "Command '$1' is required"
+}
++cmd:assert-ver() {
+  +cmd:ok-ver "$@" ||
+    error "Command '$1' version '$2' or higher is required"
+}
 
 # Assert stable versions of heavily used commands:
-+cmd:assert-perl() ( +cmd:assert-ver perl ${1:-5.10.1} )
-+cmd:assert-git()  ( +cmd:assert-ver git  ${1:-2.9}    )
++cmd:assert-perl() { +cmd:assert-ver perl ${1:-5.10.1}; }
++cmd:assert-git()  { +cmd:assert-ver git  ${1:-2.9}; }
 
 # Check if command exists and is at or above a version.
-+cmd:ok-ver() (
-  command=$1 version=$2
++cmd:ok-ver() {
+  local command=$1 version=$2
+  local out got want
 
   out=$("$command" --version 2>/dev/null) ||
     return
@@ -36,4 +41,4 @@
       ))
     ))
   ))
-)
+}
