@@ -17,19 +17,24 @@ update:main() (
     update:list
 
   else
-    source-once install
     source-once util/pkg
 
     config=.bpan/config
     [[ -f $config ]] ||
       error "Can't 'bpan update'. No '$config' file."
 
-    pkg:index-update
+    force_update=true pkg:index-update
 
-    update:packages
-    update:templates
-    update:manpages
+    update:apply
   fi
+)
+
+update:apply() (
+  source-once install
+
+  update:packages
+  update:templates
+  update:manpages
 )
 
 update:list() (

@@ -156,7 +156,7 @@ add:main() (
     say -y "RUNNING 'bpan update'"
 
     source-once update
-    update:main
+    update:apply
   fi
 )
 

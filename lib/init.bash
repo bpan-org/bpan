@@ -205,5 +205,5 @@ init:main() (
 
   say -y "RUNNING 'bpan update'"
 
-  update:main
+  update:apply
 )
