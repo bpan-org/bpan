@@ -24,9 +24,9 @@ source = https://github.com/$owner/$name
 
 # The main default BPAN package index:
 [index "bpan"]
-repo = bpan-org/bpan-index
+repo = bpan-org/new-index
 source = $host.github.https/$index.bpan.repo
-branch = main
+branch = index-2.0
 file = index.ini
 host = github
 owner = bpan-org

@@ -9,7 +9,7 @@ license = MIT
 copyright = 2014-2022
 
 repo = https://github.com/bpan-org/bpan
-branch = main
+branch = index-2.0
 site = $package.repo
 bug = $package.repo/issues/
 irc = irc.libera.chat/bpan
