@@ -67,7 +67,7 @@
 ]]
 
 +git:tag-pushed() [[
-  -n $(git ls-remote --tags origin "${1?}")
+  -n $(git ls-remote --tags "${2:-origin}" "${1?}")
 ]]
 
 +git:top-dir() {
