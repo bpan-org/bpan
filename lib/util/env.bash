@@ -1,3 +1,7 @@
+env:bpan-version() (
+  echo "$VERSION"
+)
+
 env:name() (
   [[ ${name-} ]] ||
     die "'\$name' not defined"
@@ -70,7 +74,7 @@ env:github-user-id() (
   unset id
 
   if [[ -f $root/config ]]; then
-    id=$(ini:get --file="$root/config" github.user) || true
+    id=$(ini:get --file="$root/config" host.github.user) || true
   fi
 
   if ! [[ $id ]]; then
@@ -109,6 +113,10 @@ env:markdown-title() (
   printf '%s\n%s' "$name" "$line"
 )
 
+env:pkg-title-default() (
+  echo "CHANGEME short description of '$(env:pkg)'"
+)
+
 env:readme-title() (
   name=$(env:repo-name)
   len=${#name}
@@ -125,4 +133,3 @@ env:repo-name() (
   fi
   echo "$name"
 )
-

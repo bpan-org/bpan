@@ -5,7 +5,7 @@
 -->
 (% markdown-title %)
 
-Your tagline for '(% pkg %)'
+(% pkg-title-default %)
 
 ## Synopsis
 

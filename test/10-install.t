@@ -12,7 +12,7 @@ test-install-setup() {
 
   I=$BPAN_INSTALL
 
-  trap test-install-teardown exit
+#   trap test-install-teardown exit
 }
 
 test-install-teardown() (
@@ -33,10 +33,10 @@ test-install-teardown() (
 
 {
   test-install-setup
-  command='bpan -q install github:bpan-org/getopt-bash=0.1.0'
+  command='bpan -q install github:bpan-org/getopt-bash=0.1.17'
   ok "$($command)" \
     "'$command' works"
-  ok-d "$I/src/github/bpan-org/getopt-bash/0.1.0/"
+  ok-d "$I/src/github/bpan-org/getopt-bash/0.1.17/"
   ok-h "$I/lib/getopt.bash"
   ok-f "$I/lib/getopt.bash"
   ok-h "$I/man/man3/getopt.3"
@@ -56,7 +56,7 @@ test-install-teardown() (
           find . \
             -mindepth 1 \
             -type f \
-            -not -path './src/github/*/bpan-index/*' \
+            -not -path './src/github/*/*-index/*' \
             -not -path './src/github/*/getopt-bash/.git/*'
       )" \
     "" \

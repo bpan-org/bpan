@@ -10,14 +10,14 @@ search:main() (
   term=$(IFS='|'; echo "$*")
   pattern="=.*($term)"
 
-  if [[ ! -f $bpan_index_file ]]; then
+  if [[ ! -f $bpan_index_path ]]; then
     source-once util/pkg
     pkg:index-update
   fi
 
   # shellcheck disable=2207
   found=($(
-    git config -l -f "$bpan_index_file" |
+    git config -l -f "$bpan_index_path" |
       grep -i -E "$pattern" |
       grep '^package\.' |
       cut -d. -f2 |

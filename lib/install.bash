@@ -59,7 +59,7 @@ install:main() (
 
     if [[ ! -d $pkg_src ]]; then
       git -C "$base" worktree add --force --quiet "$pkg_src" "$pkg_version" ||
-        error "Can't add git worktree for '$pkg_id=$var'"
+        error "Can't add git worktree for '$pkg_id=$pkg_version'"
       if [[ $(git -C "$pkg_src" rev-parse HEAD) != "$pkg_commit" ]]; then
         rm -fr "$pkg_src"
         error "Bad commit: package '$pkg_id' version '$pkg_version' commit '$pkg_commit'"

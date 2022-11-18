@@ -1,7 +1,8 @@
 # TODO redirect from https://bpan.org/publish-requests
 
-publish:options() (
-  echo "c,check     Just run preflight checks. Don't publish"
+publish:options() (cat <<...
+c,check     Just run preflight checks. Don't publish
+...
 )
 
 publish:main() (
@@ -33,9 +34,10 @@ publish:get-env() {
   [[ $(ini:get package.name) != "$app" ]] ||
     error "Can't use '$app publish' for '$app'."
 
-  token=$(ini:get github.token) || true
-  if [[ -z $token || $token == ___ ]]; then
-    error "Missing or invalid github.token in $root/config"
+  token=$(ini:get host.github.token) ||
+    error "No entry for 'host.github.token' in $root/config"
+  if [[ $token != *????????????????????* ]]; then
+    error "Missing or invalid host.github.token in $root/config"
   fi
 
   local url
@@ -82,13 +84,13 @@ publish:check-publish() (
   [[ $(+git:sha1 "$tag") == $(+git:sha1 HEAD) ]] ||
     error "Tag '$tag' is not HEAD commit"
 
-  ini:list --file="$bpan_index_file" |
+  ini:list --file="$bpan_index_path" |
     grep -q "^package\.$package\." ||
       error \
         "Can't publish '$package'." \
         "Not yet registered. Try '$app register'."
 
-  ini:get --file="$bpan_index_file" \
+  ini:get --file="$bpan_index_path" \
     package."$package".v"${version//./-}" >/dev/null &&
       error "$package version '$version' already published"
 
@@ -209,15 +211,27 @@ publish:gha-main() (
 )
 
 publish:gha-get-env() {
-  bpan_index_file=index.ini
+  index_file=index.ini
 
   set -x
-  package=$gha_request_package
-  version=$gha_request_version
-  commit=$gha_request_commit
+  package_id=$gha_request_package
+  package_version=$gha_request_version
+  package_commit=$gha_request_commit
+  package_sha512=$(
+    cd package ||exit
+    +git:commit-sha512 "$package_version"
+  )
   comment_body=$(
     grep -v '^\*\*'"$APP"' Index Updater.*\*\*' \
       <<<"$gha_event_comment_body"
+  )
+  package_title=$(
+    git config --file="package/.$app/config" \
+      package.title
+  )
+  package_license=$(
+    git config --file="package/.$app/config" \
+      package.license
   )
 
   set "${BPAN_DEBUG_BASH_X:-+x}"
@@ -229,7 +243,7 @@ publish:gha-get-env() {
   $option_debug && set -x
 
   if [[ ${BPAN_INDEX_UPDATE_TESTING-} ]]; then
-    v=$(git config -f "$bpan_index_file" "package.$package.version")
+    v=$(git config -f "$index_file" "package.$package_id.version")
     test_version=${v%.*}.$(( ${v##*.} + 1 ))
   fi
 }
@@ -237,63 +251,80 @@ publish:gha-get-env() {
 publish:gha-check-publish() {
   config=package/.bpan/config
   [[ -f $config ]] ||
-    die "Package '$package' has no '.bpan/config' file"
+    die "Package '$package_id' has no '.bpan/config' file"
 
   : "Check new version is greater than indexed one"
   indexed_version=$(
-    git config -f "$bpan_index_file" "package.$package.version"
+    git config -f "$index_file" "package.$package_id.version"
   )
   +source bashplus/version
   if [[ ${BPAN_INDEX_UPDATE_TESTING-} ]]; then
     +version:gt "$test_version" "$indexed_version" ||
-      die "'$package' version '$version' not greater than '$indexed_version'"
+      die "'$package_id' version '$package_version' "\
+``````````"not greater than '$indexed_version'"
   else
-    +version:gt "$version" "$indexed_version" ||
-      die "'$package' version '$version' not greater than '$indexed_version'"
+    +version:gt "$package_version" "$indexed_version" ||
+      die "'$package_id' version '$package_version' "\
+''''''''''"not greater than '$indexed_version'"
   fi
 
   : "Check that requesting user is package author"
-  owner_github=$(ini:get --file="$config" owner.github) ||
-    die "No author.github entry in '$package' config"
-  [[ $owner_github == "$gha_triggering_actor" ]] ||
-    die "Request from '$triggering_actor' should be from '$owner_github'"
+  package_author=$(ini:first --file="$config" '^author\..*\.user$') ||
+    die "No author.*.user entry in '$package_id' config"
+  [[ $package_author == "$gha_triggering_actor" ]] ||
+    die "Request from '$gha_triggering_actor' should be from '$package_author'"
 
   : "Check that request commit matches actual version commit"
-  actual_commit=$(git -C package rev-parse "$version") || true
-  [[ $actual_commit == "$commit" ]] ||
-    die "'$commit' is not the actual commit for '$package' tag '$version'"
+  actual_commit=$(git -C package rev-parse "$package_version") || true
+  [[ $actual_commit == "$package_commit" ]] ||
+    die "'$package_commit' is not the actual commit "\
+''''''''"for '$package_id' tag '$package_version'"
 
   : "Run the package's test suite"
   (cd package && bpan-run test -v) ||
-    die "$package v$version failed tests"
+    die "$package_id v$package_version failed tests"
 }
 
 publish:gha-update-index() (
-  [[ ${#commit} -eq 40 ]] ||
-    die "Can't get commit for '$package' v$version"
+  ini:init "$index_file"
+
+  stamp=$(TZ=UTC date '+%Y-%m-%dT%H:%M:%S')
+
+  [[ ${#package_commit} -eq 40 ]] ||
+    die "Can't get commit for '$package_id' v$package_version"
 
   # TODO Update all relevant fields
 
   if [[ ${BPAN_INDEX_UPDATE_TESTING-} ]]; then
-    git config -f "$bpan_index_file" \
-      "package.$package.version" "$test_version"
-    git config -f "$bpan_index_file" \
-      "package.$package.v${test_version//./-}" "$commit"
+    ini:set "package.$package_id.version" "$test_version"
 
   else
-    git config -f "$bpan_index_file" \
-      "package.$package.version" "$version"
-    git config -f "$bpan_index_file" \
-      "package.$package.v${version//./-}" "$commit"
+    ini:set "package.$package_id.version" "$package_version"
   fi
+  ini:set "package.$package_id.commit" "$package_commit"
 
-  ini:set --file="$bpan_index_file" \
-    "package.$package.date" "$(date -u)"
+  ini:set "package.$package_id.update" "$stamp"
+
+  # shellcheck disable=2153
+  ini:set bpan.version "$VERSION"
+  ini:set bpan.updated "$stamp"
 
   git config user.email "update-index@bpan.org"
   git config user.name "$APP Update Index"
 
-  git commit -a -m "Publish $package=$version"
+  message="\
+Publish $package_id
+
+    package=$package_id
+    title=\"$package_title\"
+    version=$package_version
+    license=$package_license
+    author=$package_author
+    commit=$package_commit
+    sha512=$package_sha512
+"
+
+  git commit --all --message="${message//\'\'\'/\`\`\`}"
 
   git diff HEAD^
 
@@ -337,7 +368,7 @@ publish:gha-post-status() (
     line_num=$(
       git diff HEAD^ |
         grep '@' |
-        head -n1 |
+        tail -n1 |
         cut -d+ -f2 |
         cut -d, -f1
     )
@@ -345,9 +376,10 @@ publish:gha-post-status() (
 
     publish_html_index_url=$(git config remote.origin.url)
 
+    url=$publish_html_index_url/blob/$GITHUB_REF_NAME/index.ini#L$line_num
     comment_body+="\
 1. [Publish Successful - \
-Index Updated]($publish_html_index_url/blob/main/index.ini#L$line_num)
+Index Updated]($url)
 "
   else
     thumb='-1'
@@ -363,7 +395,6 @@ Index Updated]($publish_html_index_url/blob/main/index.ini#L$line_num)
     git config http.https://github.com/.extraheader
   )
 
-  rc=0
   curl \
     --silent \
     --request POST \
@@ -371,10 +402,9 @@ Index Updated]($publish_html_index_url/blob/main/index.ini#L$line_num)
     --header "$auth_header" \
     "$gha_event_comment_reactions_url" \
     --data "{\"content\":\"$thumb\"}" \
-  >/dev/null ||
-    rc=$?
+  >/dev/null || true
 
-  if [[ $rc -eq 0 ]]; then
+  if [[ $ok -eq 0 ]]; then
     say -g 'Publish Successful'
   else
     say -r 'Publish Failed'
