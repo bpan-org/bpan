@@ -58,7 +58,8 @@ install:main() (
     fi
 
     if [[ ! -d $pkg_src ]]; then
-      git -C "$base" worktree add --force --quiet "$pkg_src" "$pkg_version" ||
+      # 'worktree --quiet' not available on git 2.8 (centos 6)
+      git -C "$base" worktree add --force "$pkg_src" "$pkg_version" &>/dev/null ||
         error "Can't add git worktree for '$pkg_id=$pkg_version'"
       if [[ $(git -C "$pkg_src" rev-parse HEAD) != "$pkg_commit" ]]; then
         rm -fr "$pkg_src"
