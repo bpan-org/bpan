@@ -180,10 +180,10 @@ init:main() (
   )
 
   pkgs=(
-    bashplus:@
-    bashplus:@/err
-    bashplus:@/sys
-    getopt-bash
+    github:bpan-org/bashplus:@
+    github:bpan-org/bashplus:@/err
+    github:bpan-org/bashplus:@/sys
+    github:bpan-org/getopt-bash
   )
 
   if $option_bin; then

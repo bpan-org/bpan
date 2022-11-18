@@ -53,7 +53,11 @@ ok-not-e "$D/test/XX-template.t"
 (cd "$D" && bpan "${quiet[@]}" add --file=test/XX-template.t)
 ok-f "$D/test/XX-template.t"
 
-(cd "$D" && bpan "${quiet[@]}" add --pkg=bashplus --pkg=getopt-bash)
+(cd "$D" &&
+  bpan "${quiet[@]}" add \
+    --pkg=github:bpan-org/bashplus \
+    --pkg=github:bpan-org/getopt-bash
+)
 ok-f "$D/.bpan/lib/bashplus.bash"
 
 done-testing

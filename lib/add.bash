@@ -117,7 +117,6 @@ add:main() (
       grep -q "^$pkg$" <(ini:all --file=.bpan/config update.package) &&
         error "Package '$pkg' already added"
 
-      ini:set --file=.bpan/config "require.package.$pkg" '0.0.0+'
       ini:add --file=.bpan/config 'update.package' "$pkg"
 
       additions=true

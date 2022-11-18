@@ -3,7 +3,7 @@
 source test/init
 
 test-errors <<'...'
-> bpan uninstall getopt-bash=9.9.9
+> bpan uninstall github:bpan-org/getopt-bash=9.9.9
 'github:bpan-org/getopt-bash=9.9.9' is not installed
 ...
 

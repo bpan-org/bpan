@@ -47,7 +47,7 @@ test-install-teardown() (
   command=${command/install/uninstall}
   ok "$($command)" \
     "'$command' works"
-  ok-not-e "$I/src/github/bpan-org/getopt-bash/0.1.0/"
+  ok-not-e "$I/src/github/bpan-org/getopt-bash/0.1.18/"
   ok-not-e "$I/lib/getopt.bash"
   ok-not-e "$I/man/man3/getopt.3"
 

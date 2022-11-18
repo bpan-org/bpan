@@ -1,8 +1,3 @@
-upgrade:options() (cat <<'...'
-rebase    Upgrade using 'git pull --rebase'
-...
-)
-
 upgrade:main() (
   cd "$root" || exit
 
@@ -23,14 +18,12 @@ upgrade:main() (
 
   say -y "Pulling '$repo' in '$root'..."
 
-  opts=(--ff-only)
-  $option_rebase && opts=(--rebase)
-
   (
     $option_verbose && set -x
-    git pull --quiet "${opts[@]}" origin "$branch" ||
-      error "Could not git pull '$root'." \
-            "Try again with --rebase if you have local commits."
+    git fetch --quiet origin "$branch" ||
+      error "Could not git fetch '$root'."
+    git reset --hard --quiet FETCH_HEAD ||
+      error "Could not git reset '$root'"
   )
 
   if [[ $(+git:commit-sha) == "$commit" ]]; then

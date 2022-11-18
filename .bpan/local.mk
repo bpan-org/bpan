@@ -54,3 +54,4 @@ clean:
 	$(RM) -r test/dir/
 	$(RM) -r test/lib-pkg/
 	$(RM) -r test/local/
+	$(RM) core.*

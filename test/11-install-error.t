@@ -6,7 +6,7 @@ source test/init
   skip-all "These tests need to be run online"
 
 test-errors <<'...'
-> bpan install foo
+> bpan install github:bpan-org/foo
 [bpan] Error: No package 'github:bpan-org/foo' found
 > bpan install x+y
 [bpan] Error: Invalid package id 'x+y'
