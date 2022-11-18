@@ -1,3 +1,7 @@
+[version "0.1.82"]
+date = Fri Nov 18 07:59:02 AM PST 2022
+done = Changes to make tests pass in older environments
+
 [version "0.1.81"]
 date = Fri Nov 18 07:20:55 AM PST 2022
 done = Various changes for portability
