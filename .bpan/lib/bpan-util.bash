@@ -1,3 +1,30 @@
+ini:match() (
+  set "${INI_DEBUG_BASH_X:-+x}"
+  ini:data "$@"
+  [[ ${#args[*]} -eq 1 ]] ||
+    ini:die "ini:all requires 1 key"
+  git config --file <(cat "${__ini_files[@]?}") --get-regexp "${args[@]}"
+)
+
+ini:first() (
+  set "${INI_DEBUG_BASH_X:-+x}"
+  read -r key value < <(ini:match "$@")
+  [[ $value ]] || return
+  echo "$value"
+)
+
++git:commit-sha512() (
+  ref=${1:-HEAD}
+  {
+    printf 'commit %s\0' "$(
+      git --no-replace-objects cat-file commit "$ref" | wc -c
+    )"
+    git cat-file commit HEAD
+  } |
+    sha512sum |
+    cut -d' ' -f1
+)
+
 bpan:require-commands() (
   ok=true
   while read -r line; do

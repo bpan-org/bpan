@@ -12,12 +12,14 @@ upgrade:main() (
 
   repo=$(git config remote.origin.url) ||
     die "Can't determine bpan upstream repo"
-  commit=$(git rev-parse HEAD) ||
+  commit=$(+git:commit-sha) ||
     die "Can't determine bpan HEAD commit"
-  branch=$(git rev-parse --abbrev-ref HEAD) ||
+  branch=$(+git:branch-name) ||
     die "Can't determine bpan branch"
-  [[ $branch == main ]] ||
-    error "'$root' must be on branch 'main' to 'bpan upgrade'"
+  pkg_branch=$(ini:get package.branch) ||
+    die "Can't find config entry 'package.branch'"
+  [[ $branch == "$pkg_branch" ]] ||
+    error "'$root' must be on branch '$pkg_branch' to 'bpan upgrade'"
 
   say -y "Pulling '$repo' in '$root'..."
 
@@ -31,7 +33,7 @@ upgrade:main() (
             "Try again with --rebase if you have local commits."
   )
 
-  if [[ $(git rev-parse HEAD) == "$commit" ]]; then
+  if [[ $(+git:commit-sha) == "$commit" ]]; then
     say -y "No upstream changes found"
   else
     say -y "Pulled new changes to '$root'"

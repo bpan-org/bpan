@@ -16,14 +16,16 @@ prefix = $BPAN_ROOT/local
 
 # Main Git hosting entry:
 [host "github"]
-clone = https://github.com/$owner/$name
+https = https://github.com
+ssh = git@github.com
 api = https://api.github.com/repos
+source = https://github.com/$owner/$name
 
 
 # The main default BPAN package index:
 [index "bpan"]
 repo = bpan-org/bpan-index
-clone = https://github.com/$index.bpan.repo
+source = $host.github.https/$index.bpan.repo
 branch = main
 file = index.ini
 host = github

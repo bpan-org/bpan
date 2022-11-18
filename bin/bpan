@@ -15,7 +15,7 @@ set "${BPAN_DEBUG_BASH_X:-+x}"
       "Try: 'source /path/to/bpan/.rc'."
 
 source "$BPAN_ROOT/lib/bpan.bash" --app
-bpan:source bashplus +cmd +data +err +fs +git +say +sym +sys
+bpan:source bashplus +cmd +data +err +fs +git +say +sym +sys +time
 bpan:source ini
 bpan:source bpan-util
 bpan:source getopt "\
@@ -137,8 +137,8 @@ set-env() {
   pkg:config-vars
 
   if [[ ${BPAN_DEBUG_BASH_X-} ]]; then
-    BASHPLUS_DEBUG_BASH_X=$BPAN_DEBUG_BASH_X
-    INI_DEBUG_BASH_X=$BPAN_DEBUG_BASH_X
+    BASHPLUS_DEBUG_BASH_X=${BASHPLUS_DEBUG_BASH_X:-$BPAN_DEBUG_BASH_X}
+    INI_DEBUG_BASH_X=${INI_DEBUG_BASH_X:-$BPAN_DEBUG_BASH_X}
   fi
 }
 

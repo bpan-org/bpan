@@ -16,8 +16,8 @@ is "$BPAN_ROOT" \
 
 ok-s "$root/config"
 
-is "$(bpan config --global github.token)" \
+is "$(bpan config --global host.github.token)" \
    '___' \
-   "BPAN global config has 'github.token = ___'"
+   "BPAN global config has 'host.github.token = ___'"
 
 done-testing

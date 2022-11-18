@@ -7,6 +7,8 @@ dryrun    Don't tag, commit or push
 )
 
 bump:main() (
+  bump:check-repo
+
   if $option_publish; then
     option_push=true
   fi
@@ -15,8 +17,6 @@ bump:main() (
 
   old_version=$(bump:old-version)
   new_version=$(bump:new-version)
-
-  VERSION=$new_version
 
   change_list=$(bump:change-list)
 
@@ -76,12 +76,16 @@ bump:main() (
   fi
 )
 
-bump:check-sanity() (
-  pushed=false
+bump:check-repo() (
   +git:in-top-dir ||
     error "'$app $cmd' must be at repo toplevel"
   +git:is-clean ||
     error "Can't '$app $cmd' with uncommited changes"
+)
+
+bump:check-sanity() (
+  pushed=false
+
   if [[ $old_version != 0.0.0 ]]; then
     +git:tag-exists "$old_version" ||
       error "No tag for current version '$old_version'"
@@ -149,6 +153,7 @@ bump:update-config-file() (
     ini:set --file=etc/config bpan.version "$new_version"
   fi
 
+  # shellcheck disable=2153
   ini:set --file=.bpan/config bpan.version "$VERSION"
   git config --file=.bpan/config --unset bpan.api-version || true
 

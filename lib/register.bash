@@ -24,9 +24,10 @@ register:main() (
 )
 
 register:preflight() {
-  token=$(ini:get github.token) || true
+  token=$(ini:get host.github.token) ||
+    error "No entry for 'host.github.token' in $root/config"
   [[ $token =~ [a-zA-Z0-9]{36} ]] ||
-    error "Your configured 'github.token' does not seem valid"
+    error "Your configured 'host.github.token' does not seem valid"
   o "GitHub token looks ok"
 
   +git:in-repo ||
@@ -60,14 +61,22 @@ register:preflight() {
   package_repo=${remote_owner_repo#*/}
   o "BPAN package repo is '$package_repo'"
 
-  if grep -q '^\[package "'"$package_id"'"\]' "$bpan_index_file"; then
+  if grep -q '^\[package "'"$package_id"'"\]' "$bpan_index_path"; then
     error "Package '$package_id' is already registered"
   fi
   o "Package '$package_id' is not already registered"
 
-  github_id=$(register:config owner.github) ||
-    error "Config has no owner.github id field"
-  o "GitHub user to update BPAN index is '$github_id'"
+  author_host=$(ini:first '^author\..*\.host$') ||
+    error "No author.*.host entry in config"
+  author_user=$(ini:first '^author\..*\.user$') ||
+    error "No author.*.user entry in config"
+  package_author=$author_host:$author_user
+  [[ $package_author == github:* ]] ||
+    error "Config package.author should be 'github:<username>'"
+  github_id=$author_user
+  : "$(register:config "author.$package_author.name")" ||
+    error "Config has no '[author \"$package_author\"]' section"
+  o "User to update BPAN index is '$package_author'"
 
   package_name=$(register:config package.name) ||
     error "Config has no package.title"
@@ -75,15 +84,21 @@ register:preflight() {
 
   package_title=$(register:config package.title) ||
     error "Config has no package.title"
+  [[ $package_title != *CHANGEME* ]] ||
+    error "Please change the 'package.title' entry in '.bpan/config'"
   o "Config package.title = '$package_title'"
 
   package_version=$(register:config package.version) ||
     error "Config has no package.version"
   o "Config package.version = '$package_version'"
 
-  author_name=$(register:config author.name) ||
-    error "Config has no author.name"
-  o "Config author.name = '$author_name'"
+  package_license=$(register:config package.license) ||
+    error "Config has no package.license"
+  o "Config package.license = '$package_license'"
+
+  package_tag=$(register:config package.tag) ||
+    error "Config has no package.tag"
+  o "Config package.tag = '$package_tag'"
 
   [[ $package_version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] ||
     error "Config package.version '$package_version' does not match '#.#.#'"
@@ -96,8 +111,8 @@ register:preflight() {
     error "No tag '$package_version' found"
   o "Git tag '$package_version' exists"
 
-  commit=$(+git:commit-sha "$package_version")
-  [[ $commit == "$(+git:commit-sha HEAD)" ]] ||
+  package_commit=$(+git:commit-sha "$package_version")
+  [[ $package_commit == "$(+git:commit-sha HEAD)" ]] ||
     error "Git tag '$package_version' commit is not HEAD commit"
   o "Git commit for tag '$package_version' is HEAD commit"
 
@@ -113,6 +128,9 @@ register:preflight() {
   o "Running the test suite:"
   bpan-run test ||
     error "Test suite failed"
+
+  package_update=$(TZ=UTC date '+%Y-%m-%dT%H:%M:%S')
+  package_sha512=$(+git:commit-sha512 "$package_version")
 }
 
 register:update-bpan-index() (
@@ -127,7 +145,6 @@ register:update-bpan-index() (
     (( i++ < 10 )) &&
     ! git clone \
         --quiet \
-        --branch=main \
         "$fork_repo_url" \
         "$index_dir" \
         2>/dev/null
@@ -135,7 +152,7 @@ register:update-bpan-index() (
     mkdir -p "$index_dir"
     if ! $forked; then
       +post "$bpan_index_api_url/forks" >/dev/null
-      o "Forked $bpan_indec_clone_url"
+      o "Forked $bpan_index_source"
       forked=true
     fi
     say -y "  * Waiting for fork to be ready to clone..."
@@ -151,10 +168,12 @@ register:update-bpan-index() (
 
   git -C "$index_dir" checkout --quiet -b "$fork_branch"
   o "Created branch '$fork_branch'"
-  git -C "$index_dir" fetch --quiet "$bpan_indec_clone_url" main
-  o "Fetched main branch of '$bpan_indec_clone_url'"
+  git -C "$index_dir" fetch --quiet \
+    "$bpan_index_source" \
+    "$bpan_index_branch"
+  o "Fetched '$bpan_index_branch' branch of '$bpan_index_source'"
   git -C "$index_dir" reset --quiet --hard FETCH_HEAD
-  o "Hard reset HEAD to '$bpan_indec_clone_url' HEAD"
+  o "Hard reset HEAD to '$bpan_index_source' HEAD"
 
   entry=$(register:new-index-entry)
   head=$(head -n1 <<<"$entry")
@@ -173,14 +192,30 @@ register:update-bpan-index() (
         echo "$line"
       done < "$bpan_index_file"
       if ! $updated; then
+        echo
         echo "$entry"
       fi
     ) > index
     mv index "$bpan_index_file"
+
+    ini:set --file="$bpan_index_file" bpan.version "$VERSION"
+    ini:set --file="$bpan_index_file" bpan.updated "$package_update"
   )
 
+  message="\
+Register $package_id=$package_version
+
+    package=$package_id
+    title=\"$package_title\"
+    version=$package_version
+    license=$package_license
+    author=$package_author
+    commit=$package_commit
+    sha512=$package_sha512
+"
+
   git -C "$index_dir" commit --quiet --all \
-    --message="Register github:$fork_branch=$package_version"
+    --message="${message//\'\'\'/\`\`\`}"
   o "Committed the new index entry to the bpan-index fork"
 
   git -C "$index_dir" push --quiet --force origin "$fork_branch" &>/dev/null
@@ -190,17 +225,20 @@ register:update-bpan-index() (
 register:post-pull-request() (
   fork_branch=$package_owner/$package_name
   head=$github_id:$fork_branch
-  base=main
-  title="Register BPAN Package $package_id"
+  base=$bpan_index_branch
+  title="Register $package_id=$package_version"
+  http=https://github.com/$remote_owner_repo/tree/$package_version
   body=$(+json-escape "\
 Please add this new package to the \
-[BPAN Index]($bpan_indec_clone_url/blob/$bpan_index_branch/$bpan_index_file):
+[BPAN Index]($bpan_index_source/blob/$bpan_index_branch/$bpan_index_file):
 
-    name:    $package_name
-    version: $package_version
+> $http
+
+    package: $package_id
     title:   $package_title
-    author:  $author_name
-    github:  $github_id"
+    version: $package_version
+    license: $package_license
+    author:  $package_author"
   )
 
   json=$(cat <<...
@@ -298,12 +336,3 @@ register:new-index-entry() (
 
   grep -v '^$' <<<"$entry"
 )
-
-register:tags-line() (
-  if tags=$(register:config package.tags); then
-    echo "tags = $tags"
-  else
-    echo 'tags ='
-  fi
-)
-

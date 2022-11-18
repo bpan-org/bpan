@@ -15,6 +15,8 @@ pkg:parse-id+() {
 }
 
 pkg:parse-id() {
+  __pkg_main_index=${__pkg_main_index:-$(pkg:get-main-index)}
+
   pkg_name=''
   pkg_owner=''
   pkg_host=''
@@ -24,7 +26,7 @@ pkg:parse-id() {
   pkg_repo=''
 
   local id=$1
-  local index=bpan    # TODO pass in value for multi index
+  local index=$__pkg_main_index    # TODO pass in value for multi index
 
   local w='[-a-zA-Z0-9_]'
   local v='[.0-9]'
@@ -57,7 +59,7 @@ pkg:parse-id() {
     owner=$pkg_owner
     name=$pkg_name
     ini:vars owner name
-    key=host.$pkg_host.clone
+    key=host.$pkg_host.source
     ini:get "$key" ||
       error "Can't find config value for '$key'"
   )
@@ -65,38 +67,46 @@ pkg:parse-id() {
   pkg_src=$BPAN_INSTALL/src/$pkg_host/$pkg_owner/$pkg_name/$pkg_version
 }
 
+pkg:get-main-index() (
+  local n=$'\n'
+  [[ $(ini:list) =~ ${n}index\.([-a-z0-9]+)\.source= ]] ||
+    error "No 'index.*.source' entry in $app config files"
+  echo "${BASH_REMATCH[1]}"
+)
+
 pkg:config-vars() {
-  local index=bpan    # TODO pass in value for multi index
+  __pkg_main_index=${__pkg_main_index:-$(pkg:get-main-index)}
+  local index=$__pkg_main_index    # TODO pass in value for multi index
   local repo host
 
-  bpan_index_clone_url=$(ini:get "index.$index.clone")
+  bpan_index_source=$(ini:get "index.$index.source")
   bpan_index_branch=$(ini:get "index.$index.branch")
 
   host=$(ini:get "index.$index.host")
-  repo=$(ini:get index.$index.repo)
+  repo=$(ini:get "index.$index.repo")
 
-  bpan_index_repo_dir=src/$host/$repo
-  bpan_index_api_url=$(ini:get index.$index.api)
-  bpan_index_publish_url=$(ini:get index.$index.publish)
-  bpan_index_file=$(ini:get index.$index.file)
+  bpan_index_dir=src/$host/$repo
+  bpan_index_api_url=$(ini:get "index.$index.api")
+  bpan_index_publish_url=$(ini:get "index.$index.publish")
+  bpan_index_file=$(ini:get "index.$index.file")
 
-  bpan_index_file=$BPAN_INSTALL/$bpan_index_repo_dir/$bpan_index_file
+  bpan_index_path=$BPAN_INSTALL/$bpan_index_dir/$bpan_index_file
 }
 
 pkg:index-update() (
   pkg:config-vars
 
   if [[ -f ${BPAN_TEST_INDEX_REPO-} ]]; then
-    bpan_index_clone_url=$BPAN_TEST_INDEX_REPO
+    bpan_index_source=$BPAN_TEST_INDEX_REPO
     bpan_index_branch=${BPAN_TEST_INDEX_BRANCH:-main}
   fi
 
-  if [[ ! -f $bpan_index_file ]]; then
+  if [[ ! -f $bpan_index_path ]]; then
     git clone \
       --quiet \
       --branch "$bpan_index_branch" \
-      "$bpan_index_clone_url" \
-      "$BPAN_INSTALL/$bpan_index_repo_dir"
+      "$bpan_index_source" \
+      "$BPAN_INSTALL/$bpan_index_dir"
 
   elif ! [[ ${BPAN_TEST_RUNNING-} ]]; then
     if ${force_update:-false} ||
@@ -104,30 +114,31 @@ pkg:index-update() (
       pkg:api-mismatch
     then
       say -Y "Updating BPAN package index..."
-      git -C "$BPAN_INSTALL/$bpan_index_repo_dir" pull \
+      git -C "$BPAN_INSTALL/$bpan_index_dir" pull \
         --quiet \
         --ff-only \
-        origin main
+        origin "$bpan_index_branch"
     fi
   fi
 
-  [[ -f $bpan_index_file ]] ||
+  [[ -f $bpan_index_path ]] ||
     die "BPAN package index file not available"
 
   index_api_version=$(
-    git config -f "$bpan_index_file" bpan.api-version || echo 0
+    git config -f "$bpan_index_path" bpan.api-version || echo 0
   )
 
-  if [[ $index_api_version -lt $BPAN_INDEX_API_VERSION ]]; then
-    error "BPAN Index API Version mismatch. Try again later."
-  elif [[ $index_api_version -gt $BPAN_INDEX_API_VERSION ]]; then
-    error "BPAN version is too old for the index. Run: 'bpan upgrade'"
-  fi
+  # XXX Compare bpan.VERSION with index.bpan.version
+  # if [[ $index_api_version -lt $BPAN_INDEX_API_VERSION ]]; then
+  #   error "BPAN Index API Version mismatch. Try again later."
+  # elif [[ $index_api_version -gt $BPAN_INDEX_API_VERSION ]]; then
+  #   error "BPAN version is too old for the index. Run: 'bpan upgrade'"
+  # fi
 )
 
 pkg:index-too-old() (
   +source bashplus/time
-  head=$BPAN_INSTALL/$bpan_index_repo_dir/.git/FETCH_HEAD
+  head=$BPAN_INSTALL/$bpan_index_dir/.git/FETCH_HEAD
   [[ -f $head ]] || return 0
   curr_time=$(+time:epoch)
   pull_time=$(+fs:mtime "$head")
@@ -136,20 +147,46 @@ pkg:index-too-old() (
 
 pkg:api-mismatch() {
   [[ $BPAN_INDEX_API_VERSION -gt \
-    "$(git config -f "$bpan_index_file" bpan.api-version || echo 0)" \
+    "$(git config -f "$bpan_index_path" bpan.api-version || echo 0)" \
   ]]
 }
 
 pkg:get-version() (
   pkg_id=$1
-  git config -f "$bpan_index_file" "package.$pkg_id.version" ||
+  git config -f "$bpan_index_path" "package.$pkg_id.version" ||
     error "No package '$pkg_id' found"
 )
 
 pkg:get-commit() (
   pkg_id=$1 version=$2
-  git config -f "$bpan_index_file" "package.$pkg_id.v${version//./-}" ||
+  index_version=$(
+    git config \
+      -f "$bpan_index_path" \
+      "package.$pkg_id.version"
+  ) || error "Can't find version for package '$pkg.id'"
+
+  dir=$BPAN_INSTALL/$bpan_index_dir
+  if [[ $index_version == "$version" ]]; then
+    config=$(< "$bpan_index_path")
+  else
+    index_commit=$(
+      git -C "$dir" log \
+        -E --grep "(Publish|Register) $pkg_id=${version//./\\.}" \
+        --pretty='%H'
+    )
+    [[ $index_commit ]] ||
+      error "Can't find index commit for package '$pkg_id' version '$version'"
+    config=$(git -C "$dir" show "$index_commit:index.ini") || die
+  fi
+
+  commit=$(
+    git config -f- "package.$pkg_id.commit" <<< "$config" ||
+    # XXX temporary support old/new index style
+    git config -f- "package.$pkg_id.v${version//./-}" <<< "$config"
+  ) ||
     error "Can't find commit for package '$pkg_id' version '$version'"
+
+  echo "$commit"
 )
 
 pkg:installed() (

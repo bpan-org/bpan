@@ -1,6 +1,6 @@
 (% readme-title %)
 
-Short, one-line description of '(% repo-name %)'
+(% pkg-title-default %)
 
 ## Synopsis
 
