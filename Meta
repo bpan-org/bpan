@@ -38,6 +38,7 @@ package = bashplus:@/err
 package = bashplus:@/func
 package = bashplus:@/git
 package = bashplus:@/fs
+package = bashplus:@/str
 package = bashplus:@/sym
 package = bashplus:@/sys
 package = bashplus:@/time
