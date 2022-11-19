@@ -19,7 +19,7 @@ prefix = $BPAN_ROOT/local
 https = https://github.com
 ssh = git@github.com
 api = https://api.github.com/repos
-source = https://github.com/$owner/$name
+source = $host.github.https/$owner/$name
 
 
 # The main default BPAN package index:
