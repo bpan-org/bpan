@@ -1,3 +1,11 @@
+[version "0.1.83"]
+date = Sat Nov 19 02:18:46 PM PST 2022
+done = Small refactor in etc/config
+done = Make upgrade test be branch aware
+done = Remove api-version code
+done = Add bashplus/str
+done = Template syntax from '(%...%)' to '[%...%]'
+
 [version "0.1.82"]
 date = Fri Nov 18 07:59:02 AM PST 2022
 done = Changes to make tests pass in older environments
