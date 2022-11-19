@@ -327,11 +327,11 @@ register:config() (
 register:new-index-entry() (
   package_version_key=${package_version//./-}
   entry=$(< "$root/share/template/index-entry.ini")
-  while [[ $entry =~ \(%\ ([^%]*)\ %\) ]]; do
+  while [[ $entry =~ \[%\ ([^%]*)\ %\] ]]; do
     prev=$entry
     expr=${BASH_REMATCH[1]%%\ }
     eval "value=$expr"
-    entry=${entry/(% $expr %)/$value}
+    entry=${entry/"[% $expr %]"/$value}
   done
 
   grep -v '^$' <<<"$entry"

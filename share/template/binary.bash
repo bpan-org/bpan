@@ -34,13 +34,13 @@ V,version     Display $app version
 x,debug       Print lots of debugging info
 "
 
-# source "$root/lib/(% name %).bash"
+# source "$root/lib/[% name %].bash"
 
 main() (
   getopt "$@"
   set -- "${args[@]}"
 
-  # (% name %):main "$@"
+  # [% name %]:main "$@"
 
   echo "Hello, ${1-world}!"
 )

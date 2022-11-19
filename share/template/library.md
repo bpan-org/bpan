@@ -3,9 +3,9 @@
   You'll need to edit it to refelect your desired content.
   You can safely remove these HTML comments.
 -->
-(% markdown-title %)
+[% markdown-title %]
 
-(% pkg-title-default %)
+[% pkg-title-default %]
 
 ## Synopsis
 
@@ -20,12 +20,12 @@
 * With [BPAN](
   https://github.com/bpan-org/bpan#installation):
   ```
-  bpan install (% pkg %)
+  bpan install [% pkg %]
   ```
 
 ## Copyright and License
 
-Copyright (% copyright-year %) by (% author-name %)
+Copyright [% copyright-year %] by [% author-name %]
 
 This is free software, licensed under:
 

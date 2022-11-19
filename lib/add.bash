@@ -306,7 +306,7 @@ add:file-copy() (
 
   +fs:mktemp
 
-  if grep -q -E '\(%.*%\)' "$from"; then
+  if grep -q -E '\[%.*%\]' "$from"; then
     add:file-render "$from" > "$temp"
   else
     cp -pL "$from" "$temp"
@@ -331,7 +331,7 @@ add:file-render() (
 
   text=$(< "$1")
 
-  while [[ $text =~ \(%(\ *[-:.a-zA-Z0-9]+\ *)%\) ]]; do
+  while [[ $text =~ \[%(\ *[-:.a-zA-Z0-9]+\ *)%\] ]]; do
     match=${BASH_REMATCH[1]}
     cmd=${match##\ }
     cmd=${cmd%%\ }
@@ -346,7 +346,7 @@ add:file-render() (
       val='"'$val'"'
     fi
 
-    text=${text/\(%$match%\)/$val}
+    text=${text/\[%$match%\]/$val}
   done
 
   echo "$text"

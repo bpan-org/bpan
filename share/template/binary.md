@@ -4,9 +4,9 @@
   You can safely remove these HTML comments.
 -->
 
-(% markdown-title %)
+[% markdown-title %]
 
-(% pkg-title-default %)
+[% pkg-title-default %]
 
 ## Synopsis
 
@@ -21,7 +21,7 @@
 * With [BPAN](
   https://github.com/bpan-org/bpan#installation):
   ```
-  bpan install (% pkg %)
+  bpan install [% pkg %]
   ```
 
   <!-- Note to author:
@@ -31,19 +31,19 @@
 
 * From source:
   ```
-  git clone (% config:package.repo %) /path/to/(% pkg %)
+  git clone [% config:package.repo %] /path/to/[% pkg %]
   ```
 
   Then add the following line to your shell's startup file:
   ```
-  source /path/to/(% pkg %)/.rc
+  source /path/to/[% pkg %]/.rc
   ```
 
   This supports 12 interactive shells including `bash`, `zsh` and `fish`.
 
 ## Copyright and License
 
-Copyright (% copyright-year %) by (% author-name %)
+Copyright [% copyright-year %] by [% author-name %]
 
 This is free software, licensed under:
 
