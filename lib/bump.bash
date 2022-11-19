@@ -155,7 +155,6 @@ bump:update-config-file() (
 
   # shellcheck disable=2153
   ini:set --file=.bpan/config bpan.version "$VERSION"
-  git config --file=.bpan/config --unset bpan.api-version || true
 
   ini:set --file=.bpan/config package.version "$new_version"
 

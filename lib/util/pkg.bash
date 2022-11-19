@@ -110,8 +110,7 @@ pkg:index-update() (
 
   elif ! [[ ${BPAN_TEST_RUNNING-} ]]; then
     if ${force_update:-false} ||
-      pkg:index-too-old ||
-      pkg:api-mismatch
+      pkg:index-too-old
     then
       say -Y "Updating BPAN package index..."
       git -C "$BPAN_INSTALL/$bpan_index_dir" pull \
@@ -123,17 +122,6 @@ pkg:index-update() (
 
   [[ -f $bpan_index_path ]] ||
     die "BPAN package index file not available"
-
-  index_api_version=$(
-    git config -f "$bpan_index_path" bpan.api-version || echo 0
-  )
-
-  # XXX Compare bpan.VERSION with index.bpan.version
-  # if [[ $index_api_version -lt $BPAN_INDEX_API_VERSION ]]; then
-  #   error "BPAN Index API Version mismatch. Try again later."
-  # elif [[ $index_api_version -gt $BPAN_INDEX_API_VERSION ]]; then
-  #   error "BPAN version is too old for the index. Run: 'bpan upgrade'"
-  # fi
 )
 
 pkg:index-too-old() (
@@ -144,12 +132,6 @@ pkg:index-too-old() (
   pull_time=$(+fs:mtime "$head")
   (( curr_time - (3 * 60) > pull_time ))
 )
-
-pkg:api-mismatch() {
-  [[ $BPAN_INDEX_API_VERSION -gt \
-    "$(git config -f "$bpan_index_path" bpan.api-version || echo 0)" \
-  ]]
-}
 
 pkg:get-version() (
   pkg_id=$1

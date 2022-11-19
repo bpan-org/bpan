@@ -2,7 +2,7 @@
 
 source test/init
 
-is "$(bpan config bpan.api-version)" 1 \
+ok "$([[ $(bpan config bpan.version) == 0.1.* ]])" \
   "Can read a value from bpan system config"
 
 try 'bpan config --list | wc -l'

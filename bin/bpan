@@ -15,7 +15,7 @@ set "${BPAN_DEBUG_BASH_X:-+x}"
       "Try: 'source /path/to/bpan/.rc'."
 
 source "$BPAN_ROOT/lib/bpan.bash" --app
-bpan:source bashplus +cmd +data +err +fs +git +say +sym +sys +time
+bpan:source bashplus +cmd +err +fs +git +list +say +str +sym +sys +time
 bpan:source ini
 bpan:source bpan-util
 bpan:source getopt "\
@@ -129,9 +129,6 @@ set-env() {
       error "BPAN_INSTALL='$BPAN_INSTALL' - directory not found"
     fi
   fi
-
-  # TODO Check ini files bpan.api-version.
-  BPAN_INDEX_API_VERSION=1
 
   source-once util/pkg
   pkg:config-vars

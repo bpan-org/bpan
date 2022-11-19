@@ -33,11 +33,12 @@ ping = 0
 [update]
 package = bashplus:@
 package = bashplus:@/cmd
-package = bashplus:@/data
 package = bashplus:@/err
 package = bashplus:@/func
 package = bashplus:@/git
 package = bashplus:@/fs
+package = bashplus:@/list
+package = bashplus:@/say
 package = bashplus:@/str
 package = bashplus:@/sym
 package = bashplus:@/sys
