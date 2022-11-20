@@ -77,6 +77,8 @@ main() (
 
   $option_debug && export BPAN_DEBUG_BASH=true
 
+  [[ ${args[0]} == + ]] && cmd=misc
+
   if [[ $option_version == true ]]; then
     echo "$app $VERSION"
 
@@ -213,4 +215,5 @@ todo() {
   error "'$app $cmd' not yet implemented\n"
 }
 
-main "$@"
+[[ $0 != "${BASH_SOURCE[0]}" ]] ||
+  main "$@"

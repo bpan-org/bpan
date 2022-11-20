@@ -15,7 +15,7 @@ source "$root/.bpan/lib/bpan.bash" --app
 # The 'bpan:source' function is used to source bash files from `./bpan/lib/`.
 # Files are added there with `bpan add --pkg=...`.
 
-bpan:source bashplus --err --sys
+bpan:source bashplus +err +sys
 
 bpan:source getopt "\
 getopt_default=--help
