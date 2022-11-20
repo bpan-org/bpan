@@ -1,3 +1,8 @@
+[version "0.1.84"]
+date = Sun Nov 20 12:39:08 PM PST 2022
+done = Correct paths used by bpan:source
+done = Add 'bpan + cmd' misc command support
+
 [version "0.1.83"]
 date = Sat Nov 19 02:18:46 PM PST 2022
 done = Small refactor in etc/config
