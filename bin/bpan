@@ -77,7 +77,7 @@ main() (
 
   $option_debug && export BPAN_DEBUG_BASH=true
 
-  [[ ${args[0]} == + ]] && cmd=misc
+  [[ ${args[0]-} == + ]] && cmd=misc
 
   if [[ $option_version == true ]]; then
     echo "$app $VERSION"

@@ -17,8 +17,8 @@ bpan:main() {
 
   # Add local .bpan/lib to BPAN_PATH
   local dir
-  dir=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)
-  [[ ${BPAN_ROOT-} && $root == "${BPAN_ROOT%/}" ]] ||
+  dir=$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd -P)
+  [[ $dir == "${BPAN_ROOT-}" ]] ||
     dir=${dir%/.bpan}
   dir+=/.bpan/lib
   [[ -d $dir && ${BPAN_PATH-} != *"$dir"* ]] &&
