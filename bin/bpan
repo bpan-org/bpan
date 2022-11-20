@@ -46,7 +46,6 @@ Project Commands:
 Information Commands:
   help          Get help for a '$app' command
   cmds          List available '$app' commands
-  upgrade       Upgrade the $APP installation
 
 Options:
 --

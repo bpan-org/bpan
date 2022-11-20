@@ -1,10 +1,11 @@
-update:options() (
-  echo "l,list    List possible template files"
-  echo "f,file=   Template file to update"
-  echo "t,type=   pkg | file | man | new | init | global"
-  echo "a,all     All types"
-  echo "I,index   Refresh index file"
-  # echo "L,local   Symlink install to local repos"
+update:options() (cat <<...
+l,list    List possible template files
+f,file=   Template file to update
+t,type=   pkg | file | man | new | init | global
+a,all     All types
+I,index   Refresh index file
+S,self    Update '$app' itself (to latest version)
+...
 )
 
 update:main() (
@@ -13,7 +14,10 @@ update:main() (
     "$root/config" \
     "$(pwd)/.bpan/config"
 
-  if ${option_list:-false}; then
+  if $option_self; then
+    update:self
+
+  elif ${option_list:-false}; then
     update:list
 
   else
@@ -194,4 +198,44 @@ update:manpages() (
     ini:list --file=.bpan/config |
       grep '^update\.man'
   )
+)
+
+update:self() (
+  cd "$root" || exit
+
+  +git:is-clean ||
+    error \
+      "Can't update '$app'" \
+      "'$root' git repo has uncommitted changes"
+
+  repo=$(git config remote.origin.url) ||
+    die "Can't determine bpan upstream repo"
+  commit=$(+git:commit-sha) ||
+    die "Can't determine bpan HEAD commit"
+  branch=$(+git:branch-name) ||
+    die "Can't determine bpan branch"
+  pkg_branch=$(ini:get package.branch) ||
+    die "Can't find config entry 'package.branch'"
+  [[ $branch == "$pkg_branch" ]] ||
+    error "'$root' must be on branch '$pkg_branch' to '$app update --self'"
+
+  say -y "Pulling '$repo' in '$root'..."
+
+  (
+    $option_verbose && set -x
+    git fetch --quiet origin "$branch" ||
+      error "Could not git fetch '$root'."
+    git reset --hard --quiet FETCH_HEAD ||
+      error "Could not git reset '$root'"
+  )
+
+  if [[ $(+git:commit-sha) == "$commit" ]]; then
+    say -y "No upstream changes found"
+  else
+    say -y "Pulled new changes to '$root'"
+  fi
+
+  say -y "Updating BPAN index file..."
+  source-once util/pkg
+  pkg:index-update
 )
