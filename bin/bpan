@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-VERSION=0.1.84
+VERSION=0.1.85
 
 die() { printf '%s\n' "$@" >&2; exit 1; }
 
