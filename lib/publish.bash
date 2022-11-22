@@ -404,7 +404,7 @@ Index Updated]($url)
     --data "{\"content\":\"$thumb\"}" \
   >/dev/null || true
 
-  if [[ $ok -eq 0 ]]; then
+  if $ok; then
     say -g 'Publish Successful'
   else
     say -r 'Publish Failed'
