@@ -19,23 +19,26 @@ uninstall:main() (
   [[ $# -gt 0 ]] ||
     error "'$app $cmd' requires one or more packages"
 
-  source-once util/pkg
+  source-once util/db
 
-  for target do
-    pkg:parse-id "$target"
-    path=$pkg_host/$pkg_owner/$pkg_name/$pkg_version
-    name=$pkg_id=$pkg_version
-    if [[ -d $BPAN_INSTALL/src/$path ]]; then
-      say -y "Uninstalling '$name':"
-      uninstall:package "$path" "$name"
-    else
-      say -r "'$name' is not installed"
-    fi
+  for package_id do
+    uninstall:package "$package_id"
   done
 )
 
 uninstall:package() (
-  path=$1 name=$2
+  package_id=$1
+
+  db:find-package "$package_id"
+
+  source=$host/$owner/$name/$version
+
+  if ! [[ -d $BPAN_INSTALL/src/$source ]]; then
+    say -r "'$fqid=$version' is not installed"
+    return
+  fi
+
+  say -y "Uninstalling '$name':"
 
   cd "$BPAN_INSTALL" || exit
 
@@ -50,10 +53,10 @@ uninstall:package() (
   done <<< "$(
     find bin lib man share -type l -print0 2>/dev/null |
       xargs -r -0 ls -l |
-      grep -F "$path"
+      grep -F "$source"
   )"
-  say +w "- Removing package src/$path/"
-  rm -fr "src/$path/"
+  say -w "- Removing package src/$source/"
+  rm -fr "src/$source/"
 
   while true; do
     # shellcheck disable=2046

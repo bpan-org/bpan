@@ -10,9 +10,10 @@ setup:main() (
 
   if ! [[ -d $local_dir ]]; then
     mkdir "$local_dir"
-    source-once util/pkg
+    source-once util/db
     option_quiet=true
-    pkg:index-update
+    option_count_index=0
+    db:sync
   fi
 
   [[ -f $config ]] ||

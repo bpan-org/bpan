@@ -28,7 +28,6 @@ for file in "${want[@]}"; do
     "'bpan add --files' has '$file'"
 done
 
-
 D=test/dir
 
 rm -fr "$D"

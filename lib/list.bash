@@ -1,12 +1,12 @@
 list:main() (
-  source-once util/pkg
+  source-once util/db
 
   if [[ ! -d $BPAN_INSTALL/src ]]; then
     say -r "No BPAN packages currently installed"
     return
   fi
 
-  installed=($(pkg:installed))
+  read -r -a installed <<<"$(db:list-installed)"
 
   if [[ ${#installed[*]} -eq 0 ]]; then
     say -r "No BPAN packages currently installed"
@@ -14,7 +14,7 @@ list:main() (
   fi
 
   for id in "${installed[@]}"; do
-    if pkg:is-primary "$id"; then
+    if db:package-is-primary "$id"; then
       say -g "* $id"
     else
       say -y "  $id"
@@ -24,9 +24,4 @@ list:main() (
       list:links "$id"
     fi
   done
-)
-
-list:links() (
-  id=$1
-  die ">>$id<<"
 )

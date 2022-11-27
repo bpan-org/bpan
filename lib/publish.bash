@@ -1,6 +1,7 @@
 # TODO redirect from https://bpan.org/publish-requests
 
 publish:options() (cat <<...
+I,index=    Index name to register to
 c,check     Just run preflight checks. Don't publish
 ...
 )
@@ -11,9 +12,16 @@ publish:main() (
     return
   fi
 
-  source-once util/pkg
-  force_update=true pkg:index-update
-  pkg:config-vars
+  source-once util/db
+
+  repo=$(ini:get package.repo) ||
+    die --stack
+  [[ $repo =~ https://github.com/([^/]+/[^/]+)$ ]] ||
+    die --stack
+  package_id=${BASH_REMATCH[1]}
+  db:find-package "$package_id"
+
+  force_update=true db:sync
 
   publish:get-env
 
@@ -84,13 +92,13 @@ publish:check-publish() (
   [[ $(+git:sha1 "$tag") == $(+git:sha1 HEAD) ]] ||
     error "Tag '$tag' is not HEAD commit"
 
-  ini:list --file="$bpan_index_path" |
+  ini:list --file="$index_path" |
     grep -q "^package\.$package\." ||
       error \
         "Can't publish '$package'." \
         "Not yet registered. Try '$app register'."
 
-  ini:get --file="$bpan_index_path" \
+  ini:get --file="$index_path" \
     package."$package".v"${version//./-}" >/dev/null &&
       error "$package version '$version' already published"
 
@@ -178,7 +186,7 @@ publish:post-request() (
       --header "Accept: application/vnd.github+json" \
       --header "Authorization: Bearer $token" \
       --data "$data" \
-      "$bpan_index_publish_url" |
+      "$index_publish_url" |
     grep '"html_url"' |
     head -n1 |
     cut -d'"' -f4

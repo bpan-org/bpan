@@ -201,9 +201,9 @@ init:main() (
     say -y "RUNNING 'git init'"
   fi
 
-  source-once update
-
   say -y "RUNNING 'bpan update'"
-
+  source-once util/db
+  db:sync
+  source-once update
   update:apply
 )

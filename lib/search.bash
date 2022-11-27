@@ -1,5 +1,12 @@
 search:default() ( echo '--help' )
 search:usage() ( echo "$app [<$app-opts>] $cmd <$cmd-term-regexp>" )
+search:usage() ( echo "$app [<$app-opts>] $cmd <$cmd-term-regexp>" )
+
+search:options() (cat <<...
+U,update  Update index(es)
+I,index=  Index name to search
+...
+)
 
 search:main() (
   [[ -t 1 ]] && tty=true || tty=false
@@ -10,22 +17,14 @@ search:main() (
   term=$(IFS='|'; echo "$*")
   pattern="=.*($term)"
 
-  if [[ ! -f $bpan_index_path ]]; then
-    source-once util/pkg
-    pkg:index-update
-  fi
+  source-once util/db
 
-  # shellcheck disable=2207
-  found=($(
-    git config -l -f "$bpan_index_path" |
-      grep -i -E "$pattern" |
-      grep '^package\.' |
-      cut -d. -f2 |
-      +l:sort |
-      uniq || true
-  ))
+  force_update=$option_update \
+    db:sync
 
-  num=${#found[*]}
+  found=$(db:find-packages "$pattern")
+
+  num=$(wc -l <<<"$found")
   if [[ $num -eq 0 ]]; then
     $tty && say -r "No matches found for search term '$term'"
     return
@@ -36,11 +35,11 @@ search:main() (
   fi
   echo
 
-  for package in "${found[@]}"; do
+  while read -r package; do
     if $tty; then
       say -y "* $package"
     else
       echo "$package"
     fi
-  done
+  done <<<"$found"
 )

@@ -5,16 +5,17 @@ VERSION=0.1.85
 die() { printf '%s\n' "$@" >&2; exit 1; }
 
 ( shopt -s compat31 2>/dev/null ) ||
-  die "'bpan' requires Bash version 3.2 or higher."
+  die "Error: Requires Bash version 3.2 or higher."
 
 [[ ${BPAN_DEBUG-} == -x ]] && BPAN_DEBUG_BASH_X='-x'
 set "${BPAN_DEBUG_BASH_X:-+x}"
 
 [[ ${BPAN_ROOT:-} ]] ||
-  die "BPAN_ROOT not set." \
+  die "Error: BPAN_ROOT not set." \
       "Try: 'source /path/to/bpan/.rc'."
 
-source "$BPAN_ROOT/lib/bpan.bash" --app
+source "$BPAN_ROOT/lib/bpan.bash" --app ||
+  die "Error: Can't source 'bpan.bash'"
 bpan:source bashplus +cmd +err +fs +git +list +say +str +sym +sys +time
 bpan:source ini
 bpan:source bpan-util
@@ -130,9 +131,6 @@ set-env() {
       error "BPAN_INSTALL='$BPAN_INSTALL' - directory not found"
     fi
   fi
-
-  source-once util/pkg
-  pkg:config-vars
 
   if [[ ${BPAN_DEBUG_BASH_X-} ]]; then
     BASHPLUS_DEBUG_BASH_X=${BASHPLUS_DEBUG_BASH_X:-$BPAN_DEBUG_BASH_X}

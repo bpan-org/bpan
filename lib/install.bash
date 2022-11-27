@@ -21,76 +21,98 @@ install:usage() (
   echo "$app [<$app-opts>] $cmd [<cmd-opts>] <pkg-id...>"
 )
 
+install:options() (cat <<...
+U,update  Update index(es)
+I,index=  Index name to install from
+...
+)
+
 install:main() (
   [[ $# -gt 0 ]] ||
     error "'$app $cmd' requires one or more packages"
 
-  source-once util/pkg
+  source-once util/db
 
-  force_update=true pkg:index-update
+  force_update=$option_update \
+    db:sync
 
-  for id do
-    pkg:parse-id+ "$id"
+  for package_id; do
+    install:package "$package_id"
+  done
+)
 
-    base=${pkg_src%/*}
-    if [[ -d $base ]]; then
-      if [[ ! -d $pkg_src ]]; then
-        (
-          say -y "Fetch $base"
-          $option_verbose && set -x
+install:package() (
+  package_id=$1
 
-          GIT_TERMINAL_PROMPT=0 git -C "$base" fetch \
-            --quiet \
-            2>/dev/null
-        ) || error "Can't 'git -C $base fetch'"
-      fi
-    else
-      mkdir -p "$(dirname "$base")"
+  source-once util/db
+
+  db:find-package "$package_id"
+
+  repo=$(
+    ini:vars owner name
+    key=host.$host.source
+    ini:get "$key" ||
+      error "Can't find config value for '$key'"
+  )
+
+  base=${source%/*}
+  if [[ -d $base ]]; then
+    if [[ ! -d $source ]]; then
       (
-        say -y "Clone $pkg_repo -> $base"
+        say -y "Fetch $base"
         $option_verbose && set -x
 
-        GIT_TERMINAL_PROMPT=0 git clone \
+        GIT_TERMINAL_PROMPT=0 git -C "$base" fetch \
           --quiet \
-          --no-checkout \
-          "$pkg_repo" "$base" 2>/dev/null
-      ) || error "Can't 'git clone $pkg_repo'"
+          2>/dev/null
+      ) || error "Can't 'git -C $base fetch'"
     fi
-
-    if [[ ! -d $pkg_src ]]; then
-      # 'worktree --quiet' not available on git 2.8 (centos 6)
-      git -C "$base" worktree add --force "$pkg_src" "$pkg_version" &>/dev/null ||
-        error "Can't add git worktree for '$pkg_id=$pkg_version'"
-      if [[ $(git -C "$pkg_src" rev-parse HEAD) != "$pkg_commit" ]]; then
-        rm -fr "$pkg_src"
-        error "Bad commit: package '$pkg_id' version '$pkg_version' commit '$pkg_commit'"
-      fi
-    fi
-
+  else
+    mkdir -p "$(dirname "$base")"
     (
-      while read -r file; do
-        rm -f "$BPAN_INSTALL/$file"
+      say -y "Clone $repo -> $base"
+      $option_verbose && set -x
 
-        n=${file//[^\/]/}; n=${#n}
-        prefix=..
-        for (( i = 1; i < n; i++ )); do prefix+=/..; done
+      GIT_TERMINAL_PROMPT=0 git clone \
+        --quiet \
+        --no-checkout \
+        "$repo" "$base" 2>/dev/null
+    ) || error "Can't 'git clone $repo'"
+  fi
 
-        link=$BPAN_INSTALL/$file
-        target=src/$pkg_host/$pkg_owner/$pkg_name/$pkg_version/$file
-        if [[ ! -f $link ]] ||
-           [[ $(readlink "$link") != $prefix/$target ]]
-        then
-          (
-            say -y "Install $file -> $target"
-            $option_verbose && set -x
-            mkdir -p "$(dirname "$link")"
-            ln -s "$prefix/$target" "$link"
-          )
-        fi
-      done < <(
-        cd "$pkg_src" || exit
-        find bin lib man share -type f 2>/dev/null || true
-      )
+  if [[ ! -d $source ]]; then
+    # 'worktree --quiet' not available on git 2.8 (centos 6)
+    git -C "$base" worktree add --force "$source" "$latest" &>/dev/null ||
+      error "Can't add git worktree for '$fqid=$latest'"
+    if [[ $(git -C "$source" rev-parse HEAD) != "$commit" ]]; then
+      rm -fr "$source"
+      error "Bad commit: package '$id' version '$latest' commit '$commit'"
+    fi
+  fi
+
+  (
+    while read -r file; do
+      rm -f "$BPAN_INSTALL/$file"
+
+      n=${file//[^\/]/}; n=${#n}
+      prefix=..
+      for (( i = 1; i < n; i++ )); do prefix+=/..; done
+
+      link=$BPAN_INSTALL/$file
+      target=src/$host/$owner/$name/$latest/$file
+      if [[ ! -f $link ]] ||
+          [[ $(readlink "$link") != $prefix/$target ]]
+      then
+        (
+          say -y "Install $file -> $target"
+          $option_verbose && set -x
+          mkdir -p "$(dirname "$link")"
+          ln -s "$prefix/$target" "$link"
+        )
+      fi
+    done < <(
+      cd "$source" || exit
+      find bin lib man share -type f 2>/dev/null || true
     )
-  done
+  )
 )

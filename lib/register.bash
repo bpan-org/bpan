@@ -1,7 +1,19 @@
+register:options() (cat <<...
+I,index=  Index name to register to
+...
+)
+
 register:main() (
-  source-once util/pkg
-  force_update=true pkg:index-update
-  pkg:config-vars
+  source-once util/db
+
+  index=$(db:index-names)
+  [[ $index && $index != *$'\n'* ]] ||
+    error "Can't determine index to register to." \
+      "Please specify with '--index=<index-name>'."
+
+  force_update=true db:sync
+
+  db:get-index-config "$index"
 
   say -y "Check Package is Ready to Register"
   register:preflight
@@ -61,7 +73,7 @@ register:preflight() {
   package_repo=${remote_owner_repo#*/}
   o "BPAN package repo is '$package_repo'"
 
-  if grep -q '^\[package "'"$package_id"'"\]' "$bpan_index_path"; then
+  if grep -q '^\[package "'"$package_id"'"\]' "$index_path"; then
     error "Package '$package_id' is already registered"
   fi
   o "Package '$package_id' is not already registered"
@@ -136,7 +148,7 @@ register:preflight() {
 register:update-bpan-index() (
   local entry head line
 
-  fork_repo_url=git@github.com:$github_id/${bpan_index_api_url##*/}
+  fork_repo_url=git@github.com:$github_id/${index_api_url##*/}
 
   forked=false
   o "Cloning fork: '$fork_repo_url'"
@@ -151,8 +163,8 @@ register:update-bpan-index() (
   do
     mkdir -p "$index_dir"
     if ! $forked; then
-      +post "$bpan_index_api_url/forks" >/dev/null
-      o "Forked $bpan_index_source"
+      +post "$index_api_url/forks" >/dev/null
+      o "Forked $index_source"
       forked=true
     fi
     say -y "  * Waiting for fork to be ready to clone..."
@@ -169,11 +181,11 @@ register:update-bpan-index() (
   git -C "$index_dir" checkout --quiet -b "$fork_branch"
   o "Created branch '$fork_branch'"
   git -C "$index_dir" fetch --quiet \
-    "$bpan_index_source" \
-    "$bpan_index_branch"
-  o "Fetched '$bpan_index_branch' branch of '$bpan_index_source'"
+    "$index_source" \
+    "$index_branch"
+  o "Fetched '$index_branch' branch of '$index_source'"
   git -C "$index_dir" reset --quiet --hard FETCH_HEAD
-  o "Hard reset HEAD to '$bpan_index_source' HEAD"
+  o "Hard reset HEAD to '$index_source' HEAD"
 
   entry=$(register:new-index-entry)
   head=$(head -n1 <<<"$entry")
@@ -190,16 +202,16 @@ register:update-bpan-index() (
           updated=true
         fi
         echo "$line"
-      done < "$bpan_index_file"
+      done < "$index_file"
       if ! $updated; then
         echo
         echo "$entry"
       fi
     ) > index
-    mv index "$bpan_index_file"
+    mv index "$index_file"
 
-    ini:set --file="$bpan_index_file" bpan.version "$VERSION"
-    ini:set --file="$bpan_index_file" bpan.updated "$package_update"
+    ini:set --file="$index_file" bpan.version "$VERSION"
+    ini:set --file="$index_file" bpan.updated "$package_update"
   )
 
   message="\
@@ -225,12 +237,12 @@ Register $package_id=$package_version
 register:post-pull-request() (
   fork_branch=$package_owner/$package_name
   head=$github_id:$fork_branch
-  base=$bpan_index_branch
+  base=$index_branch
   title="Register $package_id=$package_version"
   http=https://github.com/$remote_owner_repo/tree/$package_version
   body=$(+json-escape "\
 Please add this new package to the \
-[BPAN Index]($bpan_index_source/blob/$bpan_index_branch/$bpan_index_file):
+[BPAN Index]($index_source/blob/$index_branch/$index_file):
 
 > $http
 
@@ -256,7 +268,7 @@ Please add this new package to the \
 
   response=$(
     +post \
-      "$bpan_index_api_url/pulls" \
+      "$index_api_url/pulls" \
       "$json"
   )
 
@@ -289,6 +301,7 @@ Please add this new package to the \
   fi
 
   response=$(
+    set -x # XXX
     curl \
       --silent \
       --show-error \

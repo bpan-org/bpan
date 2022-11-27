@@ -3,7 +3,6 @@ l,list    List possible template files
 f,file=   Template file to update
 t,type=   pkg | file | man | new | init | global
 a,all     All types
-I,index   Refresh index file
 S,self    Update '$app' itself (to latest version)
 ...
 )
@@ -21,13 +20,14 @@ update:main() (
     update:list
 
   else
-    source-once util/pkg
+    source-once util/db
 
     config=.bpan/config
     [[ -f $config ]] ||
       error "Can't 'bpan update'. No '$config' file."
 
-    force_update=true pkg:index-update
+    force_update=true
+      db:sync
 
     update:apply
   fi
@@ -88,28 +88,22 @@ update:packages() (
     fi
   )
 
-  while read -r pkg; do
-    pkg=${pkg#*=}
+  while read -r package_id; do
+    package_id=${package_id#*=}
 
-    pkg:parse-id+ "$pkg"
+    db:find-package "$package_id"
 
-    if ! [[ -d $pkg_src ]]; then
-      say -y "INSTALL $pkg_owner/$pkg_name $pkg_version"
-      install:main "$pkg"
+    if ! [[ -d $source ]]; then
+      say -y "INSTALL $host:$owner/$name=$latest"
+      install:package "$package_id"
     fi
 
-    if [[ $pkg_file ]]; then
-      from=$BPAN_INSTALL/$pkg_file
-      to=.bpan/$pkg_file
+    if [[ $file ]]; then
+      from=$BPAN_INSTALL/$file
+      to=.bpan/$file
 
       update:copy-file "$from" "$to"
       continue
-    fi
-
-    option_index=false
-    pkg:parse-id "$pkg"
-    if [[ ! $pkg_version ]]; then
-      pkg_src+=$(pkg:get-version "$pkg_id")
     fi
 
     while read -r file; do
@@ -124,12 +118,12 @@ update:packages() (
       to=.bpan/$file
       update:copy-file "$from" "$to"
     done < <(
-      cd "$pkg_src" || exit
+      cd "$source" || exit
       find bin lib share -type f 2>/dev/null || true
     )
 
   done < <(
-    ini:list |
+    ini:list --file=.bpan/config |
       grep '^update\.package'
   )
 )
@@ -214,10 +208,10 @@ update:self() (
     die "Can't determine bpan HEAD commit"
   branch=$(+git:branch-name) ||
     die "Can't determine bpan branch"
-  pkg_branch=$(ini:get package.branch) ||
+  package_branch=$(ini:get package.branch) ||
     die "Can't find config entry 'package.branch'"
-  [[ $branch == "$pkg_branch" ]] ||
-    error "'$root' must be on branch '$pkg_branch' to '$app update --self'"
+  [[ $branch == "$package_branch" ]] ||
+    error "'$root' must be on branch '$package_branch' to '$app update --self'"
 
   say -y "Pulling '$repo' in '$root'..."
 
@@ -236,6 +230,6 @@ update:self() (
   fi
 
   say -y "Updating BPAN index file..."
-  source-once util/pkg
-  pkg:index-update
+  source-once util/db
+  db:sync
 )

@@ -108,12 +108,9 @@ add:main() (
   fi
 
   if [[ $option_count_pkg -gt 0 ]]; then
-    source-once util/pkg
+    source-once util/db
     add:assert-config
     for pkg in "${option_pkg[@]}"; do
-      pkg:parse-id "$pkg"
-      grep -q '\[package "'"$pkg_id"'"\]' "$bpan_index_path" ||
-        error "No such BPAN package '$pkg'"
       grep -q "^$pkg$" <(ini:all --file=.bpan/config update.package) &&
         error "Package '$pkg' already added"
 
@@ -155,6 +152,8 @@ add:main() (
     say -y "RUNNING 'bpan update'"
 
     source-once update
+    source-once util/db
+    db:sync
     update:apply
   fi
 )
