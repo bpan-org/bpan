@@ -138,6 +138,7 @@ set-env() {
       error "BPAN_INSTALL='$BPAN_INSTALL' - directory not found"
     fi
   fi
+  install_dir=$BPAN_INSTALL
 
   if [[ ${BPAN_DEBUG_BASH_X-} ]]; then
     BASHPLUS_DEBUG_BASH_X=${BASHPLUS_DEBUG_BASH_X:-$BPAN_DEBUG_BASH_X}

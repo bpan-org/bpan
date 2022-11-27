@@ -33,14 +33,14 @@ uninstall:package() (
 
   source=$host/$owner/$name/$version
 
-  if ! [[ -d $BPAN_INSTALL/src/$source ]]; then
+  if ! [[ -d $install_dir/src/$source ]]; then
     say -r "'$fqid=$version' is not installed"
     return
   fi
 
   say -y "Uninstalling '$name':"
 
-  cd "$BPAN_INSTALL" || exit
+  cd "$install_dir" || exit
 
   while read -r line; do
     link=${line%% -> *}

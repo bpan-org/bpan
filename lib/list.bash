@@ -1,7 +1,7 @@
 list:main() (
   source-once util/db
 
-  if [[ ! -d $BPAN_INSTALL/src ]]; then
+  if [[ ! -d $install_dir/src ]]; then
     say -r "No BPAN packages currently installed"
     return
   fi

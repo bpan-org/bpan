@@ -37,14 +37,14 @@ db:sync() (
         --quiet \
         --branch "$index_branch" \
         "$index_source" \
-        "$BPAN_INSTALL/$index_dir"
+        "$install_dir/$index_dir"
 
     elif ! [[ ${BPAN_TEST_RUNNING-} ]]; then
       if ${force_update:-false} ||
         db:index-too-old
       then
         say -Y "Updating $APP package index '$index_name'"
-        git -C "$BPAN_INSTALL/$index_dir" pull \
+        git -C "$install_dir/$index_dir" pull \
           --quiet \
           --ff-only \
           origin "$index_branch"
@@ -70,7 +70,7 @@ db:get-index-config() {
   index_dir=src/$index_default_host/$index_repo
   index_file=$(ini:get "index.$index_name.file")
 
-  index_path=$BPAN_INSTALL/$index_dir/$index_file
+  index_path=$install_dir/$index_dir/$index_file
 }
 
 db:find-packages() (
@@ -129,7 +129,7 @@ db:get-package-release-info() {
   if [[ ! $version || $version == "$latest" ]]; then
     commit=$(ini:get --file="$index_path" "package.$fqid.commit")
     sha512=$(ini:get --file="$index_path" "package.$fqid.sha512")
-    source=$BPAN_INSTALL/src/$host/$owner/$name/$latest
+    source=$install_dir/src/$host/$owner/$name/$latest
   else
     db:get-package-version-info "$package_id" "$version"
   fi
@@ -144,7 +144,7 @@ db:get-package-version-info() {
       "package.$fqid.version"
   ) || error "Can't find version for package '$package_id'"
 
-  local dir=$BPAN_INSTALL/$index_dir
+  local dir=$install_dir/$index_dir
   local config
   if [[ $index_version == "$version" ]]; then
     config=$(< "$index_path")
@@ -169,7 +169,7 @@ db:get-package-version-info() {
     git config -f- "package.$fqid.sha512" <<< "$config"
   ) ||
     error "Can't find sha512 for package '$package_id' version '$version'"
-  source=$BPAN_INSTALL/src/$host/$owner/$name/$version
+  source=$install_dir/src/$host/$owner/$name/$version
 }
 
 db:package-parse-id() {
@@ -201,7 +201,7 @@ db:package-parse-id() {
 
 db:list-installed() (
   shopt -s nullglob
-  cd "$BPAN_INSTALL/src/" || exit 0
+  cd "$install_dir/src/" || exit 0
   printf '%s\n' */*/*/[0-9]* |
     +l:sort |
     while IFS=/ read -r host owner name ver; do
@@ -222,7 +222,7 @@ db:package-is-primary() (
     db:package-parse-id "$id" "$index"
 
     (
-      find "$BPAN_INSTALL"/{lib,bin,share} \
+      find "$install_dir"/{lib,bin,share} \
         -type l \
         -print0 \
         2>/dev/null || true
@@ -236,7 +236,7 @@ db:package-is-primary() (
 
 db:index-too-old() (
   +source bashplus/time
-  head=$BPAN_INSTALL/$index_dir/.git/FETCH_HEAD
+  head=$install_dir/$index_dir/.git/FETCH_HEAD
   [[ -f $head ]] || return 0
   curr_time=$(+time:epoch)
   pull_time=$(+fs:mtime "$head")

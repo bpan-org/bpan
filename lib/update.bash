@@ -98,7 +98,7 @@ update:packages() (
     fi
 
     if [[ $file ]]; then
-      from=$BPAN_INSTALL/$file
+      from=$install_dir/$file
       to=.bpan/$file
 
       update:copy-file "$from" "$to"
@@ -113,7 +113,7 @@ update:packages() (
         prefix+=/..
       done
 
-      from=$BPAN_INSTALL/$file
+      from=$install_dir/$file
       to=.bpan/$file
       update:copy-file "$from" "$to"
     done < <(

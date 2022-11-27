@@ -92,13 +92,13 @@ install:package() (
 
   (
     while read -r file; do
-      rm -f "$BPAN_INSTALL/$file"
+      rm -f "$install_dir/$file"
 
       n=${file//[^\/]/}; n=${#n}
       prefix=..
       for (( i = 1; i < n; i++ )); do prefix+=/..; done
 
-      link=$BPAN_INSTALL/$file
+      link=$install_dir/$file
       target=src/$host/$owner/$name/$latest/$file
       if [[ ! -f $link ]] ||
           [[ $(readlink "$link") != $prefix/$target ]]
