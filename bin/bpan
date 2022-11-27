@@ -105,18 +105,25 @@ set-env() {
   [[ -f $root/bin/$app ]] ||
     error "BPAN_ROOT variable has bad value '$root'"
 
-  local files=("$root/etc/config")
-  local dir
+  local files=()
 
-  if [[ -f $root/config ]]; then
-    files+=("$root/config")
+  config_file_system=${BPAN_CONFIG_SYSTEM:-$root/etc/config}
+  [[ -f $config_file_system ]] ||
+    error "$APP system config file '$config_file_system' file does not exist"
+  files+=("$config_file_system")
+
+  config_file_global=${BPAN_CONFIG_GLOBAL:-$root/config}
+  if [[ -f $config_file_global ]]; then
+    files+=("$config_file_global")
   fi
 
-  if +git:in-repo . &&
-     dir=$(+git:top-dir) &&
-     [[ -f $dir/.bpan/config ]]
-  then
-    files+=( "$dir/.bpan/config" )
+  config_file_package=.$app/config
+  if +git:in-repo .; then
+    local top_dir
+    top_dir=$(+git:top-dir)
+    if [[ -f $top_dir/$config_file_package ]]; then
+      files+=( "$top_dir/$config_file_package" )
+    fi
   fi
 
   ini:init "${files[@]}"

@@ -13,7 +13,7 @@ bump:main() (
     option_push=true
   fi
 
-  package_name=$(ini:get --file=.bpan/config package.name)
+  package_name=$(ini:get --file="$config_file_package" package.name)
 
   old_version=$(bump:old-version)
   new_version=$(bump:new-version)
@@ -93,8 +93,8 @@ bump:check-sanity() (
 
   [[ -f Changes ]] ||
     error "'$app $cmd' require './Changes' file"
-  [[ -f .bpan/config ]] ||
-    error "'$app $cmd' require '.bpan/config' file"
+  [[ -f $config_file_package ]] ||
+    error "'$app $cmd' require '$config_file_package' file"
 
   +git:tag-exists "$new_version" &&
     error "Can't bump. Tag '$new_version' already exists."
@@ -106,7 +106,7 @@ bump:check-sanity() (
     branch=$(+git:branch-name)
     [[ $branch ]] ||
       error "Can't push. Not checked out to a branch."
-    publish_branch=$(ini:get --file=.bpan/config package.branch || echo main)
+    publish_branch=$(ini:get --file="$config_file_package" package.branch || echo main)
     [[ $branch == "$publish_branch" ]] ||
       error "Can't push. Current branch is not '$publish_branch'"
   fi
@@ -149,16 +149,16 @@ $(bump:change-list)"
 )
 
 bump:update-config-file() (
-  if [[ $package_name == bpan && -f etc/config ]]; then
-    ini:set --file=etc/config bpan.version "$new_version"
+  if [[ $package_name == bpan && -f $config_file_system ]]; then
+    ini:set --file="$config_file_system" bpan.version "$new_version"
   fi
 
   # shellcheck disable=2153
-  ini:set --file=.bpan/config bpan.version "$VERSION"
+  ini:set --file="$config_file_package" bpan.version "$VERSION"
 
-  ini:set --file=.bpan/config package.version "$new_version"
+  ini:set --file="$config_file_package" package.version "$new_version"
 
-  say -y "Updated '.bpan/config' file to '$new_version'"
+  say -y "Updated '$config_file_package' file to '$new_version'"
 )
 
 bump:update-version-vars() (
@@ -183,8 +183,8 @@ bump:update-version-vars() (
 )
 
 bump:old-version() (
-  [[ -f .bpan/config ]] ||
-    error "Config file '.bpan/config' not found"
+  [[ -f $config_file_package ]] ||
+    error "Config file '$config_file_package' not found"
 
   version=$(ini:get package.version)
 

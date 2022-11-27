@@ -9,9 +9,9 @@ S,self    Update '$app' itself (to latest version)
 
 update:main() (
   ini:init \
-    "$root/etc/config" \
-    "$root/config" \
-    "$(pwd)/.bpan/config"
+    "$config_file_system" \
+    "$config_file_global" \
+    "$(pwd)/$config_file_package"
 
   if $option_self; then
     update:self
@@ -22,9 +22,8 @@ update:main() (
   else
     source-once util/db
 
-    config=.bpan/config
-    [[ -f $config ]] ||
-      error "Can't 'bpan update'. No '$config' file."
+    [[ -f $config_file_package ]] ||
+      error "Can't 'bpan update'. No '$config_file_package' file."
 
     force_update=true
       db:sync
@@ -123,7 +122,7 @@ update:packages() (
     )
 
   done < <(
-    ini:list --file=.bpan/config |
+    ini:list --file="$config_file_package" |
       grep '^update\.package'
   )
 )
@@ -145,7 +144,7 @@ update:templates() (
 
     add:file-copy "$from" "$to"
   done < <(
-    ini:list --file=.bpan/config |
+    ini:list --file="$config_file_package" |
       grep '^update\.file'
   )
 )
@@ -189,7 +188,7 @@ update:manpages() (
       say -y "UPDATED '$man' from '$md'"
     fi
   done < <(
-    ini:list --file=.bpan/config |
+    ini:list --file="$config_file_package" |
       grep '^update\.man'
   )
 )
