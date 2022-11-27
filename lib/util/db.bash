@@ -30,12 +30,7 @@ db:index-names() (
 
 db:sync() (
   while read -r index_name; do
-    if [[ -f ${BPAN_TEST_INDEX_REPO-} ]]; then
-      index_source=$BPAN_TEST_INDEX_REPO
-      index_branch=${BPAN_TEST_INDEX_BRANCH:-main}
-    else
-      db:get-index-config "$index_name"
-    fi
+    db:get-index-config "$index_name"
 
     if [[ ! -f $index_path ]]; then
       git clone \
@@ -73,8 +68,6 @@ db:get-index-config() {
 
   index_repo=$(ini:get "index.$index_name.repo")
   index_dir=src/$index_default_host/$index_repo
-  index_api_url=$(ini:get "index.$index_name.api")
-  index_publish_url=$(ini:get "index.$index_name.publish")
   index_file=$(ini:get "index.$index_name.file")
 
   index_path=$BPAN_INSTALL/$index_dir/$index_file

@@ -1,0 +1,10 @@
+[bpan]
+version = 0.1.82
+
+[user]
+name = Pat Tester
+email = pat@tester.bpan
+
+[host "github"]
+user = octocat
+token = ghp_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX

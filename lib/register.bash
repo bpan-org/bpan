@@ -14,6 +14,8 @@ register:main() (
   force_update=true db:sync
 
   db:get-index-config "$index"
+  index_api_url=$(ini:get "index.$index.api") ||
+    error "No config entry 'index.$index.api'"
 
   say -y "Check Package is Ready to Register"
   register:preflight

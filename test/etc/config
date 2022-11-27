@@ -1,0 +1,23 @@
+[bpan]
+version = 0.1.84
+
+[install]
+prefix = $BPAN_ROOT/local
+
+[host "github"]
+file = file:///tmp/bpan/github
+source = $host.github.file/$owner/$name
+
+[index "bpan"]
+repo = bpan-org/bpan-index
+source = $host.github.file/$index.bpan.repo
+branch = main
+file = index.ini
+host = github
+owner = bpan-org
+
+[template "bpan"]
+add = $BPAN_ROOT/share/add
+
+[test]
+docker-image = ingy/bpan-testing:0.1.0

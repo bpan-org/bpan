@@ -33,7 +33,7 @@ install:main() (
 
   source-once util/db
 
-  force_update=$option_update \
+  force_update=${option_update:-false} \
     db:sync
 
   for package_id; do

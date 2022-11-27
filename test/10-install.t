@@ -2,9 +2,6 @@
 
 source test/init
 
-+sys:online ||
-  skip-all "These tests need to be run online"
-
 test-install-setup() {
   export BPAN_INSTALL=$PWD//test/local
   rm -fr "$BPAN_INSTALL"

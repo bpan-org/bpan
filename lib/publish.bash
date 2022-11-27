@@ -20,6 +20,8 @@ publish:main() (
     die --stack
   package_id=${BASH_REMATCH[1]}
   db:find-package "$package_id"
+  index_publish_url=$(ini:get "index.$index.publish") ||
+    error "No config entry 'index.$index.publish'"
 
   force_update=true db:sync
 

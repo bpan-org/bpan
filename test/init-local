@@ -1,17 +1,39 @@
 #!/bash
 
-+can md2man || bpan -q install github:bpan-org/md2man
-
-export BPAN_INSTALL=$PWD/test/local
-mkdir -p "$BPAN_INSTALL"
-
-export BPAN_TEST_INDEX_REPO=$BPAN_ROOT/local/src/github/bpan-org/bpan-index/.git
-export BPAN_TEST_GITHUB_USER_ID=octocat
-
 export GIT_AUTHOR_NAME='Pat Tester'
 export GIT_AUTHOR_EMAIL=pat@tester.bpan
 export GIT_COMMITTER_NAME='Pat Tester'
 export GIT_COMMITTER_EMAIL=pat@tester.bpan
+
+export BPAN_INSTALL=$PWD/test/local
+mkdir -p "$BPAN_INSTALL"
+
+export BPAN_TEST_GITHUB_USER_ID=octocat
+
+export BPAN_CONFIG_SYSTEM=$PWD/test/etc/config
+export BPAN_CONFIG_GLOBAL=$PWD/test/config
+
+# Cache online resources needed for testing, so that tests will run faster and
+# can later be run offline.
+export BPAN_TEST_CACHE=${BPAN_TEST_CACHE:-/tmp/bpan}
+bpan_org_dir=$BPAN_TEST_CACHE/github/bpan-org
+if ! [[ -d $bpan_org_dir ]]; then
+  note "Caching remote repositories to '$BPAN_TEST_CACHE/':"
+
+  +sys:online ||
+    die "System needs to be online to cache remote repositories"
+
+  rm -fr "$bpan_org_dir"
+  mkdir -p "$bpan_org_dir"
+  for repo in bpan-index bashplus getopt-bash md2man; do
+    note "* Cloning https://github.com/bpan-org/$repo"
+    git clone --quiet --bare \
+      https://github.com/bpan-org/"$repo" \
+      "$bpan_org_dir/$repo"
+  done
+  git clone --quiet "$bpan_org_dir/md2man" "$BPAN_TEST_CACHE/md2man"
+fi
+export PATH=$BPAN_TEST_CACHE/md2man/bin:$PATH
 
 install-test-bpan() {
   root=$(basename "$(caller | cut -d ' ' -f2)")
