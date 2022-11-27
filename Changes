@@ -1,3 +1,12 @@
+[version "0.1.86"]
+date = Sun Nov 27 12:32:05 PM PST 2022
+done = Use 'install_dir' for BPAN_INSTALL internally
+done = Update global and local bpan.version for bump on bpan itself
+done = Cache online resources so tests run faster and also offline
+done = Make config file locations configurable
+done = Support multiple BPAN indexes
+done = Change 'bpan upgrade' to 'bpan update --self'
+
 [version "0.1.85"]
 date = Tue Nov 22 03:10:25 PM PST 2022
 done = Fix bug in publish.bash
