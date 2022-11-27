@@ -25,10 +25,10 @@ matrix = @ingy:yaml.io
 site = http://ingy.net
 
 [require "command"]
-bash = 3.2
+bash = 3.2+
 git = 2.7+
 make = 3.81+
-ping = 0
+ping = 0+
 
 [update]
 package = bashplus:@

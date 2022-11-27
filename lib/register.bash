@@ -303,7 +303,6 @@ Please add this new package to the \
   fi
 
   response=$(
-    set -x # XXX
     curl \
       --silent \
       --show-error \

@@ -11,7 +11,7 @@ update:main() (
   ini:init \
     "$config_file_system" \
     "$config_file_global" \
-    "$(pwd)/$config_file_package"
+    "$(pwd)/$config_file_local"
 
   if $option_self; then
     update:self
@@ -22,8 +22,8 @@ update:main() (
   else
     source-once util/db
 
-    [[ -f $config_file_package ]] ||
-      error "Can't 'bpan update'. No '$config_file_package' file."
+    [[ -f $config_file_local ]] ||
+      error "Can't 'bpan update'. No '$config_file_local' file."
 
     force_update=true
       db:sync
@@ -122,7 +122,7 @@ update:packages() (
     )
 
   done < <(
-    ini:list --file="$config_file_package" |
+    ini:list --file="$config_file_local" |
       grep '^update\.package'
   )
 )
@@ -144,7 +144,7 @@ update:templates() (
 
     add:file-copy "$from" "$to"
   done < <(
-    ini:list --file="$config_file_package" |
+    ini:list --file="$config_file_local" |
       grep '^update\.file'
   )
 )
@@ -188,7 +188,7 @@ update:manpages() (
       say -y "UPDATED '$man' from '$md'"
     fi
   done < <(
-    ini:list --file="$config_file_package" |
+    ini:list --file="$config_file_local" |
       grep '^update\.man'
   )
 )

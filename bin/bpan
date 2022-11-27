@@ -117,12 +117,12 @@ set-env() {
     files+=("$config_file_global")
   fi
 
-  config_file_package=.$app/config
+  config_file_local=.$app/config
   if +git:in-repo .; then
     local top_dir
     top_dir=$(+git:top-dir)
-    if [[ -f $top_dir/$config_file_package ]]; then
-      files+=( "$top_dir/$config_file_package" )
+    if [[ -f $top_dir/$config_file_local ]]; then
+      files+=( "$top_dir/$config_file_local" )
     fi
   fi
 

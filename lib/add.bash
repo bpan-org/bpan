@@ -57,7 +57,7 @@ The 'bpan add' command add
 )
 
 add:options() (cat <<...
-config?     Add $config_file_package (or provide a name)
+config?     Add $config_file_local (or provide a name)
 
 file=       Add a file from 'bpan add --files'
 pkg=        Add a bpan package requirement
@@ -111,10 +111,10 @@ add:main() (
     source-once util/db
     add:assert-config
     for pkg in "${option_pkg[@]}"; do
-      grep -q "^$pkg$" <(ini:all --file="$config_file_package" update.package) &&
+      grep -q "^$pkg$" <(ini:all --file="$config_file_local" update.package) &&
         error "Package '$pkg' already added"
 
-      ini:add --file="$config_file_package" 'update.package' "$pkg"
+      ini:add --file="$config_file_local" 'update.package' "$pkg"
 
       additions=true
     done
@@ -159,13 +159,13 @@ add:main() (
 )
 
 add:assert-config() {
-  [[ -f $config_file_package ]] ||
-    error "Config file '$config_file_package' not found. Try '--config'."
+  [[ -f $config_file_local ]] ||
+    error "Config file '$config_file_local' not found. Try '--config'."
 
   ini:init \
     "$config_file_system" \
     "$config_file_global" \
-    "$(pwd)/$config_file_package"
+    "$(pwd)/$config_file_local"
 }
 
 add:set-env() {
@@ -193,7 +193,7 @@ add:set-env() {
       cut -d= -f2
   )
 
-  local config=${option_config:-$config_file_package}
+  local config=${option_config:-$config_file_local}
 
   unset name
   if [[ -e $config ]]; then
@@ -218,7 +218,7 @@ add:list-files() (
 )
 
 add:config() (
-  default=$config_file_package
+  default=$config_file_local
   conf_file=$option_config
   [[ $conf_file == true ]] && conf_file=$default
   conf_file=${conf_file:-$default}

@@ -13,7 +13,7 @@ bump:main() (
     option_push=true
   fi
 
-  package_name=$(ini:get --file="$config_file_package" package.name)
+  package_name=$(ini:get --file="$config_file_local" package.name)
 
   old_version=$(bump:old-version)
   new_version=$(bump:new-version)
@@ -93,8 +93,8 @@ bump:check-sanity() (
 
   [[ -f Changes ]] ||
     error "'$app $cmd' require './Changes' file"
-  [[ -f $config_file_package ]] ||
-    error "'$app $cmd' require '$config_file_package' file"
+  [[ -f $config_file_local ]] ||
+    error "'$app $cmd' require '$config_file_local' file"
 
   +git:tag-exists "$new_version" &&
     error "Can't bump. Tag '$new_version' already exists."
@@ -106,7 +106,7 @@ bump:check-sanity() (
     branch=$(+git:branch-name)
     [[ $branch ]] ||
       error "Can't push. Not checked out to a branch."
-    publish_branch=$(ini:get --file="$config_file_package" package.branch || echo main)
+    publish_branch=$(ini:get --file="$config_file_local" package.branch || echo main)
     [[ $branch == "$publish_branch" ]] ||
       error "Can't push. Current branch is not '$publish_branch'"
   fi
@@ -149,16 +149,17 @@ $(bump:change-list)"
 )
 
 bump:update-config-file() (
+  # shellcheck disable=2153
+  ini:set --file="$config_file_local" bpan.version "$VERSION"
+  ini:set --file="$config_file_local" package.version "$new_version"
+
   if [[ $package_name == bpan && -f $config_file_system ]]; then
+    ini:set --file="$config_file_local" bpan.version "$new_version"
+    ini:set --file="$config_file_global" bpan.version "$new_version"
     ini:set --file="$config_file_system" bpan.version "$new_version"
   fi
 
-  # shellcheck disable=2153
-  ini:set --file="$config_file_package" bpan.version "$VERSION"
-
-  ini:set --file="$config_file_package" package.version "$new_version"
-
-  say -y "Updated '$config_file_package' file to '$new_version'"
+  say -y "Updated '$config_file_local' file to '$new_version'"
 )
 
 bump:update-version-vars() (
@@ -183,8 +184,8 @@ bump:update-version-vars() (
 )
 
 bump:old-version() (
-  [[ -f $config_file_package ]] ||
-    error "Config file '$config_file_package' not found"
+  [[ -f $config_file_local ]] ||
+    error "Config file '$config_file_local' not found"
 
   version=$(ini:get package.version)
 
