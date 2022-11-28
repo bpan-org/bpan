@@ -244,6 +244,10 @@ publish:gha-get-env() {
     git config --file="package/.$app/config" \
       package.license
   )
+  package_tag=$(
+    git config --file="package/.$app/config" \
+      package.tag
+  )
 
   set "${BPAN_DEBUG_BASH_X:-+x}"
   comment_body+="
@@ -306,15 +310,14 @@ publish:gha-update-index() (
 
   # TODO Update all relevant fields
 
-  if [[ ${BPAN_INDEX_UPDATE_TESTING-} ]]; then
-    ini:set "package.$package_id.version" "$test_version"
-
-  else
-    ini:set "package.$package_id.version" "$package_version"
-  fi
-  ini:set "package.$package_id.commit" "$package_commit"
-
-  ini:set "package.$package_id.update" "$stamp"
+  ini:set "package.$package_id.title"   "$package_title"
+  ini:set "package.$package_id.version" "$package_version"
+  ini:set "package.$package_id.license" "$package_license"
+  ini:set "package.$package_id.tag"     "$package_tag"
+  ini:set "package.$package_id.author"  "$package_author"
+  ini:set "package.$package_id.update"  "$stamp"
+  ini:set "package.$package_id.commit"  "$package_commit"
+  ini:set "package.$package_id.sha512"  "$package_sha512"
 
   # shellcheck disable=2153
   ini:set bpan.version "$VERSION"
