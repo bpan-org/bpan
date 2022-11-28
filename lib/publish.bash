@@ -19,11 +19,12 @@ publish:main() (
   [[ $repo =~ https://github.com/([^/]+/[^/]+)$ ]] ||
     die --stack
   package_id=${BASH_REMATCH[1]}
+
+  force_update=true db:sync
+
   db:find-package "$package_id"
   index_publish_url=$(ini:get "index.$index.publish") ||
     error "No config entry 'index.$index.publish'"
-
-  force_update=true db:sync
 
   publish:get-env
 
@@ -323,7 +324,7 @@ publish:gha-update-index() (
   git config user.name "$APP Update Index"
 
   message="\
-Publish $package_id
+Publish $package_id=$package_version
 
     package=$package_id
     title=\"$package_title\"
