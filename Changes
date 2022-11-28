@@ -1,3 +1,8 @@
+[version "0.1.87"]
+date = Mon Nov 28 07:37:59 AM PST 2022
+done = Fix bug when installing older package version
+done = Fix bugs in 'bpan publish'
+
 [version "0.1.86"]
 date = Sun Nov 27 12:32:05 PM PST 2022
 done = Use 'install_dir' for BPAN_INSTALL internally
