@@ -106,7 +106,7 @@ db:find-package() {
       ;;
     0) error "No package '$package_id' found" ;;
     *) error "More than one package '$package_id' found:" \
-             "${found[@]}"
+             "${found[@]/:/ - }"
        ;;
   esac
 }
@@ -127,6 +127,7 @@ db:get-package-release-info() {
   db:package-parse-id "$package_id" "$index"
   latest=$(ini:get --file="$index_path" "package.$fqid.version")
   if [[ ! $version || $version == "$latest" ]]; then
+    version=$(ini:get --file="$index_path" "package.$fqid.version")
     commit=$(ini:get --file="$index_path" "package.$fqid.commit")
     sha512=$(ini:get --file="$index_path" "package.$fqid.sha512")
     source=$install_dir/src/$host/$owner/$name/$latest
@@ -160,7 +161,6 @@ db:get-package-version-info() {
     config=$(git -C "$dir" show "$index_commit:index.ini") || die
   fi
 
-  die --stack "XXX Need to test this"
   commit=$(
     git config -f- "package.$fqid.commit" <<< "$config"
   ) ||

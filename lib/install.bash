@@ -82,11 +82,11 @@ install:package() (
 
   if [[ ! -d $source ]]; then
     # 'worktree --quiet' not available on git 2.8 (centos 6)
-    git -C "$base" worktree add --force "$source" "$latest" &>/dev/null ||
-      error "Can't add git worktree for '$fqid=$latest'"
+    git -C "$base" worktree add --force "$source" "$version" &>/dev/null ||
+      error "Can't add git worktree for '$fqid=$version'"
     if [[ $(git -C "$source" rev-parse HEAD) != "$commit" ]]; then
       rm -fr "$source"
-      error "Bad commit: package '$id' version '$latest' commit '$commit'"
+      error "Bad commit: package '$fqid' version '$version' commit '$commit'"
     fi
   fi
 
@@ -99,7 +99,7 @@ install:package() (
       for (( i = 1; i < n; i++ )); do prefix+=/..; done
 
       link=$install_dir/$file
-      target=src/$host/$owner/$name/$latest/$file
+      target=src/$host/$owner/$name/$version/$file
       if [[ ! -f $link ]] ||
           [[ $(readlink "$link") != $prefix/$target ]]
       then
