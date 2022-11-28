@@ -284,10 +284,13 @@ publish:gha-check-publish() {
   fi
 
   : "Check that requesting user is package author"
-  package_author=$(ini:first --file="$config" '^author\..*\.user$') ||
+  author_host=$(ini:first --file="$config" '^author\..*\.host$') ||
+    die "No author.*.host entry in '$package_id' config"
+  author_user=$(ini:first --file="$config" '^author\..*\.user$') ||
     die "No author.*.user entry in '$package_id' config"
-  [[ $package_author == "$gha_triggering_actor" ]] ||
-    die "Request from '$gha_triggering_actor' should be from '$package_author'"
+  package_author=$author_host:$author_user
+  [[ $author_user == "$gha_triggering_actor" ]] ||
+    die "Request from '$gha_triggering_actor' should be from '$author_user'"
 
   : "Check that request commit matches actual version commit"
   actual_commit=$(git -C package rev-parse "$package_version") || true
