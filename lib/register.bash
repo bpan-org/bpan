@@ -12,10 +12,11 @@ register:main() (
       "Please specify with '--index=<index-name>'."
 
   force_update=true db:sync
+  db:get-index-info "$index"
 
-  db:get-index-config "$index"
-  index_api_url=$(ini:get "index.$index.api") ||
-    error "No config entry 'index.$index.api'"
+  db:get-index-info "$index"
+  index_api_url=$(ini:get --file="$index_file_path" "publish.api-repo-url") ||
+    error "No index entry 'publish.api-repo-url'"
 
   say -y "Check Package is Ready to Register"
   register:preflight
@@ -75,7 +76,7 @@ register:preflight() {
   package_repo=${remote_owner_repo#*/}
   o "BPAN package repo is '$package_repo'"
 
-  if grep -q '^\[package "'"$package_id"'"\]' "$index_path"; then
+  if grep -q '^\[package "'"$package_id"'"\]' "$index_file_path"; then
     error "Package '$package_id' is already registered"
   fi
   o "Package '$package_id' is not already registered"
@@ -166,7 +167,7 @@ register:update-bpan-index() (
     mkdir -p "$index_dir"
     if ! $forked; then
       +post "$index_api_url/forks" >/dev/null
-      o "Forked $index_source"
+      o "Forked $index_from"
       forked=true
     fi
     say -y "  * Waiting for fork to be ready to clone..."
@@ -183,11 +184,11 @@ register:update-bpan-index() (
   git -C "$index_dir" checkout --quiet -b "$fork_branch"
   o "Created branch '$fork_branch'"
   git -C "$index_dir" fetch --quiet \
-    "$index_source" \
+    "$index_from" \
     "$index_branch"
-  o "Fetched '$index_branch' branch of '$index_source'"
+  o "Fetched '$index_branch' branch of '$index_from'"
   git -C "$index_dir" reset --quiet --hard FETCH_HEAD
-  o "Hard reset HEAD to '$index_source' HEAD"
+  o "Hard reset HEAD to '$index_from' HEAD"
 
   entry=$(register:new-index-entry)
   head=$(head -n1 <<<"$entry")
@@ -204,16 +205,16 @@ register:update-bpan-index() (
           updated=true
         fi
         echo "$line"
-      done < "$index_file"
+      done < "$index_file_name"
       if ! $updated; then
         echo
         echo "$entry"
       fi
     ) > index
-    mv index "$index_file"
+    mv index "$index_file_name"
 
-    ini:set --file="$index_file" bpan.version "$VERSION"
-    ini:set --file="$index_file" bpan.updated "$package_update"
+    ini:set --file="$index_file_name" bpan.version "$VERSION"
+    ini:set --file="$index_file_name" bpan.updated "$package_update"
   )
 
   message="\
@@ -244,7 +245,7 @@ register:post-pull-request() (
   http=https://github.com/$remote_owner_repo/tree/$package_version
   body=$(+json-escape "\
 Please add this new package to the \
-[BPAN Index]($index_source/blob/$index_branch/$index_file):
+[BPAN Index]($index_from/blob/$index_branch/$index_file_name):
 
 > $http
 

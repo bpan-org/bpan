@@ -23,8 +23,11 @@ publish:main() (
   force_update=true db:sync
 
   db:find-package "$package_id"
-  index_publish_url=$(ini:get "index.$index.publish") ||
-    error "No config entry 'index.$index.publish'"
+  index_publish_url=$(
+    ini:get --file="$index_file_path" \
+      "publish.api-issue-url"
+  ) ||
+    error "No index entry 'publish.api-issue-url'"
 
   publish:get-env
 
@@ -95,13 +98,13 @@ publish:check-publish() (
   [[ $(+git:sha1 "$tag") == $(+git:sha1 HEAD) ]] ||
     error "Tag '$tag' is not HEAD commit"
 
-  ini:list --file="$index_path" |
+  ini:list --file="$index_file_path" |
     grep -q "^package\.$package\." ||
       error \
         "Can't publish '$package'." \
         "Not yet registered. Try '$app register'."
 
-  ini:get --file="$index_path" \
+  ini:get --file="$index_file_path" \
     package."$package".v"${version//./-}" >/dev/null &&
       error "$package version '$version' already published"
 
@@ -222,7 +225,7 @@ publish:gha-main() (
 )
 
 publish:gha-get-env() {
-  index_file=index.ini
+  index_file_name=index.ini
 
   set -x
   package_id=$gha_request_package
@@ -258,7 +261,7 @@ publish:gha-get-env() {
   $option_debug && set -x
 
   if [[ ${BPAN_INDEX_UPDATE_TESTING-} ]]; then
-    v=$(git config -f "$index_file" "package.$package_id.version")
+    v=$(git config -f "$index_file_name" "package.$package_id.version")
     test_version=${v%.*}.$(( ${v##*.} + 1 ))
   fi
 }
@@ -270,7 +273,7 @@ publish:gha-check-publish() {
 
   : "Check new version is greater than indexed one"
   indexed_version=$(
-    git config -f "$index_file" "package.$package_id.version"
+    git config -f "$index_file_name" "package.$package_id.version"
   )
   +source bashplus/version
   if [[ ${BPAN_INDEX_UPDATE_TESTING-} ]]; then
@@ -304,7 +307,7 @@ publish:gha-check-publish() {
 }
 
 publish:gha-update-index() (
-  ini:init "$index_file"
+  ini:init "$index_file_name"
 
   stamp=$(TZ=UTC date '+%Y-%m-%dT%H:%M:%S')
 
@@ -326,8 +329,22 @@ publish:gha-update-index() (
   ini:set bpan.version "$VERSION"
   ini:set bpan.updated "$stamp"
 
-  git config user.email "update-index@bpan.org"
-  git config user.name "$APP Update Index"
+  author_name=$(
+    git config -f package/.bpan/config \
+      --get-regexp '^author\..*\.name$' |
+      head -n1 |
+      cut -d' ' -f2-
+  )
+  author_email=$(
+    git config -f package/.bpan/config \
+      --get-regexp '^author\..*\.email$' |
+      head -n1 |
+      cut -d' ' -f2-
+  )
+  export GIT_AUTHOR_NAME=$author_name
+  export GIT_AUTHOR_EMAIL=$author_email
+  export GIT_COMMITTER_NAME='BPAN GitHub Publisher'
+  export GIT_COMMITTER_EMAIL='publish@bpan.org'
 
   message="\
 Publish $package_id=$package_version

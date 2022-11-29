@@ -1,8 +1,8 @@
 # BPAN System Config
 #
 # This file contains various 'constants' needed by BPAN.
-# Usually these are not changed, but they overridden for testing or setting
-# up a custom system.
+# Usually these are not changed, but they can be overridden for testing or
+# setting up a custom system.
 
 [bpan]
 version = 0.1.87
@@ -14,24 +14,9 @@ version = 0.1.87
 prefix = $BPAN_ROOT/local
 
 
-# Main Git hosting entry:
-[host "github"]
-https = https://github.com
-ssh = git@github.com
-api = https://api.github.com/repos
-source = $host.github.https/$owner/$name
-
-
 # The main default BPAN package index:
 [index "bpan"]
-repo = bpan-org/bpan-index
-source = $host.github.https/$index.bpan.repo
-branch = main
-file = index.ini
-host = github
-owner = bpan-org
-api = $host.github.api/$index.bpan.repo
-publish = $index.bpan.api/issues/1/comments
+from = https://github.com/bpan-org/bpan-index
 
 
 # Default template directory:

@@ -51,7 +51,7 @@ install:package() (
   repo=$(
     ini:vars owner name
     key=host.$host.source
-    ini:get "$key" ||
+    ini:get --file="$index_file_path" "$key" ||
       error "Can't find config value for '$key'"
   )
 

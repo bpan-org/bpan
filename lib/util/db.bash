@@ -12,14 +12,14 @@ db:index-names() (
 
   elif [[ ${option_count_index:-0} -gt 0 ]]; then
     for name in "${option_index[@]}"; do
-      ini:get "index.$name.source" >/dev/null ||
+      ini:get "index.$name.from" >/dev/null ||
         error "Invalid $APP index name: '$name'"
       echo "$name"
     done
 
   else
     ini:list |
-      grep -E '^index\..*\.source=' |
+      grep -E '^index\..*\.from=' |
       cut -d'=' -f1 |
       cut -d'.' -f2- |
       rev |
@@ -30,47 +30,58 @@ db:index-names() (
 
 db:sync() (
   while read -r index_name; do
-    db:get-index-config "$index_name"
+    db:get-index-info "$index_name"
 
-    if [[ ! -f $index_path ]]; then
+    if [[ ! -f $index_file_path ]]; then
       git clone \
         --quiet \
         --branch "$index_branch" \
-        "$index_source" \
-        "$install_dir/$index_dir"
+        "$index_from" \
+        "$index_file_dir"
 
     elif ! [[ ${BPAN_TEST_RUNNING-} ]]; then
       if ${force_update:-false} ||
         db:index-too-old
       then
         say -Y "Updating $APP package index '$index_name'"
-        git -C "$install_dir/$index_dir" pull \
+        git -C "$index_file_dir" pull \
           --quiet \
           --ff-only \
           origin "$index_branch"
       fi
     fi
 
-    [[ -f $index_path ]] ||
+    [[ -f $index_file_path ]] ||
       die "$APP '$index_name' index file not available"
 
   done <<<"$(db:index-names)"
 )
 
-db:get-index-config() {
+db:get-index-info() {
   local index_name=$1
 
-  index_source=$(ini:get "index.$index_name.source")
-  index_branch=$(ini:get "index.$index_name.branch")
+  index_from=$(ini:get "index.$index_name.from")
+  index_branch=$(ini:get "index.$index_name.branch" || echo main)
 
+  local path
+  path=$(ini:get "index.$index_name.path" || true)
+  if ! [[ $path ]]; then
+    if [[ $index_from == https://github.com/* ]]; then
+      path=github/${index_from#https://github.com/}/index.ini
+    else
+      error "Can't determine config value for 'index.$index_name.path'"
+    fi
+  fi
+
+  index_file_path=$install_dir/src/$path
+  index_file_name=${index_file_path##*/}
+  index_file_dir=${index_file_path%/*}
+}
+
+db:get-index-config() {
+  local index_name=$1
   index_default_host=$(ini:get "index.$index_name.host")
   index_default_owner=$(ini:get "index.$index_name.owner")
-
-  index_repo=$(ini:get "index.$index_name.repo")
-  index_dir=src/$index_default_host/$index_repo
-  index_file=$(ini:get "index.$index_name.file")
-
-  index_path=$install_dir/$index_dir/$index_file
 }
 
 db:find-packages() (
@@ -78,8 +89,8 @@ db:find-packages() (
   option_quiet=true
 
   while read -r index; do
-    db:get-index-config "$index"
-    git config -l -f "$index_path" |
+    db:get-index-info "$index"
+    git config -l -f "$index_file_path" |
       grep -i -E "$pattern" |
       grep '^package\.' |
       cut -d. -f2 |
@@ -113,9 +124,9 @@ db:find-package() {
 
 db:index-has-package() (
   index=$1 package_id=$2
-  db:get-index-config "$index"
+  db:get-index-info "$index"
   db:package-parse-id "$package_id" "$index"
-  latest=$(ini:get --file="$index_path" "package.$fqid.version") ||
+  latest=$(ini:get --file="$index_file_path" "package.$fqid.version") ||
     return
   +source bashplus/version
   +version:ge "$latest" "$version"
@@ -123,13 +134,13 @@ db:index-has-package() (
 
 db:get-package-release-info() {
   local index=$1 package_id=$2
-  db:get-index-config "$index"
+  db:get-index-info "$index"
   db:package-parse-id "$package_id" "$index"
-  latest=$(ini:get --file="$index_path" "package.$fqid.version")
+  latest=$(ini:get --file="$index_file_path" "package.$fqid.version")
   if [[ ! $version || $version == "$latest" ]]; then
-    version=$(ini:get --file="$index_path" "package.$fqid.version")
-    commit=$(ini:get --file="$index_path" "package.$fqid.commit")
-    sha512=$(ini:get --file="$index_path" "package.$fqid.sha512")
+    version=$(ini:get --file="$index_file_path" "package.$fqid.version")
+    commit=$(ini:get --file="$index_file_path" "package.$fqid.commit")
+    sha512=$(ini:get --file="$index_file_path" "package.$fqid.sha512")
     source=$install_dir/src/$host/$owner/$name/$latest
   else
     db:get-package-version-info "$package_id" "$version"
@@ -141,24 +152,23 @@ db:get-package-version-info() {
   local index_version
   index_version=$(
     git config \
-      -f "$index_path" \
+      -f "$index_file_path" \
       "package.$fqid.version"
   ) || error "Can't find version for package '$package_id'"
 
-  local dir=$install_dir/$index_dir
   local config
   if [[ $index_version == "$version" ]]; then
-    config=$(< "$index_path")
+    config=$(< "$index_file_path")
   else
     local index_commit
     index_commit=$(
-      git -C "$dir" log \
+      git -C "$index_file_dir" log \
         -E --grep "(Publish|Register) $fqid=${version//./\\.}" \
         --pretty='%H'
     )
     [[ $index_commit ]] ||
       error "Can't find index commit for package '$package_id' version '$version'"
-    config=$(git -C "$dir" show "$index_commit:index.ini") || die
+    config=$(git -C "$index_file_dir" show "$index_commit:index.ini") || die
   fi
 
   commit=$(
@@ -178,9 +188,9 @@ db:package-parse-id() {
   [[ $package_id =~ $package_id_pattern ]] ||
     error "Invalid package id '$package_id'"
 
-  host=${BASH_REMATCH[1]:-$index_default_host}
+  host=${BASH_REMATCH[1]:-$(ini:get --file="$index_file_path" "default.host")}
   host=${host%:}
-  owner=${BASH_REMATCH[2]:-$index_default_owner}
+  owner=${BASH_REMATCH[2]:-$(ini:get --file="$index_file_path" "default.owner")}
   owner=${owner%/}
   name=${BASH_REMATCH[3]}
   fqid=$host:$owner/$name
@@ -211,14 +221,14 @@ db:list-installed() (
 
 db:get-version() (
   fqid=$1
-  git config -f "$index_path" "package.$fqid.version" ||
+  git config -f "$index_file_path" "package.$fqid.version" ||
     error "No package '$fqid' found"
 )
 
 db:package-is-primary() (
   id=$1
   while read -r index; do
-    db:get-index-config "$index"
+    db:get-index-info "$index"
     db:package-parse-id "$id" "$index"
 
     (
@@ -236,7 +246,7 @@ db:package-is-primary() (
 
 db:index-too-old() (
   +source bashplus/time
-  head=$install_dir/$index_dir/.git/FETCH_HEAD
+  head=$index_file_dir/.git/FETCH_HEAD
   [[ -f $head ]] || return 0
   curr_time=$(+time:epoch)
   pull_time=$(+fs:mtime "$head")

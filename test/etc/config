@@ -5,14 +5,12 @@ version = 0.1.84
 prefix = $BPAN_ROOT/local
 
 [host "github"]
-file = file:///tmp/bpan/github
-source = $host.github.file/$owner/$name
+source = file:///tmp/bpan/github/$owner/$name
 
 [index "bpan"]
-repo = bpan-org/bpan-index
-source = $host.github.file/$index.bpan.repo
-branch = main
-file = index.ini
+from = file:///tmp/bpan/github/bpan-org/bpan-index
+path = github/bpan-org/bpan-index/index.ini
+
 host = github
 owner = bpan-org
 
