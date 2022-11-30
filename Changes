@@ -1,3 +1,9 @@
+[version "0.1.88"]
+date = Tue Nov 29 09:49:14 PM PST 2022
+done = Simplify [index] entries in config files
+done = Fix publish bug for author value
+done = Update all index fields when publishing
+
 [version "0.1.87"]
 date = Mon Nov 28 07:37:59 AM PST 2022
 done = Fix bug when installing older package version

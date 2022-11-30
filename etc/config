@@ -5,7 +5,7 @@
 # setting up a custom system.
 
 [bpan]
-version = 0.1.87
+version = 0.1.88
 
 
 # Directory where bpan installs packages.
