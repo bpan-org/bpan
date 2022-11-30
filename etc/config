@@ -16,7 +16,7 @@ prefix = $BPAN_ROOT/local
 
 # The main default BPAN package index:
 [index "bpan"]
-from = https://github.com/bpan-org/bpan-index
+source = https://github.com/bpan-org/bpan-index
 
 
 # Default template directory:

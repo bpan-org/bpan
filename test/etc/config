@@ -8,7 +8,7 @@ prefix = $BPAN_ROOT/local
 source = file:///tmp/bpan/github/$owner/$name
 
 [index "bpan"]
-from = file:///tmp/bpan/github/bpan-org/bpan-index
+source = file:///tmp/bpan/github/bpan-org/bpan-index
 path = github/bpan-org/bpan-index/index.ini
 
 host = github

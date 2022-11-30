@@ -12,14 +12,14 @@ db:index-names() (
 
   elif [[ ${option_count_index:-0} -gt 0 ]]; then
     for name in "${option_index[@]}"; do
-      ini:get "index.$name.from" >/dev/null ||
+      ini:get "index.$name.source" >/dev/null ||
         error "Invalid $APP index name: '$name'"
       echo "$name"
     done
 
   else
     ini:list |
-      grep -E '^index\..*\.from=' |
+      grep -E '^index\..*\.source=' |
       cut -d'=' -f1 |
       cut -d'.' -f2- |
       rev |
@@ -60,7 +60,7 @@ db:sync() (
 db:get-index-info() {
   local index_name=$1
 
-  index_from=$(ini:get "index.$index_name.from")
+  index_from=$(ini:get "index.$index_name.source")
   index_branch=$(ini:get "index.$index_name.branch" || echo main)
 
   local path
