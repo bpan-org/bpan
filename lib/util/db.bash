@@ -90,10 +90,17 @@ db:find-packages() (
 
   while read -r index; do
     db:get-index-info "$index"
-    git config -l -f "$index_file_path" |
-      grep -i -E "$pattern" |
-      grep '^package\.' |
-      cut -d. -f2 |
+    cat "$index_file_path" |
+      git config -f- --get-regexp '^package\..*\.title$' |
+      cut -d. -f2- |
+      tr / '\t' |
+      tr ' ' . |
+      cut -d. -f 1,3- |
+      tr -d \''()' |
+      grep -i -E $'^.*\t.*'"$pattern" |
+      tr '\t' / |
+      cut -d. -f1 |
+#       tee /dev/stderr |
       +l:sort |
       uniq || true
   done <<<"$(db:index-names)"
