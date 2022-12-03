@@ -30,7 +30,6 @@ $app <cmd> --help
 System Commands:
   find          Search for $APP packages
   install       Install a $APP package
-  uninstall     Uninstall a $APP package
   config        Manage $APP config settings
 
 Project Commands:
@@ -44,8 +43,8 @@ Project Commands:
   register      Register a new $APP package
 
 Information Commands:
-  help          Get help for a '$app' command
   cmds          List available '$app' commands
+  help          Get help for a '$app' command
 
 Options:
 --
