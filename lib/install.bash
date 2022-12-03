@@ -22,8 +22,10 @@ install:usage() (
 )
 
 install:options() (cat <<...
-U,update  Update index(es)
-I,index=  Index name to install from
+U,update    Update index(es)
+I,index=    Index name to install from
+
+uninstall   Uninstall an installed package
 ...
 )
 
@@ -33,11 +35,17 @@ install:main() (
 
   source-once util/db
 
-  force_update=${option_update:-false} \
-    db:sync
+  if ! $option_uninstall; then
+    force_update=${option_update:-false} \
+      db:sync
+  fi
 
   for package_id; do
-    install:package "$package_id"
+    if $option_uninstall; then
+      uninstall:package "$package_id"
+    else
+      install:package "$package_id"
+    fi
   done
 )
 
@@ -115,4 +123,44 @@ install:package() (
       find bin lib man share -type f 2>/dev/null || true
     )
   )
+)
+
+uninstall:package() (
+  package_id=$1
+
+  db:find-package "$package_id"
+
+  source=$host/$owner/$name/$version
+
+  if ! [[ -d $install_dir/src/$source ]]; then
+    say -r "'$fqid=$version' is not installed"
+    return
+  fi
+
+  say -y "Uninstalling '$name':"
+
+  cd "$install_dir" || exit
+
+  while read -r line; do
+    link=${line%% -> *}
+    link=${link##* }
+    file=${line##* -> }
+    [[ $link ]] || continue
+    file=${file##*../src/}
+    say -w "- Unlink $link -> $file"
+    unlink "$link"
+  done <<< "$(
+    find bin lib man share -type l -print0 2>/dev/null |
+      xargs -r -0 ls -l |
+      grep -F "$source"
+  )"
+  say -w "- Removing package src/$source/"
+  rm -fr "src/$source/"
+
+  while true; do
+    # shellcheck disable=2046
+    set -- $(find bin lib man share src -empty 2>/dev/null)
+    [[ $# -gt 0 ]] || break
+    rmdir "$@"
+  done
 )

@@ -39,9 +39,9 @@ test-install-teardown() (
   ok-h "$I/man/man3/getopt.3"
   ok-f "$I/man/man3/getopt.3"
 
-  note "Testing 'bpan uninstall' here since we have something to uninstall"
+  note "Testing 'bpan install --uninstall' - we have something to uninstall"
 
-  command=${command/install/uninstall}
+  command=${command/install/install --uninstall}
   ok "$($command)" \
     "'$command' works"
   ok-not-e "$I/src/github/bpan-org/getopt-bash/0.1.18/"
