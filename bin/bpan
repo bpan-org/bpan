@@ -28,10 +28,9 @@ $app [<opt...>] <cmd> [<cmd-opt...>] [<cmd-arg...>]
 $app <cmd> --help
 
 System Commands:
-  search        Search for $APP packages
+  find          Search for $APP packages
   install       Install a $APP package
   uninstall     Uninstall a $APP package
-  list          List all installed $APP packages
   config        Manage $APP config settings
 
 Project Commands:

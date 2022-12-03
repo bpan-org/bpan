@@ -18,7 +18,7 @@ ok "$([[ $(bpan -h) == usage:\ bpan* ]])" \
 ok "$([[ $(bpan --help) == usage:\ bpan* ]])" \
    "'bpan --help' prints usage"
 
-ok "$([[ $(bpan help list 2>&1 || true) == *No\ help* ]])" \
-   "'bpan help list' prints 'No help...'"
+ok "$([[ $(bpan help find 2>&1 || true) == *No\ help* ]])" \
+   "'bpan help find' prints 'No help...'"
 
 done-testing

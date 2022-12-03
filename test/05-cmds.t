@@ -3,15 +3,15 @@
 source test/init
 
 like "$(bpan cmds)" \
-   "1) search     - Search for BPAN packages" \
+   "1) find *- Search for BPAN packages" \
    "'bpan cmds' works"
 
 like "$(bpan cmds -q | xargs)" \
-   "search install.*uninstall.*list.*config" \
+   "find .*install .*config .*init" \
    "'bpan cmds -q' works"
 
 like "$(bpan --quiet cmds | xargs)" \
-   "search install.*uninstall.*list.*config" \
+   "find .*install .*config .*init" \
    "'bpan --quiet cmds' works"
 
 ok "$([[ $(bpan cmds | wc -l) -gt 12 ]])" \

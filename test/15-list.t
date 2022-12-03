@@ -8,11 +8,11 @@ if ! [[ -f $file ]]; then
   bpan -q install bashplus
 fi
 
-has "$(bpan list)" \
+has "$(bpan find --installed)" \
    "github:bpan-org/bashplus" \
    "Got '%W' in search results"
 
-has "$(export BPAN_INSTALL=/; bpan list)" \
+has "$(export BPAN_INSTALL=/; bpan find -i)" \
   "No BPAN packages currently installed" \
   "Got '%W' in search results"
 
