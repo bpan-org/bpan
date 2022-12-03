@@ -1,3 +1,9 @@
+[version "0.1.90"]
+date = Sat Dec  3 11:42:42 AM PST 2022
+done = Remove uninstall from getopt spec
+done = Change uninstall to 'install --uninstall'
+done = Change search and list to find and 'find --installed'
+
 [version "0.1.89"]
 date = Fri Dec  2 08:23:26 AM PST 2022
 done = Fix search algorithm
