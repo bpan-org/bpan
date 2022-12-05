@@ -24,7 +24,9 @@ db:index-names() (
       cut -d'.' -f2- |
       rev |
       cut -d'.' -f2- |
-      rev
+      rev |
+      sort |
+      uniq
   fi
 )
 
@@ -33,6 +35,7 @@ db:sync() (
     db:get-index-info "$index_name"
 
     if [[ ! -f $index_file_path ]]; then
+      say -Y "Updating $APP package index '$index_name'"
       git clone \
         --quiet \
         --branch "$index_branch" \
