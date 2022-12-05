@@ -38,6 +38,8 @@ update:apply() (
   update:packages
   update:templates
   update:manpages
+
+  ini:set --file="$config_file_local" bpan.version "$VERSION"
 )
 
 update:list() (
