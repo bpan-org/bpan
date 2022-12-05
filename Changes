@@ -1,3 +1,7 @@
+[version "0.1.92"]
+date = Mon Dec  5 12:52:37 PM PST 2022
+done = Change package config template
+
 [version "0.1.91"]
 date = Mon Dec  5 10:59:06 AM PST 2022
 done = Make publish and register use plugins
