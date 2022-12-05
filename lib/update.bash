@@ -160,7 +160,8 @@ update:manpages() (
   fi
 
   if ! +sys:is-cmd md2man; then
-    install:main md2man
+    option_uninstall=false \
+      install:main md2man
   fi
 
   # shellcheck disable=2044
