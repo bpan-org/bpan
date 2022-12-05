@@ -57,6 +57,64 @@ db:sync() (
   done <<<"$(db:index-names)"
 )
 
+db:sync-plugins() (
+  base=$install_dir/plugin
+  mkdir -p "$base"
+  read -r -a plugins <<<"$(
+    git config --file="$index_file_path" --get-regexp ^plugin |
+      cut -d. -f2 |
+      sort |
+      uniq
+  )"
+  for plugin in "${plugins[@]}"; do
+    source=$(git config --file="$index_file_path" plugin."$plugin".source)
+    dir=${source##*/}
+    if ! [[ -d $base/$dir ]]; then
+      git clone --quiet "$source" "$base/$dir"
+    elif ${option_update:-false} || ${force_update:-false}; then
+      git -C "$base/$dir" pull --quiet --ff-only
+    fi
+  done
+)
+
+db:source:plugin() {
+  local plugin_type=$1
+  local library_key=${2:-$plugin_type}
+
+  db:sync
+
+  index=${index:-$(db:get-package-index)}
+
+  db:get-index-info "$index"
+
+  db:sync-plugins "$index"
+
+  plugin_name=$(
+    git config --file="$index_file_path" \
+      "plugin.$plugin_type.source"
+  ) || return 0
+  plugin_name=${plugin_name##*/}
+
+  local library_path
+  library_path=$(
+    git config --file="$index_file_path" \
+      "plugin.$plugin_type.$library_key"
+  ) ||
+    error "Can't find plugin '$plugin_type' key '$library_key'"
+
+  source "$install_dir/plugin/$plugin_name/$library_path"
+}
+
+db:get-package-index() (
+  owner=$(ini:get package.owner) ||
+    error "Can't find 'package.owner' in config"
+  name=$(ini:get package.name) ||
+    error "Can't find 'package.name' in config"
+  package_id=$owner/$name
+  db:find-package "$package_id"
+  echo "$index"
+)
+
 db:get-index-info() {
   local index_name=$1
 

@@ -14,9 +14,9 @@ publish:main() (
 
   source-once util/db
 
-  repo=$(ini:get package.repo) ||
+  url=$(ini:get package.source) ||
     die --stack
-  [[ $repo =~ https://github.com/([^/]+/[^/]+)$ ]] ||
+  [[ $url =~ https://github.com/([^/]+/[^/]+)$ ]] ||
     die --stack
   package_id=${BASH_REMATCH[1]}
 
