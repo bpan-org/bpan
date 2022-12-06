@@ -28,9 +28,6 @@ $(BPAN_CMDS)::
 test::
 	prove$(if $v, -v) $(test)
 
-bump::
-	bpan $@ --push
-
 endif
 
 

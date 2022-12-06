@@ -86,7 +86,7 @@ db:source:plugin() {
 
   db:sync
 
-  index=${index:-$(db:get-package-index)}
+  index=${index:-$(db:get-package-index)} || return
 
   db:get-index-info "$index"
 
@@ -109,6 +109,11 @@ db:source:plugin() {
 }
 
 db:get-package-index() (
+  if [[ ${option_index-} ]]; then
+    echo "$option_index"
+    return
+  fi
+
   owner=$(ini:get package.owner) ||
     error "Can't find 'package.owner' in config"
   name=$(ini:get package.name) ||
@@ -161,7 +166,6 @@ db:find-packages() (
       grep -i -E $'^.*\t.*'"$pattern" |
       tr '\t' / |
       cut -d. -f1 |
-#       tee /dev/stderr |
       +l:sort |
       uniq || true
   done <<<"$(db:index-names)"

@@ -14,7 +14,7 @@ like "$(bpan --quiet cmds | xargs)" \
    "find .*install .*config .*init" \
    "'bpan --quiet cmds' works"
 
-ok "$([[ $(bpan cmds | wc -l) -gt 12 ]])" \
-   "'bpan cmds' has more than 15 entries"
+ok "$([[ $(bpan cmds | wc -l) -gt 10 ]])" \
+   "'bpan cmds' has more than 10 entries"
 
 done-testing

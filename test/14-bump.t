@@ -35,7 +35,7 @@ old_version=$(bpan config package.version)
 is "$old_version" 0.0.0 \
   "Initial version is %W"
 
-bpan "${quiet[@]}" bump >/dev/null
+bpan "${quiet[@]}" publish --bump >/dev/null
 
 new_version=$(bpan config package.version)
 
@@ -48,7 +48,7 @@ ok "$(! grep -q $'\t' .bpan/config)" \
 echo >> License
 git commit --quiet --all --message='Add a line to License file'
 
-bpan "${quiet[@]}" bump >/dev/null
+bpan "${quiet[@]}" publish --bump >/dev/null
 
 new_version=$(bpan config package.version)
 

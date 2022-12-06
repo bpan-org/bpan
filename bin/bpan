@@ -27,24 +27,20 @@ getopt_cmds_spec=getopt-cmds-spec
 $app [<opt...>] <cmd> [<cmd-opt...>] [<cmd-arg...>]
 $app <cmd> --help
 
-System Commands:
+$APP System Commands:
   find          Search for $APP packages
   install       Install a $APP package
   config        Manage $APP config settings
+  cmds          List available '$app' commands
+  help          Get help for a '$app' command
 
-Project Commands:
+Project Package Commands:
   new           Create a new $APP project
   init          Add $APP components to a project
   add           Add $APP elements to a project
   update        Update project $APP assets
   test          Run the project tests
-  bump          Prepare next version
   publish       Publish the project to $APP index
-  register      Register a new $APP package
-
-Information Commands:
-  cmds          List available '$app' commands
-  help          Get help for a '$app' command
 
 Options:
 --
@@ -99,6 +95,26 @@ main() (
 
 # Determine the bpan config files and the BPAN_INSTALL directory.
 set-env() {
+  do-ini-init
+
+  BPAN_INSTALL=${BPAN_INSTALL:-$(ini:get install.prefix)}
+  export BPAN_INSTALL
+  if [[ ! -d $BPAN_INSTALL ]]; then
+    if [[ $BPAN_INSTALL == $root/local ]]; then
+      mkdir -p "$BPAN_INSTALL"
+    else
+      error "BPAN_INSTALL='$BPAN_INSTALL' - directory not found"
+    fi
+  fi
+  install_dir=$BPAN_INSTALL
+
+  if [[ ${BPAN_DEBUG_BASH_X-} ]]; then
+    BASHPLUS_DEBUG_BASH_X=${BASHPLUS_DEBUG_BASH_X:-$BPAN_DEBUG_BASH_X}
+    INI_DEBUG_BASH_X=${INI_DEBUG_BASH_X:-$BPAN_DEBUG_BASH_X}
+  fi
+}
+
+do-ini-init() {
   root=$BPAN_ROOT
   [[ -f $root/bin/$app ]] ||
     error "BPAN_ROOT variable has bad value '$root'"
@@ -126,22 +142,6 @@ set-env() {
 
   ini:init "${files[@]}"
   ini:vars BPAN_ROOT BPAN_SHELL
-
-  BPAN_INSTALL=${BPAN_INSTALL:-$(ini:get install.prefix)}
-  export BPAN_INSTALL
-  if [[ ! -d $BPAN_INSTALL ]]; then
-    if [[ $BPAN_INSTALL == $root/local ]]; then
-      mkdir -p "$BPAN_INSTALL"
-    else
-      error "BPAN_INSTALL='$BPAN_INSTALL' - directory not found"
-    fi
-  fi
-  install_dir=$BPAN_INSTALL
-
-  if [[ ${BPAN_DEBUG_BASH_X-} ]]; then
-    BASHPLUS_DEBUG_BASH_X=${BASHPLUS_DEBUG_BASH_X:-$BPAN_DEBUG_BASH_X}
-    INI_DEBUG_BASH_X=${INI_DEBUG_BASH_X:-$BPAN_DEBUG_BASH_X}
-  fi
 }
 
 getopt-cmds-spec() {
