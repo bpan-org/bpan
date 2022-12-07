@@ -1,3 +1,7 @@
+[version "0.1.93"]
+date = Tue Dec  6 05:20:53 PM PST 2022
+done = Merge register and bump into publish
+
 [version "0.1.92"]
 date = Mon Dec  5 12:52:37 PM PST 2022
 done = Change package config template
