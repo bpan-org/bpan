@@ -1,3 +1,7 @@
+[version "0.1.95"]
+date = Thu Dec  8 02:16:14 PM PST 2022
+done = Fix bug in test
+
 [version "0.1.94"]
 date = Thu Dec  8 11:00:20 AM PST 2022
 done = Change 'bpan new xxx' to 'bpan init --new=xxx'
