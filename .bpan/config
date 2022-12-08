@@ -1,1 +1,57 @@
-../Meta
+[bpan]
+version = 0.1.93
+
+[package]
+name = bpan
+version = 0.1.93
+title = Bash Package Manager
+license = MIT
+copyright = 2014-2022
+
+repo = https://github.com/bpan-org/bpan
+branch = main
+site = $package.repo
+bug = $package.repo/issues/
+irc = irc.libera.chat/bpan
+
+[author "ingydotnet"]
+name = Ingy döt Net
+email = ingy@ingy.net
+host = github
+user = ingydotnet
+twitter = ingydotnet
+irc = ingy@irc.libera.chat
+matrix = @ingy:yaml.io
+site = http://ingy.net
+
+[require "command"]
+bash = 3.2+
+git = 2.7+
+make = 3.81+
+ping = 0+
+
+[update]
+package = bashplus:@
+package = bashplus:@/cmd
+package = bashplus:@/err
+package = bashplus:@/func
+package = bashplus:@/git
+package = bashplus:@/fs
+package = bashplus:@/list
+package = bashplus:@/say
+package = bashplus:@/str
+package = bashplus:@/sym
+package = bashplus:@/sys
+package = bashplus:@/time
+package = bashplus:@/timer
+package = bashplus:@/version
+package = ini-bash
+package = getopt-bash
+package = test-tap-bash
+file = License
+file = Makefile
+file = ReadMe.md doc/bpan.md
+file = test/init
+file = test/00-env.t
+file = test/00-shellcheck.t
+man1 = doc/bpan.md

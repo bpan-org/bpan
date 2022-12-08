@@ -3,7 +3,7 @@
 source test/init
 
 # shellcheck disable=2153
-version=$(git config -f "$BPAN_ROOT/Meta" package.version)
+version=$(git config -f "$BPAN_ROOT/.bpan/config" package.version)
 
 is "$(cd /tmp && bpan --version)" \
    "bpan $version" \

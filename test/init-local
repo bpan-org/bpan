@@ -42,7 +42,7 @@ install-test-bpan() {
   rm -fr "$root"
 
   local branch
-  branch=$(git config --file=Meta package.branch)
+  branch=$(git config --file=.bpan/config package.branch)
 
   git clone --quiet --branch="$branch" .git "$root"
   find .bpan bin etc lib share |
