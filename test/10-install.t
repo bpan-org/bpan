@@ -30,10 +30,10 @@ test-install-teardown() (
 
 {
   test-install-setup
-  command='bpan -q install github:bpan-org/getopt-bash=0.1.19'
+  command='bpan -q install github:bpan-org/getopt-bash=0.1.21'
   ok "$($command)" \
     "'$command' works"
-  ok-d "$I/src/github/bpan-org/getopt-bash/0.1.19/"
+  ok-d "$I/src/github/bpan-org/getopt-bash/0.1.21/"
   ok-h "$I/lib/getopt.bash"
   ok-f "$I/lib/getopt.bash"
   ok-h "$I/man/man3/getopt.3"
