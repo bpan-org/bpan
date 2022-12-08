@@ -35,7 +35,6 @@ $APP System Commands:
   help          Get help for a '$app' command
 
 Project Package Commands:
-  new           Create a new $APP project
   init          Add $APP components to a project
   add           Add $APP elements to a project
   update        Update project $APP assets

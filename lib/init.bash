@@ -1,128 +1,140 @@
-init:help() (cat<<'...'
-Set up a project to use BPAN
+init:help() (cat<<...
+Set up a project to use $APP
 
 ## Synopsis
 
-Example `bpan init` commands:
+Create an entirely new $APP package directory:
 
-    $ bpan init
-    $ bpan init --name=foo-bar
-    $ bpan init --bin
-    $ bpan init --lib
+    $ $app $cmd --new=my-app-pkg --bin
+
+Init an existing project:
+
+    $ $app $cmd
+    $ $app $cmd --name=foo-bar
+    $ $app $cmd --bin
+    $ $app $cmd --lib
 
 
 ## Description
 
-The 'bpan init' command adds BPAN files to a project.
+The '$app $cmd' command adds $APP files to a project.
 
-It is used to either create a new BPAN project (when run in an empty directory)
-or to add BPAN support to and existing project.
+It is used to either create a new $APP project or to add $APP support to an
+existing project.
 
 Usually you only run this program once per project.
 
-Afterwards you can use the following commands to maintain BPAN assets:
+Afterwards you can use the following commands to maintain $APP assets:
 
-* `bpan add`
+* '$app add'
 
   Add new files and packages.
 
-* `bpan config`
+* '$app config'
 
-  Make changes to your `.bpan/config` file.
+  Make changes to your '.$app/config' file.
 
-* `bpan update`
+* '$app update'
 
-  Update the BPAN assets listed under `[update]` in your `.bpan/config` file.
+  Update the $APP assets listed under '[update]' in your '.$app/config' file.
 
-You can also edit the `.bpan/config file by hand and run `bpan update` to make
+You can also edit the '.$app/config file by hand and run '$app update' to make
 sure everything is in sync.
 
 
 ## Options
 
-* `--bin`
+* '--new=<name>'
+
+  Create a new directory to '$app $cmd' in.
+  This will also run 'git init' in the new project directory.
+
+* '--bin'
 
   Create the following files:
 
-  * `bin/<name>`
+  * 'bin/<name>'
 
     A starter bin program for your project.
 
-  * `.bpan/lib/bpan.bash`
+  * '.$app/lib/$app.bash'
 
-    Most BPAN bin scripts use this file to bootstrap their environment.
+    Most $APP bin scripts use this file to bootstrap their environment.
 
-  * `.rc`
+  * '.rc'
 
-    Used for BPAN packages that install a commandline bin utility.
+    Used for $APP packages that install a commandline bin utility.
 
-* `--lib`
+* '--lib'
 
-  Create a `lib/<name>.bash` starter library.
+  Create a 'lib/<name>.bash' starter library.
 
-  This option may be used in combination with `--bin`.
+  This option may be used in combination with '--bin'.
 
-* `--name=<name>`
+* '--name=<name>'
 
-  By default `bpan init` will use the current directory name (stripping off
-  `-bash` from the end if it is there) as the name for these files (if it needs
+  By default '$app $cmd' will use the current directory name (stripping off
+  '-bash' from the end if it is there) as the name for these files (if it needs
   to create them):
 
-  * `bin/<name>`
-  * `lib/<name>.bash`
-  * `doc/<name>.md`
-  * `man/man1/<name>.md`
-  * `man/man3/<name>.md`
+  * 'bin/<name>'
+  * 'lib/<name>.bash'
+  * 'doc/<name>.md'
+  * 'man/man1/<name>.md'
+  * 'man/man3/<name>.md'
 
-  The `--name=...` option lets you override that name.
+  The '--name=...' option lets you override that name.
 
-* `--config=<file-name>`
+* '--config=<file-name>'
 
-  Normally the BPAN config file is `.bpan/config`.
+  Normally the $APP config file is '.$app/config'.
   With this options you can specify a different name.
-  Then `.bpan/config` will be a symlink to that file.
+  Then '.$app/config' will be a symlink to that file.
 
-* `--force`
+* '--from=<$app-template-directory>'
 
-  The `bpan init` command will not overwrite existing files, unless you use
-  this `--force` option.
+  $APP provides a default template directory to 'init' and 'add' from.
+  This option lets you choose your own.
+
+* '--force'
+
+  The '$app $cmd' command will not overwrite existing files, unless you use
+  this '--force' option.
 
   Note: If your existing files are committed to git, then you can safely use
   this to overwrite files if you are curious to see what happens.
 
-* `--from=<bpan-template-directory>`
-
-  BPAN provides a default template directory to `init` and `add` from.
-  This option lets you choose your own.
-
 
 ## See Also
 
-* `bpan help add`
-* `bpan help update`
+* '$app help add'
+* '$app help update'
 ...
 )
 
 init:options() (cat <<...
+new=      New directory name to init
+
 bin       Add a bin program: ./bin/<name>
 lib       Add a lib program: ./lib/<name>.bash
+
 name=     The name for primary bin / lib files
 config=   Specify a name for the config file
 from=     Custom directory of template files
 
 force     Overwrite existing files
 ...
-
-# from=     Specify a custom template collection
 )
 
 init:main() (
-  # TODO assert one of:
-  # * we are in an empty dir and we will make .bpan/config
-  # * we are in root of a git repo and will make .bpan/config
-  # * ./.bpan/config exists
-  # * option_force is in effect
+  if [[ $option_new ]]; then
+    init:new "$option_new"
+  else
+    init:apply
+  fi
+)
 
+init:apply() (
   source-once add
 
   add:set-env
@@ -206,4 +218,30 @@ init:main() (
   db:sync
   source-once update
   update:apply
+)
+
+init:new() (
+  dir=$1
+
+  if ! $option_bin && ! $option_lib; then
+    error "'bpan new' requires --bin or --lib (or both)"
+  fi
+
+  if [[ -d $dir ]] && ! +fs:empty "$dir"; then
+    error "Directory '$dir' already exists and is not empty"
+  fi
+
+  mkdir -p "$dir"
+  path=$(cd "$dir" && pwd -P)
+  cd "$dir" || exit
+
+  init:apply
+
+  if +git:has-untracked; then
+    git add .
+    say -y "Making initial 'git commit'"
+    git commit --quiet --message='Initial commit'
+  fi
+
+  say -g "Created new BPAN project in '$path'"
 )

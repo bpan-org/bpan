@@ -19,8 +19,8 @@ quiet=()
 quiet=(--quiet)
 
 #------------------------------------------------------------------------------
-note "bpan --quiet new --bin --config=Meta $B"
-bpan "${quiet[@]}" new --bin --config=Meta "$B"
+note "bpan --quiet init --new='$B' --bin --config=Meta"
+bpan "${quiet[@]}" init --new="$B" --bin --config=Meta
 
 ok-d "$B/.git"
 ok-f "$B/Meta"
@@ -50,8 +50,8 @@ has "$(head -20 "$B/.rc")" \
   "'$B/.rc has 'BIN_PKG_ROOT'"
 
 #------------------------------------------------------------------------------
-note "bpan --quiet new --lib $L"
-bpan "${quiet[@]}" new --lib "$L"
+note "bpan --quiet init --new='$L' --lib"
+bpan "${quiet[@]}" init --new="$L" --lib
 
 ok-f "$L/.bpan/config"
 ok-not-e "$L/Meta"
