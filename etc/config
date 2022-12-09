@@ -27,3 +27,5 @@ add = $BPAN_ROOT/share/add
 # Settings for test environments:
 [test]
 docker-image = ingy/bpan-testing:0.1.0
+
+# vim: ft=gitconfig:

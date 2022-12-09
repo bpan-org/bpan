@@ -8,18 +8,16 @@ title = Bash Package Manager
 license = MIT
 copyright = 2014-2022
 
-repo = https://github.com/bpan-org/bpan
+source = https://github.com/bpan-org/bpan
 branch = main
-site = $package.repo
-bug = $package.repo/issues/
+site = $package.source
+bug = $package.source/issues/
 irc = irc.libera.chat/bpan
 
-[author "ingydotnet"]
+[author "github:ingydotnet"]
 name = Ingy döt Net
 email = ingy@ingy.net
-host = github
-user = ingydotnet
-twitter = ingydotnet
+
 irc = ingy@irc.libera.chat
 matrix = @ingy:yaml.io
 site = http://ingy.net
@@ -55,3 +53,5 @@ file = test/init
 file = test/00-env.t
 file = test/00-shellcheck.t
 man1 = doc/bpan.md
+
+# vim: ft=gitconfig:
