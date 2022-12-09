@@ -1,3 +1,7 @@
+[version "0.1.96"]
+date = Fri Dec  9 06:59:17 AM PST 2022
+done = Changes to .bpan/config
+
 [version "0.1.95"]
 date = Thu Dec  8 02:16:14 PM PST 2022
 done = Fix bug in test
