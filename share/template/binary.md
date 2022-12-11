@@ -6,7 +6,7 @@
 
 [% markdown-title %]
 
-[% pkg-title-default %]
+[% package-title-default %]
 
 ## Synopsis
 
@@ -21,7 +21,7 @@
 * With [BPAN](
   https://github.com/bpan-org/bpan#installation):
   ```
-  bpan install [% pkg %]
+  bpan install [% package_name %]
   ```
 
   <!-- Note to author:
@@ -31,12 +31,12 @@
 
 * From source:
   ```
-  git clone [% config:package.repo %] /path/to/[% pkg %]
+  git clone [% config:package.repo %] /path/to/[% package_name %]
   ```
 
   Then add the following line to your shell's startup file:
   ```
-  source /path/to/[% pkg %]/.rc
+  source /path/to/[% package_name %]/.rc
   ```
 
   This supports 12 interactive shells including `bash`, `zsh` and `fish`.

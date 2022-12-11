@@ -1,6 +1,6 @@
 [% readme-title %]
 
-[% pkg-title-default %]
+[% package-title-default %]
 
 ## Synopsis
 

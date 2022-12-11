@@ -118,6 +118,8 @@ do-ini-init() {
   [[ -f $root/bin/$app ]] ||
     error "BPAN_ROOT variable has bad value '$root'"
 
+  bpan_run_timestamp=$(+time:stamp)
+
   local files=()
 
   config_file_system=${BPAN_CONFIG_SYSTEM:-$root/etc/config}
@@ -137,6 +139,12 @@ do-ini-init() {
     if [[ -f $top_dir/$config_file_local ]]; then
       files+=( "$top_dir/$config_file_local" )
     fi
+  fi
+
+  if [[ ${BPAN_CONFIG_EXTRA-} ]] &&
+     [[ -f $BPAN_CONFIG_EXTRA ]]
+  then
+    files+=("$BPAN_CONFIG_EXTRA")
   fi
 
   ini:init "${files[@]}"

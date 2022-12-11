@@ -13,6 +13,13 @@ ini:first() (
   echo "$value"
 )
 
+ini:first-key() (
+  set "${INI_DEBUG_BASH_X:-+x}"
+  read -r key value < <(ini:match "$@")
+  [[ $key ]] || return
+  echo "$key"
+)
+
 +git:commit-sha512() (
   ref=${1:-HEAD}
   {

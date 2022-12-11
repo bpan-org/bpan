@@ -40,6 +40,7 @@ update:apply() (
   update:manpages
 
   ini:set --file="$config_file_local" bpan.version "$VERSION"
+  ini:set --file="$config_file_local" bpan.updated "$bpan_run_timestamp"
 )
 
 update:list() (
@@ -210,10 +211,10 @@ update:self() (
     die "Can't determine bpan HEAD commit"
   branch=$(+git:branch-name) ||
     die "Can't determine bpan branch"
-  package_branch=$(ini:get package.branch) ||
-    die "Can't find config entry 'package.branch'"
-  [[ $branch == "$package_branch" ]] ||
-    error "'$root' must be on branch '$package_branch' to '$app update --self'"
+  if [[ ! ${BPAN_TEST_RUNNING-} ]]; then
+    [[ $branch == main ]] ||
+      error "'$root' must be on branch 'main' to '$app update --self'"
+  fi
 
   say -y "Pulling '$repo' in '$root'..."
 

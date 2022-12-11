@@ -8,19 +8,14 @@ title = Bash Package Manager
 license = MIT
 copyright = 2014-2022
 
-source = https://github.com/bpan-org/bpan
-branch = main
-site = $package.source
-bug = $package.source/issues/
+bug = https://github.com/bpan-org/bpan/issues/
 irc = irc.libera.chat/bpan
 
 [author "github:ingydotnet"]
 name = Ingy döt Net
 email = ingy@ingy.net
-
 irc = ingy@irc.libera.chat
 matrix = @ingy:yaml.io
-site = http://ingy.net
 
 [require "command"]
 bash = 3.2+

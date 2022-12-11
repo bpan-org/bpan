@@ -224,7 +224,7 @@ init:new() (
   dir=$1
 
   if ! $option_bin && ! $option_lib; then
-    error "'bpan new' requires --bin or --lib (or both)"
+    error "'bpan init --new=...' requires --bin or --lib (or both)"
   fi
 
   if [[ -d $dir ]] && ! +fs:empty "$dir"; then

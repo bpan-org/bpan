@@ -36,15 +36,14 @@ fi
 export PATH=$BPAN_TEST_CACHE/md2man/bin:$PATH
 
 install-test-bpan() {
+  +source bashplus/git
+
   root=$(basename "$(caller | cut -d ' ' -f2)")
   root=$PWD/test/bpan-${root%.t}
 
   rm -fr "$root"
 
-  local branch
-  branch=$(git config --file=.bpan/config package.branch)
-
-  git clone --quiet --branch="$branch" .git "$root"
+  git clone --quiet --branch="$(+git:branch-name)" .git "$root"
   find .bpan bin etc lib share |
     cpio -dump "$root" &>/dev/null
 

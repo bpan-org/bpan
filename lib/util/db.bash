@@ -80,9 +80,9 @@ db:sync-plugins() (
   done
 )
 
-db:source:plugin() {
+db:source-plugin() {
   local plugin_type=$1
-  local library_key=${2:-$plugin_type}
+  local plugin_lib=${2:-$plugin_type}
 
   db:sync
 
@@ -98,12 +98,7 @@ db:source:plugin() {
   ) || return 0
   plugin_name=${plugin_name##*/}
 
-  local library_path
-  library_path=$(
-    git config --file="$index_file_path" \
-      "plugin.$plugin_type.$library_key"
-  ) ||
-    error "Can't find plugin '$plugin_type' key '$library_key'"
+  local library_path=lib/$plugin_lib.bash
 
   source "$install_dir/plugin/$plugin_name/$library_path"
 }
@@ -114,14 +109,44 @@ db:get-package-index() (
     return
   fi
 
-  owner=$(ini:get package.owner) ||
-    error "Can't find 'package.owner' in config"
-  name=$(ini:get package.name) ||
-    error "Can't find 'package.name' in config"
+  db:get-package-domain-owner-name
   package_id=$owner/$name
-  db:find-package "$package_id"
+  db:find-package "$package_id" --none-ok || return
   echo "$index"
 )
+
+db:get-package-domain-owner-name() {
+  host='' domain='' owner='' name=''
+
+  if [[ -f .git/config ]]; then
+    local url
+    url=$(git config remote.origin.url || true)
+    if [[ $url =~ ^https://(github\.com)/([^/]+)/(.+)$ ]]; then
+      host=github
+      domain=${BASH_REMATCH[1]}
+      owner=${BASH_REMATCH[2]}
+      name=${BASH_REMATCH[3]}
+      name=${name%.git}
+      return
+    elif [[ $url =~ ^git@(github\.com):([^/]+)/(.+)$ ]]; then
+      host=github
+      domain=${BASH_REMATCH[1]}
+      owner=${BASH_REMATCH[2]}
+      name=${BASH_REMATCH[3]}
+      name=${name%.git}
+      return
+    elif [[ $url =~ ([-.a-z]+\.com) ]]; then
+      domain=${BASH_REMATCH[1]}
+      host=${domain%.com}  # XXX this needs more logic. hack for now.
+    fi
+  fi
+
+  owner=$(ini:get package.owner) ||
+    error "Can't find 'package.owner' in config"
+
+  name=$(ini:get package.name) ||
+    error "Can't find 'package.name' in config"
+}
 
 db:get-index-info() {
   local index_name=$1
@@ -187,7 +212,9 @@ db:find-package() {
       index=${found[0]%%:*}
       return
       ;;
-    0) error "No package '$package_id' found" ;;
+    0)
+      [[ ${2-} == --none-ok ]] && return 1
+      error "No package '$package_id' found" ;;
     *) error "More than one package '$package_id' found:" \
              "${found[@]/:/ - }"
        ;;

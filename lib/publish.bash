@@ -17,15 +17,22 @@ publish:main() (
   new_version=$(publish:new-version)
   change_list=$(publish:change-list)
 
-  if $option_register; then
-    publish:register "$@"
-
-  elif [[ $option_bump ]]; then
+  if [[ $option_bump ]]; then
     [[ $change_list ]] || error \
       "Can't bump version." \
       "No changes commited since version '$old_version'"
 
     publish:bump "$@"
+
+  elif $option_register; then
+    if [[ $change_list ]]; then
+      publish:bump "$@"
+      publish:push
+      do-ini-init
+    fi
+
+    publish:source-plugin
+    publish:register "$@"
 
   else
     package_name=$(git config -f .bpan/config package.name)
@@ -38,156 +45,27 @@ publish:main() (
 
     [[ $package_name == bpan ]] && return
 
-    source-once util/db
-    db:source:plugin publish || {
-      # shellcheck disable=2046
-      set -- $(db:index-names)
-      if [[ $# -eq 1 ]]; then
-        error "Please specify --register"
-      else
-        error \
-          "More than 1 index in configuration:" \
-          "$@" \
-          "Please specify --index=..."
-      fi
-    }
+    publish:source-plugin
     publish:run "$@"
   fi
 )
 
-publish:run() (
-  publish:get-package-info
+publish:source-plugin() {
+  source-once util/db
 
-  publish:get-env
-
-  publish:check
-
-  $option_check && return
-
-  publish:update-index-repo
-)
-
-publish:get-package-info() (
-  die --stack
-)
-
-publish:get-env() (
-  die --stack
-)
-
-publish:get-index-api-url() (
-  url=$(git -C "$index_file_dir" config remote.origin.url) ||
-    error "Can't determine index_api_url"
-  echo "${url/github.com/api.github.com/repos}"
-)
-
-publish:check() (
-  package_id=$package \
-    publish:check-version-bump "$version"
-
-  publish_branch=$(ini:get package.branch) || true
-  publish_branch=${publish_branch:-main}
-
-  [[ $(+git:branch-name) == "$publish_branch" ]] ||
-    error "Not on publish branch '$publish_branch'"
-
-  tag=$version
-  +git:tag-exists "$tag" ||
-    error "Version '$version' is not a git tag"
-
-  +git:tag-pushed "$tag" ||
-    error "Tag '$tag' is not pushed to origin"
-
-  [[ $(+git:sha1 "$tag") == $(+git:sha1 HEAD) ]] ||
-    error "Tag '$tag' is not HEAD commit"
-
-  ini:get --file="$index_file_path" \
-    package."$package".v"${version//./-}" >/dev/null &&
-      error "$package version '$version' already published"
-
-  say -y "Running tests"
-  bpan-run test
-  echo
-)
-
-publish:check-version-bump() (
-  version=$1
-  indexed_version=$(
-    git config -f "$index_file_path" \
-      "package.$package_id.version"
-  )
-  +source bashplus/version
-  +version:gt "$version" "$indexed_version" ||
-    error \
-      "'$package_id' version '$version' not greater than indexed version"
-)
-
-publish:update-index-repo() (
-  die --stack
-)
-
-publish:update-index() (
-  ini:init "$index_file_path"
-
-  stamp=$(TZ=UTC date '+%Y-%m-%dT%H:%M:%S')
-
-  [[ ${#package_commit} -eq 40 ]] ||
-    die "Can't get commit for '$package_id' v$package_version"
-
-  # TODO Update all relevant fields
-
-  ini:set "package.$package_id.title"   "$package_title"
-  ini:set "package.$package_id.version" "$package_version"
-  ini:set "package.$package_id.license" "$package_license"
-  ini:set "package.$package_id.tag"     "$package_tag"
-  ini:set "package.$package_id.author"  "$package_author"
-  ini:set "package.$package_id.update"  "$stamp"
-  ini:set "package.$package_id.commit"  "$package_commit"
-  ini:set "package.$package_id.sha512"  "$package_sha512"
-
-  # shellcheck disable=2153
-  ini:set bpan.version "$VERSION"
-  ini:set bpan.updated "$stamp"
-
-  author_name=$(
-    git config -f .bpan/config \
-      --get-regexp '^author\..*\.name$' |
-      head -n1 |
-      cut -d' ' -f2-
-  )
-  author_email=$(
-    git config -f .bpan/config \
-      --get-regexp '^author\..*\.email$' |
-      head -n1 |
-      cut -d' ' -f2-
-  )
-  export GIT_AUTHOR_NAME=$author_name
-  export GIT_AUTHOR_EMAIL=$author_email
-  export GIT_COMMITTER_NAME='BPAN GitHub Publisher'
-  export GIT_COMMITTER_EMAIL='publish@bpan.org'
-
-  message="\
-Publish $package_id=$package_version
-
-    package=$package_id
-    title=\"$package_title\"
-    version=$package_version
-    license=$package_license
-    author=$package_author
-    commit=$package_commit
-    sha512=$package_sha512
-"
-
-  cd ..
-
-  git commit --all --message="${message//\'\'\'/\`\`\`}"
-
-  git diff HEAD^
-
-  git log -1
-
-  git push
-)
+  db:source-plugin publish || {
+    # shellcheck disable=2046
+    set -- $(db:index-names)
+    if [[ $# -eq 1 ]]; then
+      error "Please specify --register"
+    else
+      error \
+        "More than 1 index in configuration:" \
+        "$@" \
+        "Please specify --index=..."
+    fi
+  }
+}
 
 publish:old-version() (
   [[ -f $config_file_local ]] ||
@@ -244,25 +122,212 @@ publish:push() (
   say -y "Pushed to origin '$branch'"
 )
 
+
 #------------------------------------------------------------------------------
-# Register logic
+# Publish Common Logic
 #------------------------------------------------------------------------------
-publish:register() (
-  source-once util/db
 
-  index=$(db:index-names)
-  [[ $index && $index != *$'\n'* ]] ||
-    error "Can't determine index to register to." \
-      "Please specify with '--index=<index-name>'."
+publish:setup() {
+  +git:in-repo ||
+    error "Not in a git repo"
 
-  db:source:plugin publish register
+  [[ -f .bpan/config ]] ||
+    error "Not in a $APP package repo"
 
-  register:run "$@"
+  [[ $(ini:get package.name) != "$app" ]] ||
+    error "Can't use '$app publish' for '$app'."
+
+  db:get-package-domain-owner-name
+  package_id=$host:$owner/$name
+
+  force_update=true db:sync
+
+  package=$host:$owner/$name
+
+  version=$(ini:get package.version) ||
+    error "Can't find 'package.version' in .bpan/config"
+
+  [[ $version != 0.0.0 ]] ||
+    error "Can't publish version '0.0.0'." \
+          "Try '$app bump'."
+
+  commit=$(+git:sha1 "$version")
+}
+
+publish:check() (
+  package_id=$package \
+    publish:check-version-bump "$version"
+
+  publish_branch=$(ini:get package.branch) || true
+  publish_branch=${publish_branch:-main}
+
+  [[ $(+git:branch-name) == "$publish_branch" ]] ||
+    error "Not on publish branch '$publish_branch'"
+
+  tag=$version
+  +git:tag-exists "$tag" ||
+    error "Version '$version' is not a git tag"
+
+  +git:tag-pushed "$tag" ||
+    error "Tag '$tag' is not pushed to origin"
+
+  [[ $(+git:sha1 "$tag") == $(+git:sha1 HEAD) ]] ||
+    error "Tag '$tag' is not HEAD commit"
+
+  ini:get --file="$index_file_path" \
+    package."$package".v"${version//./-}" >/dev/null &&
+      error "$package version '$version' already published"
+
+  say -y "Running tests"
+  BASHPLUS_DEBUG_STACK='' bpan-run test
+  echo
 )
 
-register:run() (
-  error "$APP index '$index' does not support '$app register'"
+publish:check-version-bump() (
+  version=$1
+  indexed_version=$(
+    git config -f "$index_file_path" \
+      "package.$package_id.version"
+  )
+  +source bashplus/version
+  +version:gt "$version" "$indexed_version" ||
+    error \
+      "'$package_id' version '$version' not greater than indexed version"
 )
+
+publish:add-new-index-entry() (
+  entry="[package \"$package_id\"]"
+
+  cd "$index_file_dir" || exit
+  (
+    updated=false
+    while IFS='' read -r line; do
+      if ! $updated && [[ $line == '[package'* && $entry < "$line" ]]
+      then
+        echo "$entry"
+        echo
+        updated=true
+      fi
+      echo "$line"
+    done < "$index_file_name"
+    if ! $updated; then
+      echo
+      echo "$entry"
+    fi
+  ) > index
+  mv index "$index_file_name"
+
+  ini:set --file="$index_file_name" "package.$package_id.title" ...
+  ini:set --file="$index_file_name" "package.$package_id.version" 0.0.0
+  # shellcheck disable=2153
+  ini:set --file="$index_file_name" bpan.version "$VERSION"
+  ini:set --file="$index_file_name" bpan.updated "$bpan_run_timestamp"
+  # die ">>$(< "$index_file_name")<<" "pwd=$(pwd)" "index_file_path=$index_file_path" "index_file_name=$index_file_name" "index_dir=$index_dir"
+)
+
+publish:new-index-entry() (
+  package_version_key=${package_version//./-}
+  entry=$(< "$root/share/template/index-entry.ini")
+  while [[ $entry =~ \[%\ ([^%]*)\ %\] ]]; do
+    prev=$entry
+    expr=${BASH_REMATCH[1]%%\ }
+    eval "value=$expr"
+    entry=${entry/"[% $expr %]"/$value}
+  done
+
+  grep -v '^$' <<<"$entry"
+)
+
+publish:update-index() (
+  action=${1?Action verb required}
+
+  package_author=$(publish:get-package-author)
+
+  ini:init "$index_file_path"
+
+  package_title=$(git config -f .bpan/config package.title)
+  package_version=$(git config -f .bpan/config package.version)
+  package_license=$(git config -f .bpan/config package.license)
+  package_tag=$(git config -f .bpan/config package.tag)
+  package_commit=$(+git:commit-sha "$package_version")
+  package_sha512=$(+git:commit-sha512 "$package_version")
+
+  [[ ${#package_commit} -eq 40 ]] ||
+    die "Can't get commit for '$package_id' v$package_version"
+
+  # TODO Update all relevant fields
+
+  ini:set "package.$package_id.title"   "$package_title"
+  ini:set "package.$package_id.version" "$package_version"
+  ini:set "package.$package_id.license" "$package_license"
+  ini:set "package.$package_id.tag"     "$package_tag"
+  ini:set "package.$package_id.author"  "$package_author"
+  ini:set "package.$package_id.update"  "$bpan_run_timestamp"
+  ini:set "package.$package_id.commit"  "$package_commit"
+  ini:set "package.$package_id.sha512"  "$package_sha512"
+
+  # shellcheck disable=2153
+  ini:set bpan.version "$VERSION"
+  ini:set bpan.updated "$bpan_run_timestamp"
+
+  author_name=$(
+    git config -f .bpan/config \
+      --get-regexp '^author\..*\.name$' |
+      head -n1 |
+      cut -d' ' -f2-
+  )
+  author_email=$(
+    git config -f .bpan/config \
+      --get-regexp '^author\..*\.email$' |
+      head -n1 |
+      cut -d' ' -f2-
+  )
+  export GIT_AUTHOR_NAME=$author_name
+  export GIT_AUTHOR_EMAIL=$author_email
+  export GIT_COMMITTER_NAME='BPAN GitHub Publisher'
+  export GIT_COMMITTER_EMAIL='publish@bpan.org'
+
+  message="\
+$action $package_id=$package_version
+
+    package=$package_id
+    title=\"$package_title\"
+    version=$package_version
+    license=$package_license
+    author=$package_author
+    commit=$package_commit
+    sha512=$package_sha512
+"
+  message=${message//\'\'\'/\`\`\`}
+
+  git -C "$index_file_dir" \
+    commit --all --message="$message"
+)
+
+publish:get-package-author() (
+  author_id=$(
+    ini:first-key '^author\..*\.name$' |
+      cut -d. -f2
+  ) || error "No author.*.name entry in config"
+  [[ $author_id == *:* ]] ||
+    error "Invalid author section key '[author \"$author_id\"]'" \
+      "Should be '[author \"<host-name>:<host-user-id>\"]'"
+  author_host=${author_id%:*}
+  author_user=${author_id#*:}
+  author_domain=$(
+    ini:get --file="$index_file_path" "host.$author_host.domain"
+  ) || error "No 'host.$author_host.domain' entry in '$index' index"
+
+  package_author=$(
+    ini:vars domain user
+    domain=$author_domain
+    user=$author_user
+    ini:get --file="$index_file_path" "host.$author_host.author"
+  ) || error "No 'host.$author_host.author' entry in '$index' index"
+
+  echo "$package_author"
+)
+
 
 #------------------------------------------------------------------------------
 # Bump logic
@@ -283,7 +348,7 @@ publish:bump() (
   bpan-run update
 
   say -y "Running 'bpan test'"
-  bpan-run test
+  BASHPLUS_DEBUG_STACK='' bpan-run test
 
   git commit -q -a -m "Version $new_version"
 
@@ -336,7 +401,7 @@ publish:check-bump-ok() (
 publish:update-changes-file() (
   entry="\
 [version \"$new_version\"]
-date = $(date)
+date = $bpan_run_timestamp
 $change_list"
 
   if [[ $old_version == 0.0.0 ]]; then

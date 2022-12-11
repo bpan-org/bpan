@@ -5,7 +5,7 @@
 -->
 [% markdown-title %]
 
-[% pkg-title-default %]
+[% package-title-default %]
 
 ## Synopsis
 
@@ -20,7 +20,7 @@
 * With [BPAN](
   https://github.com/bpan-org/bpan#installation):
   ```
-  bpan install [% pkg %]
+  bpan install [% package_name %]
   ```
 
 ## Copyright and License

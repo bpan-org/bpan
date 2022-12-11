@@ -21,7 +21,7 @@ env:NAME() (
   echo "$NAME"
 )
 
-env:pkg() (
+env:package-name() (
   [[ ${name-} ]] ||
     die "'\$name' not defined"
   [[ $name =~ ^[a-z][-a-z0-9]*$ ]] ||
@@ -113,8 +113,8 @@ env:markdown-title() (
   printf '%s\n%s' "$name" "$line"
 )
 
-env:pkg-title-default() (
-  echo "CHANGEME short description of '$(env:pkg)'"
+env:package-title-default() (
+  echo "CHANGEME short description of '$(env:package-name)'"
 )
 
 env:readme-title() (
