@@ -1,3 +1,7 @@
+[version "0.1.97"]
+date = 2022-12-13T18:05:49
+done = Refactor publishing
+
 [version "0.1.96"]
 date = Fri Dec  9 06:59:17 AM PST 2022
 done = Changes to .bpan/config
