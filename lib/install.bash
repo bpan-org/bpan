@@ -55,9 +55,10 @@ install:package() (
   source-once util/db
 
   db:find-package "$package_id"
+  domain=$(git config --file="$index_file_path" "host.$host.domain")
 
   repo=$(
-    ini:vars owner name
+    ini:vars domain owner name
     key=host.$host.source
     ini:get --file="$index_file_path" "$key" ||
       error "Can't find config value for '$key'"

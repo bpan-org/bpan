@@ -222,7 +222,6 @@ publish:add-new-index-entry() (
   # shellcheck disable=2153
   ini:set --file="$index_file_name" bpan.version "$VERSION"
   ini:set --file="$index_file_name" bpan.updated "$bpan_run_timestamp"
-  # die ">>$(< "$index_file_name")<<" "pwd=$(pwd)" "index_file_path=$index_file_path" "index_file_name=$index_file_name" "index_dir=$index_dir"
 )
 
 publish:new-index-entry() (
@@ -301,7 +300,7 @@ $action $package_id=$package_version
   message=${message//\'\'\'/\`\`\`}
 
   git -C "$index_file_dir" \
-    commit --all --message="$message"
+    commit --quiet --all --message="$message"
 )
 
 publish:get-package-author() (
