@@ -1,3 +1,7 @@
+[version "0.1.98"]
+date = 2022-12-13-15-04-27
+done = A couple small fixes to tests
+
 [version "0.1.97"]
 date = 2022-12-13T18:05:49
 done = Refactor publishing
