@@ -57,11 +57,11 @@ install:package() (
   db:find-package "$package_id"
   domain=$(git config --file="$index_file_path" "host.$host.domain")
 
-  repo=$(
+  clone_url=$(
     ini:vars domain owner name
-    key=host.$host.source
-    ini:get --file="$index_file_path" "$key" ||
-      error "Can't find config value for '$key'"
+    ini:get --file="$index_file_path" "host.$host.clone" ||
+    ini:get --file="$index_file_path" "host.$host.source" ||
+      error "Can't find clone url for host '$host'"
   )
 
   base=${source%/*}
@@ -79,14 +79,14 @@ install:package() (
   else
     mkdir -p "$(dirname "$base")"
     (
-      say -y "Clone $repo -> $base"
+      say -y "Clone $clone_url -> $base"
       $option_verbose && set -x
 
       GIT_TERMINAL_PROMPT=0 git clone \
         --quiet \
         --no-checkout \
-        "$repo" "$base" 2>/dev/null
-    ) || error "Can't 'git clone $repo'"
+        "$clone_url" "$base" 2>/dev/null
+    ) || error "Can't 'git clone $clone_url'"
   fi
 
   if [[ ! -d $source ]]; then
