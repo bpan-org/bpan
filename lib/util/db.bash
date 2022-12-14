@@ -116,36 +116,33 @@ db:get-package-index() (
 )
 
 db:get-package-domain-owner-name() {
-  host='' domain='' owner='' name=''
+  name=$(ini:get package.name) ||
+    error "Can't get config entry 'package.name'"
+  host=$(ini:get package.host) || true
+  owner=$(ini:get package.owner) || true
+  domain=''
 
-  if [[ -f .git/config ]]; then
-    local url
-    url=$(git config remote.origin.url || true)
-    if [[ $url =~ ^https://(github\.com)/([^/]+)/(.+)$ ]]; then
-      host=github
-      domain=${BASH_REMATCH[1]}
-      owner=${BASH_REMATCH[2]}
-      name=${BASH_REMATCH[3]}
-      name=${name%.git}
-      return
-    elif [[ $url =~ ^git@(github\.com):([^/]+)/(.+)$ ]]; then
-      host=github
-      domain=${BASH_REMATCH[1]}
-      owner=${BASH_REMATCH[2]}
-      name=${BASH_REMATCH[3]}
-      name=${name%.git}
-      return
-    elif [[ $url =~ ([-.a-z]+\.com) ]]; then
-      domain=${BASH_REMATCH[1]}
-      host=${domain%.com}  # XXX this needs more logic. hack for now.
+  if [[ ! $host || ! $owner ]]; then
+    if [[ -f .git/config ]]; then
+      local url
+      url=$(git config remote.origin.url || true)
+      if [[ $url =~ ^https://github\.com/([^/]+)/.+$ ]]; then
+        [[ $host ]] || host=github
+        [[ $owner ]] || owner=${BASH_REMATCH[1]}
+        domain=github.com
+      elif [[ $url =~ ^git@github\.com:([^/]+)/.+$ ]]; then
+        [[ $host ]] || host=github
+        [[ $owner ]] || owner=${BASH_REMATCH[1]}
+        domain=github.com
+        host=github
+      fi
     fi
   fi
 
-  owner=$(ini:get package.owner) ||
-    error "Can't find 'package.owner' in config"
+  [[ $host ]] || host=$(git config --file="$index_file_path" default.host)
+  [[ $owner ]] || owner=$(git config --file="$index_file_path" default.owner)
 
-  name=$(ini:get package.name) ||
-    error "Can't find 'package.name' in config"
+  domain=$(git config --file="$index_file_path" host."$host".domain)
 }
 
 db:get-index-info() {
