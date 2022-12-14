@@ -142,7 +142,9 @@ db:get-package-domain-owner-name() {
   [[ $host ]] || host=$(git config --file="$index_file_path" default.host)
   [[ $owner ]] || owner=$(git config --file="$index_file_path" default.owner)
 
-  domain=$(git config --file="$index_file_path" host."$host".domain)
+  if [[ ${index_file_path-} ]]; then
+    domain=$(git config --file="$index_file_path" host."$host".domain)
+  fi
 }
 
 db:get-index-info() {
