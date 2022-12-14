@@ -20,7 +20,7 @@
 * With [BPAN](
   https://github.com/bpan-org/bpan#installation):
   ```
-  bpan install [% package_name %]
+  bpan install [% package-name %]
   ```
 
 ## Copyright and License

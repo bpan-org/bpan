@@ -1,19 +1,19 @@
 #!/bash
 
-# Use one of the following commands to activate `[% package_name %]` in your shell:
+# Use one of the following commands to activate `[% package-name %]` in your shell:
 #
-# ash  | [% NAME %]_ROOT=/path/to/[% package_name %] . /path/to/[% package_name %]/.rc
-# bash | source /path/to/[% package_name %]/.rc
-# dash | [% NAME %]_ROOT=/path/to/[% package_name %] . /path/to/[% package_name %]/.rc
-# fish | source /path/to/[% package_name %]/.rc
-# ksh  | [% NAME %]_ROOT=/path/to/[% package_name %] . /path/to/[% package_name %]/.rc
-# mksh | [% NAME %]_ROOT=/path/to/[% package_name %] . /path/to/[% package_name %]/.rc
-# mrsh | [% NAME %]_ROOT=/path/to/[% package_name %]; . /path/to/[% package_name %]/.rc
-# posh | [% NAME %]_ROOT=/path/to/[% package_name %] . /path/to/[% package_name %]/.rc
-# sh   | [% NAME %]_ROOT=/path/to/[% package_name %] . /path/to/[% package_name %]/.rc
-# tcsh | source /path/to/[% package_name %]/.rc
-# yash | . /path/to/[% package_name %]/.rc 2>/dev/null
-# zsh  | source /path/to/[% package_name %]/.rc
+# ash  | [% NAME %]_ROOT=/path/to/[% package-name %] . /path/to/[% package-name %]/.rc
+# bash | source /path/to/[% package-name %]/.rc
+# dash | [% NAME %]_ROOT=/path/to/[% package-name %] . /path/to/[% package-name %]/.rc
+# fish | source /path/to/[% package-name %]/.rc
+# ksh  | [% NAME %]_ROOT=/path/to/[% package-name %] . /path/to/[% package-name %]/.rc
+# mksh | [% NAME %]_ROOT=/path/to/[% package-name %] . /path/to/[% package-name %]/.rc
+# mrsh | [% NAME %]_ROOT=/path/to/[% package-name %]; . /path/to/[% package-name %]/.rc
+# posh | [% NAME %]_ROOT=/path/to/[% package-name %] . /path/to/[% package-name %]/.rc
+# sh   | [% NAME %]_ROOT=/path/to/[% package-name %] . /path/to/[% package-name %]/.rc
+# tcsh | source /path/to/[% package-name %]/.rc
+# yash | . /path/to/[% package-name %]/.rc 2>/dev/null
+# zsh  | source /path/to/[% package-name %]/.rc
 
 # Note: tcsh must come first or this won't work (for tcsh).
 
