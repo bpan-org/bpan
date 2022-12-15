@@ -242,8 +242,6 @@ publish:new-index-entry() (
 publish:update-index() (
   action=${1?Action verb required}
 
-  package_author=$(publish:get-package-author)
-
   ini:init "$index_file_path"
 
   package_title=$(git config -f .bpan/config package.title)
@@ -252,6 +250,9 @@ publish:update-index() (
   package_tag=$(git config -f .bpan/config package.tag)
   package_commit=$(+git:commit-sha "$package_version")
   package_sha512=$(+git:commit-sha512 "$package_version")
+
+  package_source=$(publish:get-package-source)
+  package_author=$(publish:get-package-author)
 
   [[ ${#package_commit} -eq 40 ]] ||
     die "Can't get commit for '$package_id' v$package_version"
@@ -262,6 +263,7 @@ publish:update-index() (
   ini:set "package.$package_id.version" "$package_version"
   ini:set "package.$package_id.license" "$package_license"
   ini:set "package.$package_id.tag"     "$package_tag"
+  ini:set "package.$package_id.source"  "$package_source"
   ini:set "package.$package_id.author"  "$package_author"
   ini:set "package.$package_id.update"  "$bpan_run_timestamp"
   ini:set "package.$package_id.commit"  "$package_commit"
@@ -305,9 +307,21 @@ $action $package_id=$package_version
     commit --quiet --all --message="$message"
 )
 
+publish:get-package-source() (
+  package_source=$(
+    owner=$pkg_owner
+    host=$pkg_host
+    version=$package_version
+    ini:vars owner name version
+    ini:get --file="$index_file_path" "host.$host.source"
+  ) || error "No 'host.$host.source' entry in '$index' index"
+
+  echo "$package_source"
+)
+
 publish:get-package-author() (
   author_id=$(
-    ini:first-key '^author\..*\.name$' |
+    ini:first-key --file="$config_file_local" '^author\..*\.name$' |
       cut -d. -f2
   ) || error "No author.*.name entry in config"
   [[ $author_id == *:* ]] ||
