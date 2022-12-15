@@ -205,7 +205,8 @@ init:apply() (
     done
   fi
 
-  pkg=$(ini:get package.name)
+  bpan:get-pkg-vars
+  pkg=$pkg_name
   name=${pkg%-bash}
 
   if [[ ! -d .git ]]; then

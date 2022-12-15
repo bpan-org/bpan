@@ -30,8 +30,8 @@ $app <cmd> --help
 $APP System Commands:
   find          Search for $APP packages
   install       Install a $APP package
+  cmds          Get info about $APP or packages
   config        Manage $APP config settings
-  cmds          List available '$app' commands
   help          Get help for a '$app' command
 
 Project Package Commands:

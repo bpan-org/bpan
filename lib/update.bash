@@ -132,7 +132,8 @@ update:packages() (
 
 update:templates() (
   source-once add
-  name=$(ini:get package.name || echo 'no-name')
+  bpan:get-pkg-vars 2>/dev/null || true
+  name=${pkg_name:-no-name}
   while read -r line; do
     line=${line#file.bpan.}
     action=${line%%=*}

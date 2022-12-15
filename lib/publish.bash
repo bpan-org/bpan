@@ -35,7 +35,8 @@ publish:main() (
     publish:register "$@"
 
   else
-    package_name=$(git config -f .bpan/config package.name)
+    bpan:get-pkg-vars
+    package_name=$pkg_name
 
     if [[ $change_list ]]; then
       publish:bump "$@"
@@ -134,7 +135,8 @@ publish:setup() {
   [[ -f .bpan/config ]] ||
     error "Not in a $APP package repo"
 
-  [[ $(ini:get package.name) != "$app" ]] ||
+  bpan:get-pkg-vars
+  [[ $pkg_name != "$app" ]] ||
     error "Can't use '$app publish' for '$app'."
 
   db:get-package-domain-owner-name
@@ -334,7 +336,8 @@ publish:get-package-author() (
 publish:bump() (
   publish:check-repo
 
-  package_name=$(ini:get --file="$config_file_local" package.name)
+  bpan:get-pkg-vars
+  package_name=$pkg_name
 
   publish:check-bump-ok
 

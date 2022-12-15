@@ -1,3 +1,35 @@
+bpan:get-pkg-vars() {
+  pkg_id='' pkg_host='' pkg_owner='' pkg_name=''
+  if pkg_id=$(git config --file="$config_file_local" package.id); then
+    [[ $pkg_id =~ ^([-a-z0-9]+):([-a-z0-9]+)/([-a-z0-9]+)$ ]] ||
+      error "Invalid value for package.id '$pkg_id'"
+    pkg_host=${BASH_REMATCH[1]}
+    pkg_owner=${BASH_REMATCH[2]}
+    pkg_name=${BASH_REMATCH[3]}
+    return
+  fi
+
+  pkg_name=$(git config --file="$config_file_local" package.name) ||
+    error "$config_file_local must contain package.id or package.name"
+  pkg_host=$(git config --file="$config_file_local" package.host) || true
+  pkg_owner=$(git config --file="$config_file_local" package.owner) || true
+  if [[ $pkg_host && $pkg_owner ]]; then
+    pkg_id=$pkg_host:$pkg_owner/$pkg_name
+    return
+  fi
+
+  local url
+  if url=$(git config remote.origin.url); then
+    if
+      [[ $url =~ ^https://github\.com/([-a-z0-9]+)/([-a-z0-9]+)$ ]] ||
+      [[ $url =~ ^git@github\.com:([-a-z0-9]+)/([-a-z0-9]+)$ ]]
+    then
+      pkg_host=${pkg_host:-github}
+      pkg_owner=${pkg_owner:-${BASH_REMATCH[1]}}
+    fi
+  fi
+}
+
 ini:match() (
   set "${INI_DEBUG_BASH_X:-+x}"
   ini:data "$@"

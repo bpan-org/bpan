@@ -116,10 +116,10 @@ db:get-package-index() (
 )
 
 db:get-package-domain-owner-name() {
-  name=$(ini:get package.name) ||
-    error "Can't get config entry 'package.name'"
-  host=$(ini:get package.host) || true
-  owner=$(ini:get package.owner) || true
+  bpan:get-pkg-vars
+  name=$pkg_name
+  host=$pkg_host
+  owner=$pkg_owner
   domain=''
 
   if [[ ! $host || ! $owner ]]; then

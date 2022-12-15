@@ -197,7 +197,8 @@ add:set-env() {
 
   unset name
   if [[ -e $config ]]; then
-    name=$(ini:get --file="$config" package.name) || true
+    config_file_local=$config bpan:get-pkg-vars 2>/dev/null || true
+    name=$pkg_name
   fi
   [[ ${name-} ]] || name=$(basename "$PWD")
 }
