@@ -294,9 +294,11 @@ publish:update-index() (
 $action $package_id=$package_version
 
     package=$package_id
-    title=\"$package_title\"
+    title='$package_title'
     version=$package_version
     license=$package_license
+    tag='$package_tag'
+    source=$package_source
     author=$package_author
     commit=$package_commit
     sha512=$package_sha512
@@ -310,6 +312,7 @@ $action $package_id=$package_version
 publish:get-package-source() (
   host=$pkg_host
   owner=$pkg_owner
+  name=$pkg_name
   version=$package_version
 
   package_source=$(
