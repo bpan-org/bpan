@@ -1,3 +1,10 @@
+[version "0.1.100"]
+date = 2022-12-15-08-00-14
+done = Implement bpan:get-pkg-vars function
+done = Support host.*.clone config option
+done = Fix bug in db:get-package-domain-owner-name
+done = Redo logic in get-package-domain-owner-name
+
 [version "0.1.99"]
 date = 2022-12-13-17-54-27
 done = Fix bug in templates
