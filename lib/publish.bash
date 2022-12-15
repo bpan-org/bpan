@@ -308,10 +308,11 @@ $action $package_id=$package_version
 )
 
 publish:get-package-source() (
+  host=$pkg_host
+  owner=$pkg_owner
+  version=$package_version
+
   package_source=$(
-    owner=$pkg_owner
-    host=$pkg_host
-    version=$package_version
     ini:vars owner name version
     ini:get --file="$index_file_path" "host.$host.source"
   ) || error "No 'host.$host.source' entry in '$index' index"
