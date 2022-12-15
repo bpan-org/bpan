@@ -139,7 +139,7 @@ publish:setup() {
   [[ $pkg_name != "$app" ]] ||
     error "Can't use '$app publish' for '$app'."
 
-  db:get-package-domain-owner-name
+  db:get-package-host-owner-name
   package_id=$host:$owner/$name
 
   force_update=true db:sync
@@ -315,13 +315,9 @@ publish:get-package-author() (
       "Should be '[author \"<host-name>:<host-user-id>\"]'"
   author_host=${author_id%:*}
   author_user=${author_id#*:}
-  author_domain=$(
-    ini:get --file="$index_file_path" "host.$author_host.domain"
-  ) || error "No 'host.$author_host.domain' entry in '$index' index"
 
   package_author=$(
-    ini:vars domain user
-    domain=$author_domain
+    ini:vars user
     user=$author_user
     ini:get --file="$index_file_path" "host.$author_host.author"
   ) || error "No 'host.$author_host.author' entry in '$index' index"

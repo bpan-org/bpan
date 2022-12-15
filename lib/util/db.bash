@@ -109,18 +109,17 @@ db:get-package-index() (
     return
   fi
 
-  db:get-package-domain-owner-name
+  db:get-package-host-owner-name
   package_id=$owner/$name
   db:find-package "$package_id" --none-ok || return
   echo "$index"
 )
 
-db:get-package-domain-owner-name() {
+db:get-package-host-owner-name() {
   bpan:get-pkg-vars
   name=$pkg_name
   host=$pkg_host
   owner=$pkg_owner
-  domain=''
 
   if [[ ! $host || ! $owner ]]; then
     if [[ -f .git/config ]]; then
@@ -129,11 +128,9 @@ db:get-package-domain-owner-name() {
       if [[ $url =~ ^https://github\.com/([^/]+)/.+$ ]]; then
         [[ $host ]] || host=github
         [[ $owner ]] || owner=${BASH_REMATCH[1]}
-        domain=github.com
       elif [[ $url =~ ^git@github\.com:([^/]+)/.+$ ]]; then
         [[ $host ]] || host=github
         [[ $owner ]] || owner=${BASH_REMATCH[1]}
-        domain=github.com
         host=github
       fi
     fi
@@ -141,10 +138,6 @@ db:get-package-domain-owner-name() {
 
   [[ $host ]] || host=$(git config --file="$index_file_path" default.host)
   [[ $owner ]] || owner=$(git config --file="$index_file_path" default.owner)
-
-  if [[ ${index_file_path-} ]]; then
-    domain=$(git config --file="$index_file_path" host."$host".domain)
-  fi
 }
 
 db:get-index-info() {

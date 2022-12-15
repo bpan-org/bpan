@@ -55,13 +55,11 @@ install:package() (
   source-once util/db
 
   db:find-package "$package_id"
-  domain=$(git config --file="$index_file_path" "host.$host.domain")
 
-  clone_url=$(
-    ini:vars domain owner name
-    ini:get --file="$index_file_path" "host.$host.clone" ||
-    ini:get --file="$index_file_path" "host.$host.source" ||
-      error "Can't find clone url for host '$host'"
+  pull_url=$(
+    ini:vars owner name
+    ini:get --file="$index_file_path" "host.$host.pull" ||
+      error "Can't find index entry 'host.$host.pull'"
   )
 
   base=${source%/*}
@@ -79,14 +77,14 @@ install:package() (
   else
     mkdir -p "$(dirname "$base")"
     (
-      say -y "Clone $clone_url -> $base"
+      say -y "Clone $pull_url -> $base"
       $option_verbose && set -x
 
       GIT_TERMINAL_PROMPT=0 git clone \
         --quiet \
         --no-checkout \
-        "$clone_url" "$base" 2>/dev/null
-    ) || error "Can't 'git clone $clone_url'"
+        "$pull_url" "$base" 2>/dev/null
+    ) || error "Can't 'git clone $pull_url'"
   fi
 
   if [[ ! -d $source ]]; then
