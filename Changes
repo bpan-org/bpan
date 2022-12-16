@@ -1,3 +1,8 @@
+[version "0.1.102"]
+date = 2022-12-16T08:33:36Z
+done = Fix 'update --self' to fetch tags
+done = Fix bug in 'bpan update' when not in bpan related dir
+
 [version "0.1.101"]
 date = 2022-12-15T22:02:36Z
 done = Change 'bpan cmds' to 'bpan show --cmds'

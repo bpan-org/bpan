@@ -1,10 +1,10 @@
 [bpan]
-version = 0.1.101
-updated = 2022-12-16T07:19:02Z
+version = 0.1.102
+updated = 2022-12-16T08:33:36Z
 
 [package]
 name = bpan
-version = 0.1.101
+version = 0.1.102
 title = Bash Package Manager
 license = MIT
 copyright = 2014-2022
