@@ -8,10 +8,13 @@ S,self    Update '$app' itself (to latest version)
 )
 
 update:main() (
-  ini:init \
-    "$config_file_system" \
-    "$config_file_global" \
-    "$(pwd)/$config_file_local"
+  ini_files=(
+    "$config_file_system"
+    "$config_file_global"
+  )
+  [[ -f $(pwd)/$config_file_local ]] &&
+    ini_files+=("$(pwd)/$config_file_local")
+  ini:init "${ini_files[@]}"
 
   if $option_self; then
     update:self
