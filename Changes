@@ -1,3 +1,16 @@
+[version "0.1.101"]
+date = 2022-12-15T22:02:36Z
+done = Change 'bpan cmds' to 'bpan show --cmds'
+done = Update a test
+done = Add optional 'package.summary'
+done = Support package.tag being optional
+done = Add package.type to package data
+done = Fix another publish.bash bug
+done = Fix variable scope bug in publish.bash
+done = Support new meaning for host.*.source
+done = Drop 'host.*.domain' from index
+done = Update bashplus/time.bash for fixed timestamp
+
 [version "0.1.100"]
 date = 2022-12-15-08-00-14
 done = Implement bpan:get-pkg-vars function
