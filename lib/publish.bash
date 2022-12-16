@@ -1,7 +1,7 @@
 # TODO redirect from https://bpan.org/publish-requests
 
 publish:options() (cat <<...
-I,index=    Index name to register to
+I,index=    Index name to publish to
 
 check       Just run sanity checks. Don't publish
 bump?       Bump files to next version, but don't push
@@ -247,12 +247,15 @@ publish:update-index() (
   package_title=$(git config -f .bpan/config package.title)
   package_version=$(git config -f .bpan/config package.version)
   package_license=$(git config -f .bpan/config package.license)
+# package_summary=$(git config -f .bpan/config package.summary)
+  package_type=$(git config -f .bpan/config package.type)
   package_tag=$(git config -f .bpan/config package.tag)
-  package_commit=$(+git:commit-sha "$package_version")
-  package_sha512=$(+git:commit-sha512 "$package_version")
 
   package_source=$(publish:get-package-source)
   package_author=$(publish:get-package-author)
+
+  package_commit=$(+git:commit-sha "$package_version")
+  package_sha512=$(+git:commit-sha512 "$package_version")
 
   [[ ${#package_commit} -eq 40 ]] ||
     die "Can't get commit for '$package_id' v$package_version"
@@ -262,6 +265,8 @@ publish:update-index() (
   ini:set "package.$package_id.title"   "$package_title"
   ini:set "package.$package_id.version" "$package_version"
   ini:set "package.$package_id.license" "$package_license"
+# ini:set "package.$package_id.summary" "$package_summary"
+  ini:set "package.$package_id.type"    "$package_type"
   ini:set "package.$package_id.tag"     "$package_tag"
   ini:set "package.$package_id.source"  "$package_source"
   ini:set "package.$package_id.author"  "$package_author"
@@ -297,6 +302,7 @@ $action $package_id=$package_version
     title='$package_title'
     version=$package_version
     license=$package_license
+    type=$package_type
     tag='$package_tag'
     source=$package_source
     author=$package_author
