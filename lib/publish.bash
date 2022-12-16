@@ -247,7 +247,7 @@ publish:update-index() (
   package_title=$(git config -f .bpan/config package.title)
   package_version=$(git config -f .bpan/config package.version)
   package_license=$(git config -f .bpan/config package.license)
-# package_summary=$(git config -f .bpan/config package.summary)
+  package_summary=$(git config -f .bpan/config package.summary) || true
   package_type=$(git config -f .bpan/config package.type)
   package_tag=$(git config -f .bpan/config package.tag) || true
 
@@ -265,7 +265,7 @@ publish:update-index() (
   ini:set "package.$package_id.title"   "$package_title"
   ini:set "package.$package_id.version" "$package_version"
   ini:set "package.$package_id.license" "$package_license"
-# ini:set "package.$package_id.summary" "$package_summary"
+  ini:set "package.$package_id.summary" "$package_summary"
   ini:set "package.$package_id.type"    "$package_type"
   ini:set "package.$package_id.tag"     "$package_tag"
   ini:set "package.$package_id.source"  "$package_source"
