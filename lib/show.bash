@@ -1,11 +1,20 @@
-cmds:options() (
-  echo "q,quiet       Print only the command names"
+show:options() (cat <<...
+cmds          List $app commands
+
+q,quiet       Print only the command names
+...
 )
 
-cmds:main() (
+show:main() (
+  if $option_cmds; then
+    show:cmds
+  else
+    bpan-run show --help
+  fi
+)
+
+show:cmds() (
   i=1
-  names=()
-  descs=()
 
   while read -r name desc; do
     if $option_quiet; then

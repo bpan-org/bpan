@@ -16,9 +16,9 @@ Bash Packages Are Nearby
 Using the `bpan` CLI tool:
 ```
 $ bpan --help
-$ bpan cmds
+$ bpan show --cmds
 $ bpan help <command>
-$ bpan search utils
+$ bpan find utils
 $ bpan install somebody/path-utils
 ```
 
@@ -35,7 +35,7 @@ bpan:source github:ingydotnet/json
 
 Create new packages with BPAN:
 ```
-$ bpan new --lib foo-bar-bash
+$ bpan init --new=foo-bar-bash --lib
 $ bpan add --pkg=json-bash
 $ bpan add --file=test/foo.t
 $ bpan update
@@ -43,9 +43,8 @@ $ bpan update
 
 Publish your Bash packages:
 ```
-$ bpan bump --push  # Prep the next publish commit
-$ bpan register .   # Add new package entry to Index
-$ bpan publish .    # Update package's Index entry
+$ bpan publish --register   # Add new package entry to Index
+$ bpan publish              # Update package's Index entry
 ```
 
 
@@ -55,9 +54,9 @@ BPAN is the "Missing Bash Package Manager".
 
 It does 3 big things for you and your Bash code:
 
-* Find/install CLI programs/libaries written in Bash
+* Find/install CLI apps/programs/libaries written in Bash
 * Install, manage, bundle Bash deps for a project
-* Register and publish Bash packages that you make
+* Publish Bash packages that you make
 
 
 ## Installation
@@ -66,6 +65,13 @@ Installing BPAN is simple and everything happens in a single directory on your
 host machine.
 The standard location is `$HOME/.bpan/` but you can change it to anything you
 like.
+
+BPAN is written in "modern" Bash.
+It is built over several of the reusable libraries it makes available.
+
+That said, you don't need to use Bash as your interactive shell to use BPAN.
+Bash just needs to be installed (and often is by default) because Bash is the
+"programming language" in the scenario.
 
 BPAN works and is tested under the following shells: `bash`, `zsh`, `fish`,
 `ksh`, `mksh`, `tcsh`, `yash`, `ash`, `dash`, `mrsh`, `posh` and `sh`.
@@ -76,7 +82,7 @@ BPAN works and is tested under the following shells: `bash`, `zsh`, `fish`,
 You can run this command from any of the above shells to install BPAN:
 
 ```
-curl -sL get.bpan.org | bash
+bash <(curl -sL get.bpan.org)
 ```
 
 The script will try to identify your interactive shell type, and will choose an
@@ -86,17 +92,17 @@ You can override these with the `BPAN_SHELL` and `BPAN_ROOT` environment
 variables like this:
 
 ```
-curl -sL get.bpan.org | BPAN_SHELL=abcsh BPAN_ROOT=/some/path bash
+BPAN_SHELL=abcsh BPAN_ROOT=/some/path bash <(curl -sL get.bpan.org)
 ```
 
 
 ### Install BPAN from its Source Repository
 
-NOTE: You can replace `$HOME/.bpan` below with any directory path you wish.
+NOTE: It is common to use `$HOME/.bpan` for `/path/to/bpan` in the following:
 
 1. Clone the BPAN repo:
    ```
-   git clone https://github.com/bpan-org/bpan "$HOME/.bpan"
+   git clone https://github.com/bpan-org/bpan /path/to/bpan
    ```
 
 2. Source the BPAN `.rc` file to use `bpan` immediately.
@@ -118,9 +124,6 @@ NOTE: You can replace `$HOME/.bpan` below with any directory path you wish.
 
 3. Add the command in step 2 to your shell's startup file (`$HOME/.bashrc`, etc).
 
-NOTE: `$HOME/.bpan/` can be changed above to any other location that you wish to
-install BPAN.
-
 
 ### Prerequisites
 
@@ -129,11 +132,11 @@ BPAN needs just a few very common things to work:
 * Bash 3.2+
   * The BPAN system is written in Bash (of course)
 * Git 2.7+
-  * Required by `bpan` CLI and many packages, but...
-  * Not required by programs using packages (that don't require it)
+  * Required by `bpan` CLI and many BPAN packages, but...
+  * Not required by programs using BPAN packages (that don't require it)
 * GitHub account
-  * Only needed to register and publish packages
-  * BPAN publishing only works on GitHub at the current time
+  * Only needed to publish to BPAN indexes hosted on GitHub
+  * The default BPAN index is on GitHub
 
 
 ## Copyright and License

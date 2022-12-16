@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH "bpan" 1 "2022-12-15" "md2man v0.1.0" "Bash Package Manager"
+.TH "bpan" 1 "2022-12-16" "md2man v0.1.0" "Bash Package Manager"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -155,9 +155,9 @@ Using the \f(CW\*(C`bpan\*(C'\fR \s-1CLI\s0 tool:
 .PP
 .Vb 5
 \&    $ bpan \-\-help
-\&    $ bpan cmds
+\&    $ bpan show \-\-cmds
 \&    $ bpan help <command>
-\&    $ bpan search utils
+\&    $ bpan find utils
 \&    $ bpan install somebody/path\-utils
 .Ve
 .PP
@@ -176,7 +176,7 @@ Use the \f(CW\*(C`bpan\*(C'\fR Bash library in your Bash code:
 Create new packages with \s-1BPAN:\s0
 .PP
 .Vb 4
-\&    $ bpan new \-\-lib foo\-bar\-bash
+\&    $ bpan init \-\-new=foo\-bar\-bash \-\-lib
 \&    $ bpan add \-\-pkg=json\-bash
 \&    $ bpan add \-\-file=test/foo.t
 \&    $ bpan update
@@ -184,10 +184,9 @@ Create new packages with \s-1BPAN:\s0
 .PP
 Publish your Bash packages:
 .PP
-.Vb 3
-\&    $ bpan bump \-\-push  # Prep the next publish commit
-\&    $ bpan register .   # Add new package entry to Index
-\&    $ bpan publish .    # Update package\*(Aqs Index entry
+.Vb 2
+\&    $ bpan publish \-\-register   # Add new package entry to Index
+\&    $ bpan publish              # Update package\*(Aqs Index entry
 .Ve
 .SS "\s-1DESCRIPTION\s0"
 .IX Subsection "DESCRIPTION"
@@ -195,14 +194,18 @@ Publish your Bash packages:
 .PP
 It does 3 big things for you and your Bash code:
 .IP "\(bu" 4
-Find/install \s-1CLI\s0 programs/libaries written in Bash
+Find/install \s-1CLI\s0 apps/programs/libaries written in Bash
 .IP "\(bu" 4
 Install, manage, bundle Bash deps for a project
 .IP "\(bu" 4
-Register and publish Bash packages that you make
+Publish Bash packages that you make
 .SS "\s-1INSTALLATION\s0"
 .IX Subsection "INSTALLATION"
 Installing \s-1BPAN\s0 is simple and everything happens in a single directory on your host machine. The standard location is \f(CW\*(C`$HOME/.bpan/\*(C'\fR but you can change it to anything you like.
+.PP
+\&\s-1BPAN\s0 is written in \*(L"modern\*(R" Bash. It is built over several of the reusable libraries it makes available.
+.PP
+That said, you don't need to use Bash as your interactive shell to use \s-1BPAN.\s0 Bash just needs to be installed (and often is by default) because Bash is the \*(L"programming language\*(R" in the scenario.
 .PP
 \&\s-1BPAN\s0 works and is tested under the following shells: \f(CW\*(C`bash\*(C'\fR, \f(CW\*(C`zsh\*(C'\fR, \f(CW\*(C`fish\*(C'\fR, \f(CW\*(C`ksh\*(C'\fR, \f(CW\*(C`mksh\*(C'\fR, \f(CW\*(C`tcsh\*(C'\fR, \f(CW\*(C`yash\*(C'\fR, \f(CW\*(C`ash\*(C'\fR, \f(CW\*(C`dash\*(C'\fR, \f(CW\*(C`mrsh\*(C'\fR, \f(CW\*(C`posh\*(C'\fR and \f(CW\*(C`sh\*(C'\fR.
 .PP
@@ -212,7 +215,7 @@ Installing \s-1BPAN\s0 is simple and everything happens in a single directory on
 You can run this command from any of the above shells to install \s-1BPAN:\s0
 .PP
 .Vb 1
-\&    curl \-sL get.bpan.org | bash
+\&    bash <(curl \-sL get.bpan.org)
 .Ve
 .PP
 The script will try to identify your interactive shell type, and will choose an installation location of \f(CW\*(C`$HOME/.bpan/\*(C'\fR.
@@ -220,17 +223,17 @@ The script will try to identify your interactive shell type, and will choose an 
 You can override these with the \f(CW\*(C`BPAN_SHELL\*(C'\fR and \f(CW\*(C`BPAN_ROOT\*(C'\fR environment variables like this:
 .PP
 .Vb 1
-\&    curl \-sL get.bpan.org | BPAN_SHELL=abcsh BPAN_ROOT=/some/path bash
+\&    BPAN_SHELL=abcsh BPAN_ROOT=/some/path bash <(curl \-sL get.bpan.org)
 .Ve
 .PP
 \fIInstall \s-1BPAN\s0 from its Source Repository\fR
 .IX Subsection "Install BPAN from its Source Repository"
 .PP
-\&\s-1NOTE:\s0 You can replace \f(CW\*(C`$HOME/.bpan\*(C'\fR below with any directory path you wish.
+\&\s-1NOTE:\s0 It is common to use \f(CW\*(C`$HOME/.bpan\*(C'\fR for \f(CW\*(C`/path/to/bpan\*(C'\fR in the following:
 .IP "1. Clone the \s-1BPAN\s0 repo:" 4
 .IX Item "1. Clone the BPAN repo:"
 .Vb 1
-\&    git clone https://github.com/bpan\-org/bpan "$HOME/.bpan"
+\&    git clone https://github.com/bpan\-org/bpan /path/to/bpan
 .Ve
 .ie n .IP "1. Source the \s-1BPAN\s0 "".rc"" file to use ""bpan"" immediately. Use one of these commands, depending on your shell:" 4
 .el .IP "1. Source the \s-1BPAN\s0 \f(CW.rc\fR file to use \f(CWbpan\fR immediately. Use one of these commands, depending on your shell:" 4
@@ -253,8 +256,6 @@ You can override these with the \f(CW\*(C`BPAN_SHELL\*(C'\fR and \f(CW\*(C`BPAN_
 .el .IP "1. Add the command in step 2 to your shell's startup file (\f(CW$HOME/.bashrc\fR, etc)." 4
 .IX Item "1. Add the command in step 2 to your shell's startup file ($HOME/.bashrc, etc)."
 .PP
-\&\s-1NOTE:\s0 \f(CW\*(C`$HOME/.bpan/\*(C'\fR can be changed above to any other location that you wish to install \s-1BPAN.\s0
-.PP
 \fIPrerequisites\fR
 .IX Subsection "Prerequisites"
 .PP
@@ -271,9 +272,9 @@ The \s-1BPAN\s0 system is written in Bash (of course)
 Git 2.7+
 .RS 4
 .IP "\(bu" 4
-Required by \f(CW\*(C`bpan\*(C'\fR \s-1CLI\s0 and many packages, but...
+Required by \f(CW\*(C`bpan\*(C'\fR \s-1CLI\s0 and many \s-1BPAN\s0 packages, but...
 .IP "\(bu" 4
-Not required by programs using packages (that don't require it)
+Not required by programs using \s-1BPAN\s0 packages (that don't require it)
 .RE
 .RS 4
 .RE
@@ -281,9 +282,9 @@ Not required by programs using packages (that don't require it)
 GitHub account
 .RS 4
 .IP "\(bu" 4
-Only needed to register and publish packages
+Only needed to publish to \s-1BPAN\s0 indexes hosted on GitHub
 .IP "\(bu" 4
-\&\s-1BPAN\s0 publishing only works on GitHub at the current time
+The default \s-1BPAN\s0 index is on GitHub
 .RE
 .RS 4
 .RE

@@ -1,4 +1,4 @@
-ini:version() ( echo "0.1.12" )
+ini:version() ( echo "0.1.13" )
 
 ini:init() {
   if [[ $# -gt 0 ]]; then
@@ -139,7 +139,6 @@ ini:untab() {
   local file text
   for file; do
     text=$(< "$file")
-    text=${text//$' \n'/$' ""\n'}
     echo "${text//$'\t'/}" > "$file"
   done
 }
