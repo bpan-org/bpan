@@ -226,6 +226,8 @@ update:self() (
     $option_verbose && set -x
     git fetch --quiet origin "$branch" ||
       error "Could not git fetch '$root'."
+    git fetch --quiet --tags origin ||
+      error "Could not git fetch $app tags."
     git reset --hard --quiet FETCH_HEAD ||
       error "Could not git reset '$root'"
   )
