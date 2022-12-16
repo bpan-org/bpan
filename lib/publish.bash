@@ -249,7 +249,7 @@ publish:update-index() (
   package_license=$(git config -f .bpan/config package.license)
 # package_summary=$(git config -f .bpan/config package.summary)
   package_type=$(git config -f .bpan/config package.type)
-  package_tag=$(git config -f .bpan/config package.tag)
+  package_tag=$(git config -f .bpan/config package.tag) || true
 
   package_source=$(publish:get-package-source)
   package_author=$(publish:get-package-author)

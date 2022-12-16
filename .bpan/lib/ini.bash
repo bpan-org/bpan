@@ -139,6 +139,7 @@ ini:untab() {
   local file text
   for file; do
     text=$(< "$file")
+    text=${text//$' \n'/$' ""\n'}
     echo "${text//$'\t'/}" > "$file"
   done
 }
