@@ -16,7 +16,7 @@ bpan:source bashplus +cmd +sys
 bpan:source test-tap --
 
 export BPAN_TEST_RUNNING=1
-export PATH=$PWD/lib:$PATH
+export PATH=$PWD/bin:$PWD/lib:$PATH
 
 # Add any custom initialization to a test/init-local file.
 if [[ -f test/init-local ]]; then
