@@ -108,7 +108,7 @@ add:main() (
   fi
 
   if [[ $option_count_pkg -gt 0 ]]; then
-    source-once util/db
+    source-once db
     add:assert-config
     for pkg in "${option_pkg[@]}"; do
       grep -q "^$pkg$" <(ini:all --file="$config_file_local" update.package) &&
@@ -152,7 +152,7 @@ add:main() (
     say -y "RUNNING 'bpan update'"
 
     source-once update
-    source-once util/db
+    source-once db
     db:sync
     update:apply
   fi
@@ -327,7 +327,7 @@ add:file-copy() (
 )
 
 add:file-render() (
-  source-once util/env
+  source-once env
 
   text=$(< "$1")
 

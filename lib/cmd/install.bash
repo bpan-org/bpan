@@ -33,7 +33,7 @@ install:main() (
   [[ $# -gt 0 ]] ||
     error "'$app $cmd' requires one or more packages"
 
-  source-once util/db
+  source-once db
 
   if ! $option_uninstall; then
     force_update=${option_update:-false} \
@@ -52,7 +52,7 @@ install:main() (
 install:package() (
   package_id=$1
 
-  source-once util/db
+  source-once db
 
   db:find-package "$package_id"
 

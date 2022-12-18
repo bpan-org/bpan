@@ -10,7 +10,7 @@ setup:main() (
 
   if ! [[ -d $local_dir ]]; then
     mkdir "$local_dir"
-    source-once util/db
+    source-once db
     option_quiet=true
     option_count_index=0
     db:sync

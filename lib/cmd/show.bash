@@ -46,7 +46,7 @@ show:commands() (
 
 show:packages() (
   i=1
-  source-once util/db
+  source-once db
   db:index-names |
   while read -r index; do
     db:get-index-info "$index"
@@ -80,7 +80,7 @@ show:packages() (
 
 show:indexes() (
   i=1
-  source-once util/db
+  source-once db
   db:index-names |
   while read -r index; do
     if $option_quiet; then

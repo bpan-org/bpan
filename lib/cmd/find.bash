@@ -23,7 +23,7 @@ find:main() (
   term=$(IFS='|'; echo "$*")
   pattern=".*($term)"
 
-  source-once util/db
+  source-once db
 
   force_update=$option_update \
     db:sync
@@ -50,7 +50,7 @@ find:main() (
 )
 
 find:list-installed() (
-  source-once util/db
+  source-once db
 
   if [[ ! -d $install_dir/src ]]; then
     say -r "No BPAN packages currently installed"

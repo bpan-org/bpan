@@ -215,7 +215,7 @@ init:apply() (
   fi
 
   say -y "RUNNING 'bpan update'"
-  source-once util/db
+  source-once db
   db:sync
   source-once update
   update:apply

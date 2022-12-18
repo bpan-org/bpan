@@ -23,7 +23,7 @@ update:main() (
     update:list
 
   else
-    source-once util/db
+    source-once db
 
     [[ -f $config_file_local ]] ||
       error "Can't 'bpan update'. No '$config_file_local' file."
@@ -239,6 +239,6 @@ update:self() (
   fi
 
   say -y "Updating BPAN index file..."
-  source-once util/db
+  source-once db
   db:sync
 )

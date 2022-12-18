@@ -52,7 +52,7 @@ publish:main() (
 )
 
 publish:source-plugin() {
-  source-once util/db
+  source-once db
 
   db:source-plugin publish || {
     # shellcheck disable=2046
