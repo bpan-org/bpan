@@ -239,17 +239,34 @@ publish:new-index-entry() (
   grep -v '^$' <<<"$entry"
 )
 
-publish:update-index() (
-  action=${1?Action verb required}
 
-  ini:init "$index_file_path"
+# shellcheck disable=2120
+publish:get-package-fields() {
+  local field fields required var val
 
-  package_title=$(git config -f .bpan/config package.title)
-  package_version=$(git config -f .bpan/config package.version)
-  package_license=$(git config -f .bpan/config package.license)
-  package_summary=$(git config -f .bpan/config package.summary) || true
-  package_type=$(git config -f .bpan/config package.type)
-  package_tag=$(git config -f .bpan/config package.tag) || true
+  local opt=${1:-}
+
+  fields=(
+    title!
+    version!
+    license!
+    type!
+    summary
+    tag
+  )
+
+  for field in "${fields[@]}"; do
+    [[ $field == *! ]] && required=true || required=false
+    field=${field%!}
+    var=package_$field
+    val=$(git config -f ".$app/config" "package.$field") ||
+      if $required; then
+        error "Can't find package.$field in .bpan/config"
+      fi
+    printf -v "$var" %s "$val"
+    [[ $opt != --say ]] ||
+      say -y "* Config package.$field = '$val'"
+  done
 
   package_source=$(publish:get-package-source)
   package_author=$(publish:get-package-author)
@@ -259,8 +276,15 @@ publish:update-index() (
 
   [[ ${#package_commit} -eq 40 ]] ||
     die "Can't get commit for '$package_id' v$package_version"
+}
 
-  # TODO Update all relevant fields
+publish:update-index() (
+  action=${1?Action verb required}
+
+  # shellcheck disable=2119
+  publish:get-package-fields
+
+  ini:init "$index_file_path"
 
   ini:set "package.$package_id.title"   "$package_title"
   ini:set "package.$package_id.version" "$package_version"
