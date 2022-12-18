@@ -3,7 +3,7 @@
 SHELL := bash
 
 ifdef BPAN_ROOT
-    BPAN_CMDS := $(shell bpan show --quiet --cmds)
+    BPAN_CMDS := $(shell bpan show --quiet --commands)
     BPAN_CMDS := $(filter-out add bump config init install new search test uninstall,$(BPAN_CMDS))
 endif
 

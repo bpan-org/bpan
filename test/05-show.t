@@ -2,19 +2,19 @@
 
 source test/init
 
-like "$(bpan show --cmds)" \
+like "$(bpan show --commands)" \
    "1) find *- Search for BPAN packages" \
-   "'bpan cmds' works"
+   "'bpan show --commands' works"
 
-like "$(bpan show --cmds -q | xargs)" \
+like "$(bpan show --commands -q | xargs)" \
    "find .*install .*config .*init" \
-   "'bpan cmds -q' works"
+   "'bpan show --commands -q' works"
 
-like "$(bpan --quiet show --cmds | xargs)" \
+like "$(bpan --quiet show --commands | xargs)" \
    "find .*install .*config .*init" \
-   "'bpan --quiet cmds' works"
+   "'bpan --quiet show --commands' works"
 
-ok "$([[ $(bpan show --cmds | wc -l) -eq 10 ]])" \
-   "'bpan cmds' has more than 10 entries"
+ok "$([[ $(bpan show --commands | grep -c '[0-9])') -eq 10 ]])" \
+   "'bpan show --commands' has 10 entries"
 
 done-testing

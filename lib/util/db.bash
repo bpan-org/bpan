@@ -25,8 +25,7 @@ db:index-names() (
       rev |
       cut -d'.' -f2- |
       rev |
-      sort |
-      uniq
+      +uniq
   fi
 )
 

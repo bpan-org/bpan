@@ -52,6 +52,14 @@ ini:first-key() (
   echo "$key"
 )
 
+# uniq with preserved order
++uniq() (
+  cat -n |
+    sort -u -k2 |
+    sort -n |
+    cut -f2-
+)
+
 +git:commit-sha512() (
   ref=${1:-HEAD}
   {

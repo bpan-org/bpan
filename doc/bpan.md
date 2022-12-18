@@ -16,7 +16,7 @@ Bash Packages Are Nearby
 Using the `bpan` CLI tool:
 ```
 $ bpan --help
-$ bpan show --cmds
+$ bpan show --commands
 $ bpan help <command>
 $ bpan find utils
 $ bpan install somebody/path-utils
