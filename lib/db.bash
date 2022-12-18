@@ -4,18 +4,18 @@ ns='[^[:space:]]'
 readonly package_id_pattern="^($w+:)?($w+/)?($w+)(=[.0-9]+)?(:$ns+)?$"
 
 db:index-names() (
-  if
-    IFS=',' read -r -a names <<<"$(ini:get index.order)" &&
-    [[ ${#names[*]} -gt 0 ]]
-  then
-    printf '%s\n' "${names[@]}"
-
-  elif [[ ${option_count_index:-0} -gt 0 ]]; then
+  if [[ ${option_count_index:-0} -gt 0 ]]; then
     for name in "${option_index[@]}"; do
       ini:get "index.$name.source" >/dev/null ||
         error "Invalid $APP index name: '$name'"
       echo "$name"
     done
+
+  elif
+    IFS=',' read -r -a names <<<"$(ini:get index.order)" &&
+    [[ ${#names[*]} -gt 0 ]]
+  then
+    printf '%s\n' "${names[@]}"
 
   else
     ini:list |
@@ -30,11 +30,12 @@ db:index-names() (
 )
 
 db:sync() (
+  db:index-names |
   while read -r index_name; do
     db:get-index-info "$index_name"
 
     if [[ ! -f $index_file_path ]]; then
-      say -Y "Updating $APP package index '$index_name'"
+      say -Y "Updating $APP index '$index_name'"
       git clone \
         --quiet \
         --branch "$index_branch" \
@@ -45,7 +46,7 @@ db:sync() (
       if ${force_update:-false} ||
         db:index-too-old
       then
-        say -Y "Updating $APP package index '$index_name'"
+        say -Y "Updating $APP index '$index_name'"
         git -C "$index_file_dir" pull \
           --quiet \
           --ff-only \
@@ -55,8 +56,7 @@ db:sync() (
 
     [[ -f $index_file_path ]] ||
       die "$APP '$index_name' index file not available"
-
-  done <<<"$(db:index-names)"
+  done
 )
 
 db:sync-plugins() (
@@ -145,17 +145,16 @@ db:get-index-info() {
   index_from=$(ini:get "index.$index_name.source")
   index_branch=$(ini:get "index.$index_name.branch" || echo main)
 
-  local path
-  path=$(ini:get "index.$index_name.path" || true)
-  if ! [[ $path ]]; then
+  index_path=$(ini:get "index.$index_name.path" || true)
+  if ! [[ $index_path ]]; then
     if [[ $index_from == https://github.com/* ]]; then
-      path=github/${index_from#https://github.com/}/index.ini
+      index_path=github/${index_from#https://github.com/}/index.ini
     else
       error "Can't determine config value for 'index.$index_name.path'"
     fi
   fi
 
-  index_file_path=$install_dir/src/$path
+  index_file_path=$install_dir/src/$index_path
   index_file_name=${index_file_path##*/}
   index_file_dir=${index_file_path%/*}
 }
