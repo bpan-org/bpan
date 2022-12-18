@@ -4,7 +4,7 @@ help:main() (
 
   cmd=$1
 
-  lib=$root/lib/$cmd.bash
+  lib=$root/lib/cmd/$cmd.bash
   if [[ -f $lib ]]; then
     source-once "$cmd"
   else

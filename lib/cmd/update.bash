@@ -43,7 +43,7 @@ update:apply() (
   update:manpages
 
   ini:set --file="$config_file_local" bpan.version "$VERSION"
-  ini:set --file="$config_file_local" bpan.updated "$bpan_run_timestamp"
+  ini:set --file="$config_file_local" bpan.updated "$bpan_timestamp"
 )
 
 update:list() (

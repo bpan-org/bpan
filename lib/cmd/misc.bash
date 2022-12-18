@@ -12,7 +12,7 @@ misc:main() (
 )
 
 misc:stamp() (
-  date '+%Y-%m-dT%H:%M:%S' "$@"
+  echo "$bpan_timestamp"
 )
 
 misc:sha512() (

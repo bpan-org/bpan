@@ -118,7 +118,7 @@ do-ini-init() {
   [[ -f $root/bin/$app ]] ||
     error "BPAN_ROOT variable has bad value '$root'"
 
-  bpan_run_timestamp=$(+time:stamp)
+  bpan_timestamp=$(+time:stamp)
 
   local files=()
 
@@ -208,7 +208,11 @@ set-timers() {
 source-once() {
   local var=_sourced_${1//\//_}
   if [[ -z ${!var-} ]]; then
-    source "$root/lib/$1.bash"
+    if [[ -f $root/lib/cmd/$1.bash ]]; then
+      source "$root/lib/cmd/$1.bash"
+    else
+      source "$root/lib/$1.bash"
+    fi
     printf -v "$var" 1
   fi
 }

@@ -223,7 +223,7 @@ publish:add-new-index-entry() (
   ini:set --file="$index_file_name" "package.$package_id.version" 0.0.0
   # shellcheck disable=2153
   ini:set --file="$index_file_name" bpan.version "$VERSION"
-  ini:set --file="$index_file_name" bpan.updated "$bpan_run_timestamp"
+  ini:set --file="$index_file_name" bpan.updated "$bpan_timestamp"
 )
 
 publish:new-index-entry() (
@@ -270,13 +270,13 @@ publish:update-index() (
   ini:set "package.$package_id.tag"     "$package_tag"
   ini:set "package.$package_id.source"  "$package_source"
   ini:set "package.$package_id.author"  "$package_author"
-  ini:set "package.$package_id.update"  "$bpan_run_timestamp"
+  ini:set "package.$package_id.update"  "$bpan_timestamp"
   ini:set "package.$package_id.commit"  "$package_commit"
   ini:set "package.$package_id.sha512"  "$package_sha512"
 
   # shellcheck disable=2153
   ini:set bpan.version "$VERSION"
-  ini:set bpan.updated "$bpan_run_timestamp"
+  ini:set bpan.updated "$bpan_timestamp"
 
   author_name=$(
     git config -f .bpan/config \
@@ -423,7 +423,7 @@ publish:check-bump-ok() (
 publish:update-changes-file() (
   entry="\
 [version \"$new_version\"]
-date = $bpan_run_timestamp
+date = $bpan_timestamp
 $change_list"
 
   if [[ $old_version == 0.0.0 ]]; then
