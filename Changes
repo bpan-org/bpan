@@ -1,3 +1,9 @@
+[version "0.1.104"]
+date = 2022-12-18T19:07:05Z
+done = Refactor db.bash
+done = Move lib/util/* to lib/
+done = Move bpan command bash libraries under lib/cmd/
+
 [version "0.1.103"]
 date = 2022-12-18T09:29:04Z
 done = Implement more of 'bpan show'
