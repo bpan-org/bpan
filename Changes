@@ -1,3 +1,8 @@
+[version "0.1.103"]
+date = 2022-12-18T09:29:04Z
+done = Implement more of 'bpan show'
+done = Add $PWD/bin to PATH in test/init template
+
 [version "0.1.102"]
 date = 2022-12-16T08:33:36Z
 done = Fix 'update --self' to fetch tags
