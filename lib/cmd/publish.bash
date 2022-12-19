@@ -260,7 +260,7 @@ publish:get-package-fields() {
         error "Can't find package.$field in .bpan/config"
       fi
     printf -v "$var" %s "$val"
-    [[ $1 != --say ]] ||
+    [[ ${1-} != --say ]] ||
       say -y "* Config package.$field = '$val'"
   done
 
