@@ -239,8 +239,8 @@ publish:new-index-entry() (
   grep -v '^$' <<<"$entry"
 )
 
-publish:update-index() (
-  action=${1?Action verb required}
+publish:get-package-fields() {
+  local field fields required var val
 
   fields=(
     title!
@@ -255,11 +255,13 @@ publish:update-index() (
     [[ $field == *! ]] && required=true || required=false
     field=${field%!}
     var=package_$field
-    val=$(git config -f .bpan/config "package.$field") ||
+    val=$(git config -f ".$app/config" "package.$field") ||
       if $required; then
         error "Can't find package.$field in .bpan/config"
       fi
     printf -v "$var" %s "$val"
+    [[ $1 != --say ]] ||
+      say -y "* Config package.$field = '$val'"
   done
 
   package_source=$(publish:get-package-source)
@@ -270,8 +272,12 @@ publish:update-index() (
 
   [[ ${#package_commit} -eq 40 ]] ||
     die "Can't get commit for '$package_id' v$package_version"
+}
 
-  # TODO Update all relevant fields
+publish:update-index() (
+  action=${1?Action verb required}
+
+  publish:get-package-fields
 
   ini:init "$index_file_path"
 
