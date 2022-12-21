@@ -18,8 +18,8 @@ Using the `bpan` CLI tool:
 $ bpan --help
 $ bpan show --commands
 $ bpan help <command>
-$ bpan find utils
-$ bpan install somebody/path-utils
+$ bpan find foo
+$ bpan install somebody/foo-bar-bash
 ```
 
 Use the `bpan` Bash library in your Bash code:
@@ -28,9 +28,9 @@ Use the `bpan` Bash library in your Bash code:
 
 source "$MY_PROJECT_ROOT/.bpan/lib/bpan.bash" --
 
-bpan:source bashplus=0.1.0
-bpan:source bpan-org/getopt
-bpan:source github:ingydotnet/json
+bpan:source bashplus +err +sys
+bpan:source getopt
+bpan:source json
 ```
 
 Create new packages with BPAN:
@@ -39,6 +39,7 @@ $ bpan init --new=foo-bar-bash --lib
 $ bpan add --pkg=json-bash
 $ bpan add --file=test/foo.t
 $ bpan update
+$ bpan test
 ```
 
 Publish your Bash packages:
@@ -55,7 +56,7 @@ BPAN is the "Missing Bash Package Manager".
 It does 3 big things for you and your Bash code:
 
 * Find/install CLI apps/programs/libaries written in Bash
-* Install, manage, bundle Bash deps for a project
+* Install, manage, bundle Bash deps for a project or package
 * Publish Bash packages that you make
 
 
@@ -71,10 +72,10 @@ It is built over several of the reusable libraries it makes available.
 
 That said, you don't need to use Bash as your interactive shell to use BPAN.
 Bash just needs to be installed (and often is by default) because Bash is the
-"programming language" in the scenario.
+"programming language" in this scenario.
 
-BPAN works and is tested under the following shells: `bash`, `zsh`, `fish`,
-`ksh`, `mksh`, `tcsh`, `yash`, `ash`, `dash`, `mrsh`, `posh` and `sh`.
+BPAN works and is tested under the following interactive shells: `bash`, `zsh`,
+`fish`, `ksh`, `mksh`, `tcsh`, `yash`, `ash`, `dash`, `mrsh`, `posh` and `sh`.
 
 
 ### Installing with the BPAN Installation Script
