@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH "bpan" 1 "2022-12-18" "md2man v0.1.0" "Bash Package Manager"
+.TH "bpan" 1 "2022-12-21" "md2man v0.1.0" "Bash Package Manager"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -157,8 +157,8 @@ Using the \f(CW\*(C`bpan\*(C'\fR \s-1CLI\s0 tool:
 \&    $ bpan \-\-help
 \&    $ bpan show \-\-commands
 \&    $ bpan help <command>
-\&    $ bpan find utils
-\&    $ bpan install somebody/path\-utils
+\&    $ bpan find foo
+\&    $ bpan install somebody/foo\-bar\-bash
 .Ve
 .PP
 Use the \f(CW\*(C`bpan\*(C'\fR Bash library in your Bash code:
@@ -168,18 +168,19 @@ Use the \f(CW\*(C`bpan\*(C'\fR Bash library in your Bash code:
 \&
 \&    source "$MY_PROJECT_ROOT/.bpan/lib/bpan.bash" \-\-
 \&
-\&    bpan:source bashplus=0.1.0
-\&    bpan:source bpan\-org/getopt
-\&    bpan:source github:ingydotnet/json
+\&    bpan:source bashplus +err +sys
+\&    bpan:source getopt
+\&    bpan:source json
 .Ve
 .PP
 Create new packages with \s-1BPAN:\s0
 .PP
-.Vb 4
+.Vb 5
 \&    $ bpan init \-\-new=foo\-bar\-bash \-\-lib
 \&    $ bpan add \-\-pkg=json\-bash
 \&    $ bpan add \-\-file=test/foo.t
 \&    $ bpan update
+\&    $ bpan test
 .Ve
 .PP
 Publish your Bash packages:
@@ -196,7 +197,7 @@ It does 3 big things for you and your Bash code:
 .IP "\(bu" 4
 Find/install \s-1CLI\s0 apps/programs/libaries written in Bash
 .IP "\(bu" 4
-Install, manage, bundle Bash deps for a project
+Install, manage, bundle Bash deps for a project or package
 .IP "\(bu" 4
 Publish Bash packages that you make
 .SS "\s-1INSTALLATION\s0"
@@ -205,9 +206,9 @@ Installing \s-1BPAN\s0 is simple and everything happens in a single directory on
 .PP
 \&\s-1BPAN\s0 is written in \*(L"modern\*(R" Bash. It is built over several of the reusable libraries it makes available.
 .PP
-That said, you don't need to use Bash as your interactive shell to use \s-1BPAN.\s0 Bash just needs to be installed (and often is by default) because Bash is the \*(L"programming language\*(R" in the scenario.
+That said, you don't need to use Bash as your interactive shell to use \s-1BPAN.\s0 Bash just needs to be installed (and often is by default) because Bash is the \*(L"programming language\*(R" in this scenario.
 .PP
-\&\s-1BPAN\s0 works and is tested under the following shells: \f(CW\*(C`bash\*(C'\fR, \f(CW\*(C`zsh\*(C'\fR, \f(CW\*(C`fish\*(C'\fR, \f(CW\*(C`ksh\*(C'\fR, \f(CW\*(C`mksh\*(C'\fR, \f(CW\*(C`tcsh\*(C'\fR, \f(CW\*(C`yash\*(C'\fR, \f(CW\*(C`ash\*(C'\fR, \f(CW\*(C`dash\*(C'\fR, \f(CW\*(C`mrsh\*(C'\fR, \f(CW\*(C`posh\*(C'\fR and \f(CW\*(C`sh\*(C'\fR.
+\&\s-1BPAN\s0 works and is tested under the following interactive shells: \f(CW\*(C`bash\*(C'\fR, \f(CW\*(C`zsh\*(C'\fR, \f(CW\*(C`fish\*(C'\fR, \f(CW\*(C`ksh\*(C'\fR, \f(CW\*(C`mksh\*(C'\fR, \f(CW\*(C`tcsh\*(C'\fR, \f(CW\*(C`yash\*(C'\fR, \f(CW\*(C`ash\*(C'\fR, \f(CW\*(C`dash\*(C'\fR, \f(CW\*(C`mrsh\*(C'\fR, \f(CW\*(C`posh\*(C'\fR and \f(CW\*(C`sh\*(C'\fR.
 .PP
 \fIInstalling with the \s-1BPAN\s0 Installation Script\fR
 .IX Subsection "Installing with the BPAN Installation Script"
