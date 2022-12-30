@@ -7,16 +7,24 @@ die() { printf '%s\n' "$@" >&2; exit 1; }
 ( shopt -s compat31 2>/dev/null ) ||
   die "Error: Requires Bash version 3.2 or higher."
 
-[[ ${BPAN_DEBUG-} == -x ]] && BPAN_DEBUG_BASH_X='-x'
-set "${BPAN_DEBUG_BASH_X:-+x}"
-
 [[ ${BPAN_ROOT:-} ]] ||
   die "Error: BPAN_ROOT not set." \
       "Try: 'source /path/to/bpan/.rc'."
 
 source "$BPAN_ROOT/lib/bpan.bash" --app ||
   die "Error: Can't source 'bpan.bash'"
-bpan:source bashplus +cmd +err +fs +git +list +say +str +sym +sys +time
+bpan:source bashplus \
+  +cmd \
+  +err \
+  +fs \
+  +func \
+  +git \
+  +list \
+  +say \
+  +str \
+  +sym \
+  +sys \
+  +time
 bpan:source ini
 bpan:source bpan-util
 bpan:source getopt "\
@@ -49,6 +57,7 @@ q,quiet       Print less output
 h,help        Show the command summary
 V,version     Display $app version
 x,debug       Print lots of debugging info
+X*            Even more debugging info
 #
 # Hidden options for internal use:
 #
@@ -62,13 +71,11 @@ complete*     Shell tab completion for $app
 "
 
 main() (
-  [[ ${BPAN_DEBUG_TIMER-} ]] && set-timers
-
   set-env
 
   getopt "$@"
 
-  $option_debug && export BPAN_DEBUG_BASH=true
+  set-debug
 
   [[ ${args[0]-} == + ]] && cmd=misc
 
@@ -106,11 +113,6 @@ set-env() {
     fi
   fi
   install_dir=$BPAN_INSTALL
-
-  if [[ ${BPAN_DEBUG_BASH_X-} ]]; then
-    BASHPLUS_DEBUG_BASH_X=${BASHPLUS_DEBUG_BASH_X:-$BPAN_DEBUG_BASH_X}
-    INI_DEBUG_BASH_X=${INI_DEBUG_BASH_X:-$BPAN_DEBUG_BASH_X}
-  fi
 }
 
 do-ini-init() {
@@ -151,6 +153,31 @@ do-ini-init() {
   ini:vars BPAN_ROOT BPAN_SHELL
 }
 
+set-debug() {
+  [[ ${BPAN_TIMER-} ]] && set-timers
+
+  if [[ ${BPAN_SET_X-} ]]; then
+    if [[ $BPAN_SET_X == -x ]]; then
+      export BPAN_X=+x
+    elif [[ $BPAN_SET_X == -X ]]; then
+      export BPAN_X=-x
+    else
+      error "BPAN_SET_X='$BPAN_SET_X' invalid. Use -x or +x."
+    fi
+    set -x
+
+  elif $option_X; then
+    export BPAN_SET_X=-x
+    export BPAN_X=-x
+    set -x
+
+  elif $option_debug; then
+    export BPAN_SET_X=-x
+    export BPAN_X=+x
+    set -x
+  fi
+}
+
 getopt-cmds-spec() {
   source-once "$cmd"
   local help="h,help  Get help for '$app $cmd'"
@@ -187,7 +214,7 @@ $help
 }
 
 set-timers() {
-  local regex=$BPAN_DEBUG_TIMER
+  local regex=$BPAN_TIMER
   [[ $regex == 1 ]] && regex='.'
 
   local functions=($(

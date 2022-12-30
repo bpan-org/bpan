@@ -22,12 +22,12 @@ WW='\e[37;1m'   # white
 Z='\e[0m'       # reset
 
 say() (
-  set "${BASHPLUS_DEBUG_BASH_X:-+x}"
+  set "${BPAN_X:-+x}"
   +say "$@"
 )
 
 +say() (
-  set "${BASHPLUS_DEBUG_BASH_X:-+x}"
+  set "${BPAN_X:-+x}"
   ${option_quiet:-false} && return
 
   if [[ ${1-} == -? ]]; then
@@ -39,7 +39,7 @@ say() (
 )
 
 +say:color() (
-  set "${BASHPLUS_DEBUG_BASH_X:-+x}"
+  set "${BPAN_X:-+x}"
   ${option_quiet:-false} && return
 
   color=$1; shift

@@ -4,7 +4,7 @@
 # * Many are improved versions of existing builtins/commands.
 
 
-bashplus:version() ( echo '0.1.64' )
+bashplus:version() ( echo '0.1.68' )
 
 bashplus:main() {
   local arg
@@ -30,7 +30,7 @@ bashplus:main() {
 # Source a name like 'foo' or 'foo/bar':
 # shellcheck disable=2086
 +source() {
-  set "${BASHPLUS_DEBUG_BASH_X:-+x}"
+  local set=$-; set "${BPAN_X:-+x}"
   local lib=${1?}; shift
 
   local BASHPLUS_PATH=${BASHPLUS_PATH:-$(
@@ -41,6 +41,7 @@ bashplus:main() {
   for path in $(IFS=:; echo ${BASHPLUS_PATH-}); do
     if [[ -f $path/$lib.bash ]]; then
       source "$path/$lib.bash" "$@"
+      [[ $set != *x* ]] || set -x
       return
     fi
   done
@@ -51,7 +52,7 @@ bashplus:main() {
 
 # A simple 'die' function. Full featured version is in lib/bashplus/err.bash
 die() {
-  set "${BASHPLUS_DEBUG_BASH_X:-+x}"
+  set "${BPAN_X:-+x}"
   [[ $# -gt 0 ]] || set -- Died
   printf '%s\n' "$@" >&2
   exit 1
@@ -59,14 +60,14 @@ die() {
 
 # A simple 'error' function. Full featured version is in lib/bashplus/err.bash
 error() {
-  set "${BASHPLUS_DEBUG_BASH_X:-+x}"
+  set "${BPAN_X:-+x}"
   local msg="Error: ${1:-unknown}"; shift
   die "$msg" "$@"
 }
 
 # Print lines to stderr
 warn() (
-  set "${BASHPLUS_DEBUG_BASH_X:-+x}"
+  set "${BPAN_X:-+x}"
   printf '%s\n' "$@" >&2
 )
 

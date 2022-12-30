@@ -4,7 +4,18 @@
 +func:ok() [[
   $(type -t "${1:?+func:ok requires a function name}") == function ]]
 
-# Make a function anonymous
+# List all functions (possibly matching a pattern):
++func:list() (
+  declare -F |
+    cut -d' ' -f3 |
+    if [[ ${1-} ]]; then
+      grep -E "$1"
+    else
+      cat
+    fi
+)
+
+# Make a function anonymous:
 +func:anon() {
   local func=${1?}
   local var=${2?}

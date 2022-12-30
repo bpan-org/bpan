@@ -13,8 +13,6 @@ die() { printf '%s\n' "$@" >&2; exit 1; }
 
 # Put startup code in a function:
 bpan:main() {
-  [[ ${BPAN_DEBUG_BASH-} ]] && set -x
-
   # Add local .bpan/lib to BPAN_PATH
   local dir
   dir=$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd -P)
@@ -58,6 +56,8 @@ bpan:main() {
 
 # Try to source a bash library in $BPAN_PATH:
 bpan:source() {
+  local set=$-; set "${BPAN_X:-+x}"
+
   [[ $# -gt 0 ]] ||
     die "Usage: bpan:source <bpan-library-name> [<arg>...]"
 
@@ -68,6 +68,7 @@ bpan:source() {
   for dir in $(IFS=:; echo ${BPAN_PATH-}); do
     if [[ -f $dir/$name.bash ]]; then
       source "$dir/$name.bash" "$@"
+      [[ $set != *x* ]] || set -x
       return
     fi
   done
