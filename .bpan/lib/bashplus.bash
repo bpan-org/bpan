@@ -4,7 +4,7 @@
 # * Many are improved versions of existing builtins/commands.
 
 
-bashplus:version() ( echo '0.1.68' )
+bashplus:version() ( echo '0.1.69' )
 
 bashplus:main() {
   local arg

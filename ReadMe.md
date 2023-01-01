@@ -132,7 +132,7 @@ BPAN needs just a few very common things to work:
 
 * Bash 3.2+
   * The BPAN system is written in Bash (of course)
-* Git 2.7+
+* Git 2.9+
   * Required by `bpan` CLI and many BPAN packages, but...
   * Not required by programs using BPAN packages (that don't require it)
 * GitHub account
@@ -142,7 +142,7 @@ BPAN needs just a few very common things to work:
 
 ## Copyright and License
 
-Copyright 2022 by Ingy döt Net
+Copyright 2022-2023 by Ingy döt Net
 
 This is free software, licensed under:
 

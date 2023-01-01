@@ -1,3 +1,7 @@
+[version "0.1.107"]
+date = 2023-01-01T13:13:34Z
+done = Fix bug with finding host from remote url
+
 [version "0.1.106"]
 date = 2022-12-30T17:49:14Z
 done = Refactor -x code
