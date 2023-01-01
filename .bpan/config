@@ -3,13 +3,13 @@ version = 0.1.106
 updated = 2022-12-30T17:49:15Z
 
 [package]
-name = bpan
+id = github:bpan-org/bpan
 version = 0.1.106
 title = Bash Package Manager
 license = MIT
-copyright = 2014-2022
+copyright = 2014-2023
+type = bash:bpan
 
-bug = https://github.com/bpan-org/bpan/issues/
 irc = irc.libera.chat/bpan
 
 [author "github:ingydotnet"]
@@ -19,8 +19,7 @@ irc = ingy@irc.libera.chat
 matrix = @ingy:yaml.io
 
 [require "command"]
-bash = 3.2+
-git = 2.7+
+git = 2.9+
 make = 3.81+
 ping = 0+
 

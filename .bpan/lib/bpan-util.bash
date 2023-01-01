@@ -21,8 +21,8 @@ bpan:get-pkg-vars() {
   local url
   if url=$(git config remote.origin.url); then
     if
-      [[ $url =~ ^https://github\.com/([-a-z0-9]+)/([-a-z0-9]+)$ ]] ||
-      [[ $url =~ ^git@github\.com:([-a-z0-9]+)/([-a-z0-9]+)$ ]]
+      [[ $url =~ ^https://github\.com/([-a-z0-9]+)/([-a-z0-9]+)(\.git)?$ ]] ||
+      [[ $url =~ ^git@github\.com:([-a-z0-9]+)/([-a-z0-9]+)(\.git)?$ ]]
     then
       pkg_host=${pkg_host:-github}
       pkg_owner=${pkg_owner:-${BASH_REMATCH[1]}}

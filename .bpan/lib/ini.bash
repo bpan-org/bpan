@@ -63,7 +63,7 @@ ini:set() {
   i=${#__ini_files[*]}
   file=${__ini_files[i-1]?}
   git config --file "$file" "${args[@]}"
-  ini:untab "$file"
+  ini:format "$file"
   __ini_data=''
   [[ $set != *x* ]] || set -x
 }
@@ -78,7 +78,7 @@ ini:add() {
   i=${#__ini_files[*]}
   file=${__ini_files[i-1]?}
   git config --file "$file" --add "${args[@]}"
-  ini:untab "$file"
+  ini:format "$file"
   __ini_data=''
   [[ $set != *x* ]] || set -x
 }
@@ -132,10 +132,11 @@ ini:data() {
   __ini_data=$(cat "${__ini_files[@]?}")
 }
 
-ini:untab() {
+ini:format() {
   local file text
   for file; do
     text=$(< "$file")
+    text=${text//$'= \n'/$'= ""\n'}
     echo "${text//$'\t'/}" > "$file"
   done
 }
